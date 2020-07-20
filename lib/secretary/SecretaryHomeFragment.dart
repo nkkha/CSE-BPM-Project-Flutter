@@ -1,0 +1,77 @@
+import 'package:cse_bpm_project/screen/CreateRequest.dart';
+import 'package:cse_bpm_project/screen/UserRequest.dart';
+import 'package:cse_bpm_project/secretary/StudentRequest.dart';
+import 'package:flutter/material.dart';
+
+class SecretaryHomeFragment extends StatefulWidget {
+  const SecretaryHomeFragment({Key key}) : super(key: key);
+  @override
+  _SecretaryHomeFragmentState createState() => _SecretaryHomeFragmentState();
+}
+
+class _SecretaryHomeFragmentState extends State<SecretaryHomeFragment> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(
+          'Trang chủ',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(
+              height: 30,
+            ),
+            GestureDetector(
+              child: Card(
+                child: ListTile(
+                  title: Text(
+                    'Yêu cầu của sinh viên',
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => StudentRequestScreen()));
+              },
+            ),
+            Divider(),
+            GestureDetector(
+              child: Card(
+                child: ListTile(
+                  title: Text(
+                    'Thông báo từ ban chủ nhiệm',
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+              onTap: () {
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => CreateRequestScreen()));
+              },
+            ),
+            Divider(),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -1,4 +1,5 @@
-import 'package:cse_bpm_project/login_screen.dart';
+import 'package:cse_bpm_project/screen/login/Login.dart';
+import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,6 +13,10 @@ class MyApp extends StatelessWidget {
       title: 'CSE BPM Project',
       debugShowCheckedModeBanner: false,
       home: LoginScreen(),
+      theme: ThemeData(
+        primaryColor: MyColors.white,
+        primaryColorDark: MyColors.lightGray,
+      ),
     );
   }
 }

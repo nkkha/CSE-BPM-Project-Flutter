@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cse_bpm_project/falcuty/falcuty_screen.dart';
-import 'package:cse_bpm_project/secretary/secret_home.dart';
+import 'package:cse_bpm_project/screen/Home.dart';
+import 'package:cse_bpm_project/secretary/Secretary.dart';
+import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:cse_bpm_project/home_screen.dart';
-import 'package:cse_bpm_project/register_screen.dart';
+import 'Register.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,31 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _userController = new TextEditingController();
   TextEditingController _passController = new TextEditingController();
 
+  FocusNode _myFocusNode1 = new FocusNode();
+  FocusNode _myFocusNode2 = new FocusNode();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _myFocusNode1.dispose();
+    _myFocusNode2.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _myFocusNode1 = new FocusNode();
+    _myFocusNode2 = new FocusNode();
+    _myFocusNode1.addListener(_onOnFocusNodeEvent);
+    _myFocusNode2.addListener(_onOnFocusNodeEvent);
+  }
+
+  _onOnFocusNodeEvent() {
+    setState(() {
+      // Re-renders
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             children: <Widget>[
               SizedBox(
-                height: 40,
+                height: 60,
               ),
               Container(
                 height: 150,
@@ -37,48 +63,68 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Image.asset('images/logo-cse.png'),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 6),
+                padding: const EdgeInsets.fromLTRB(0, 10, 0, 6),
                 child: Text(
                   'Welcome Back!',
-                  style: TextStyle(fontSize: 22, color: Color(0xff333333)),
+                  style: TextStyle(fontSize: 22, color: MyColors.black),
                 ),
               ),
               Text(
                 'Login to continue using CSE Project',
-                style: TextStyle(fontSize: 16, color: Color(0xff606470)),
+                style: TextStyle(fontSize: 16, color: MyColors.mediumGray),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 30, 0, 20),
                 child: TextField(
+                  focusNode: _myFocusNode1,
                   controller: _userController,
                   style: TextStyle(fontSize: 18, color: Colors.black),
                   decoration: InputDecoration(
                     labelText: 'Username',
+                    labelStyle: TextStyle(
+                        color: _myFocusNode1.hasFocus
+                            ? MyColors.lightBrand
+                            : MyColors.mediumGray),
                     prefixIcon: Container(
                       width: 50,
                       child: Image.asset('images/ic_user.png'),
                     ),
                     border: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: Color(0xffCED0D2), width: 1),
+                          BorderSide(color: MyColors.lightGray, width: 1),
                       borderRadius: BorderRadius.all(Radius.circular(6)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: MyColors.lightBrand, width: 2.0),
+                      borderRadius: BorderRadius.circular(6.0),
                     ),
                   ),
                 ),
               ),
               TextField(
+                focusNode: _myFocusNode2,
                 controller: _passController,
                 obscureText: true,
                 style: TextStyle(fontSize: 18, color: Colors.black),
                 decoration: InputDecoration(
                   labelText: 'Password',
+                  labelStyle: TextStyle(
+                      color: _myFocusNode2.hasFocus
+                          ? MyColors.lightBrand
+                          : MyColors.mediumGray),
                   prefixIcon: Container(
                     width: 50,
                     child: Image.asset('images/ic_lock.png'),
                   ),
                   border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xffCED0D2), width: 1),
+                    borderSide: BorderSide(color: MyColors.lightGray, width: 1),
                     borderRadius: BorderRadius.all(Radius.circular(6)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: MyColors.lightBrand, width: 2),
+                    borderRadius: BorderRadius.circular(6.0),
                   ),
                 ),
               ),
@@ -89,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                   child: Text(
                     'Forgot password?',
-                    style: TextStyle(fontSize: 16, color: Color(0xff606470)),
+                    style: TextStyle(fontSize: 16, color: MyColors.mediumGray),
                   ),
                 ),
               ),
@@ -104,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       'Log In',
                       style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
-                    color: Color(0xff3277D8),
+                    color: MyColors.lightBrand,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(6)),
                     ),
@@ -116,12 +162,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: RichText(
                   text: TextSpan(
                     text: 'New user? ',
-                    style: TextStyle(color: Color(0xff606470), fontSize: 16),
+                    style: TextStyle(color: MyColors.darkGray, fontSize: 16),
                     children: [
                       TextSpan(
                         text: 'Sign up for a new account',
                         style: TextStyle(
-                          color: Color(0xff327798),
+                          color: MyColors.lightBrand,
                           fontSize: 16,
                         ),
                         recognizer: TapGestureRecognizer()
@@ -153,7 +199,6 @@ class _LoginScreenState extends State<LoginScreen> {
     var user = {};
     user["user"] = resBody;
     String str = json.encode(user);
-    print(str);
 
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbUser/Login',
@@ -164,18 +209,18 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (response.statusCode == 200) {
-      if (userName.contains("sv")) {
-        Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomeScreen()));
-      } else if (userName.contains("tk")){
-        Navigator.push(
-          context, MaterialPageRoute(builder: (context) => SecretaryHomeScreen()));
-      } else if (userName.contains("bcn")){
-        Navigator.push(
-          context, MaterialPageRoute(builder: (context) => FalcutyHomeScreen()));
+      if (userName.contains("sinhvien")) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      } else if (userName.contains("thuky")) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => SecretaryHomeScreen()));
+      } else if (userName.contains("banchunhiem")) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => FalcutyHomeScreen()));
       }
       // _getUserRole();
-      
+
     } else {
       throw Exception('Failed to login.');
     }

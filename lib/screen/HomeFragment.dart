@@ -1,29 +1,37 @@
-import 'dart:async';
-import 'dart:convert';
-import 'package:cse_bpm_project/login_screen.dart';
-import 'package:http/http.dart' as http;
-
-import 'package:cse_bpm_project/create_request_screen.dart';
-import 'package:cse_bpm_project/user_request_screen.dart';
+import 'package:cse_bpm_project/screen/CreateRequest.dart';
+import 'package:cse_bpm_project/screen/UserRequest.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeFragment extends StatefulWidget {
+  const HomeFragment({Key key}) : super(key: key);
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _HomeFragmentState createState() => _HomeFragmentState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeFragmentState extends State<HomeFragment> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
-        backgroundColor: Color(0xff3277D8),
         automaticallyImplyLeading: false,
+        title: Text(
+          'Trang chủ',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.add_to_home_screen),
-            onPressed: () => _onLogOutClicked(),
+            icon: Image.asset(
+              'images/ic-toolbar-new.png',
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CreateRequestScreen()),
+              );
+            },
           ),
         ],
       ),
@@ -36,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Card(
                 child: ListTile(
                   title: Text(
-                    'Your Request',
+                    'Yêu cầu của bạn',
                     style: TextStyle(
                       fontSize: 18,
                     ),
@@ -55,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Card(
                 child: ListTile(
                   title: Text(
-                    'Create Request',
+                    'Thực hiện yêu cầu',
                     style: TextStyle(
                       fontSize: 18,
                     ),
@@ -74,19 +82,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> _onLogOutClicked() async {
-
-    final http.Response response = await http.post(
-      'http://nkkha.somee.com/odata/tbUser/Logout',
-    );
-
-    if (response.statusCode == 200) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => LoginScreen()));
-    } else {
-      throw Exception('Failed to logout.');
-    }
   }
 }

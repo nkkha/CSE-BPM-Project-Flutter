@@ -1,4 +1,4 @@
-import 'package:cse_bpm_project/xin_giay_nvqs.dart';
+import 'package:cse_bpm_project/screen/XinGiayNVQS.dart';
 import 'package:flutter/material.dart';
 
 class CreateRequestScreen extends StatefulWidget {
@@ -12,7 +12,6 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Create Request'),
-        backgroundColor: Color(0xff3277D8),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
