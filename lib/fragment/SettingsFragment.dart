@@ -4,14 +4,14 @@ import 'package:http/http.dart' as http;
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 
-class SettingScreen extends StatelessWidget {
-  const SettingScreen({Key key}) : super(key: key);
+class SettingsFragment extends StatelessWidget {
+  const SettingsFragment({Key key}) : super(key: key);
 
   Widget _buildRowSetting(
       String imgUrl, String title, int index, BuildContext context) {
     return Column(
       children: <Widget>[
-        GestureDetector(
+        InkWell(
           child: Row(
             children: <Widget>[
               Padding(

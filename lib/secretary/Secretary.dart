@@ -1,9 +1,7 @@
-import 'package:cse_bpm_project/screen/HomeFragment.dart';
-import 'package:cse_bpm_project/screen/NoChat.dart';
-import 'package:cse_bpm_project/screen/Setting.dart';
+import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
 import 'package:cse_bpm_project/secretary/SecretaryHomeFragment.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
-
+import 'package:cse_bpm_project/widget/NoChatWidget.dart';
 import 'package:flutter/material.dart';
 
 class SecretaryHomeScreen extends StatefulWidget {
@@ -18,8 +16,8 @@ class _SecretaryHomeScreenState extends State<SecretaryHomeScreen> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     SecretaryHomeFragment(),
-    NoChatScreen(),
-    SettingScreen(),
+    NoChatWidget(),
+    SettingsFragment(),
   ];
 
   void _onItemTapped(int index) {

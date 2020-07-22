@@ -1,3 +1,4 @@
+import 'package:cse_bpm_project/screen/HomeScreen.dart';
 import 'package:cse_bpm_project/screen/login/Login.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: MyColors.white,
         primaryColorDark: MyColors.lightGray,
+        appBarTheme: AppBarTheme(
+          elevation: 1,
+        ),
       ),
     );
   }

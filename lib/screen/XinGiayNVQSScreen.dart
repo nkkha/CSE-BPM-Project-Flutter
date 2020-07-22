@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:cse_bpm_project/screen/Home.dart';
+import 'package:cse_bpm_project/screen/HomeScreen.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -22,6 +22,7 @@ class _XinGiayNghiaVuScreenState extends State<XinGiayNghiaVuScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Xin Giấy NVQS'),
+        titleSpacing: 0,
       ),
       body: SingleChildScrollView(
         child: GestureDetector(

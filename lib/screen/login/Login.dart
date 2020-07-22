@@ -1,14 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:cse_bpm_project/falcuty/falcuty_screen.dart';
-import 'package:cse_bpm_project/screen/Home.dart';
+
+import 'package:cse_bpm_project/falcuty/FalcutyScreen.dart';
+import 'package:cse_bpm_project/screen/HomeScreen.dart';
 import 'package:cse_bpm_project/secretary/Secretary.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
-import 'package:http/http.dart' as http;
-
-import 'Register.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+import '../../source/MyColors.dart';
+import 'Register.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -16,9 +18,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _isClicked = false;
+
   TextEditingController _userController = new TextEditingController();
   TextEditingController _passController = new TextEditingController();
-
   FocusNode _myFocusNode1 = new FocusNode();
   FocusNode _myFocusNode2 = new FocusNode();
 
@@ -47,6 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: Container(
         padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
         constraints: BoxConstraints.expand(),
@@ -145,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   height: 52,
                   child: RaisedButton(
-                    onPressed: _onLoginClicked,
+                    onPressed: _isClicked == false ? _onLoginClicked : () {},
                     child: Text(
                       'Log In',
                       style: TextStyle(color: Colors.white, fontSize: 18),
@@ -190,6 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _onLoginClicked() async {
+    _isClicked = true;
     String userName = _userController.text;
     String pass = _passController.text;
 
@@ -220,11 +226,13 @@ class _LoginScreenState extends State<LoginScreen> {
             MaterialPageRoute(builder: (context) => FalcutyHomeScreen()));
       }
       // _getUserRole();
-
     } else {
-      throw Exception('Failed to login.');
+      final snackBar = SnackBar(
+        content: Text('Username or password is incorrect!'),
+      );
+      _scaffoldKey.currentState.showSnackBar(snackBar);
     }
   }
 
-  // void _getUserRole() {}
+// void _getUserRole() {}
 }

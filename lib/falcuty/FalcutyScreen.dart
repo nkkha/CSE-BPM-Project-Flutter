@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cse_bpm_project/model/RequestNVQS.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -56,24 +57,6 @@ Future<List<RequestNVQS>> fetchListRequest() async {
     return listRequest;
   } else {
     throw Exception('Failed to load');
-  }
-}
-
-class RequestNVQS {
-  final int id;
-  final String content;
-  final int userID;
-  final String status;
-
-  RequestNVQS({this.id, this.content, this.userID, this.status});
-
-  factory RequestNVQS.fromJson(Map<String, dynamic> json) {
-    return RequestNVQS(
-      id: json['ID'],
-      content: json['Content'],
-      userID: json['UserID'],
-      status: json['Status'],
-    );
   }
 }
 

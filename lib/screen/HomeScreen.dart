@@ -1,8 +1,7 @@
-import 'package:cse_bpm_project/screen/HomeFragment.dart';
-import 'package:cse_bpm_project/screen/NoChat.dart';
-import 'package:cse_bpm_project/screen/Setting.dart';
+import 'package:cse_bpm_project/fragment/ChatFragment.dart';
+import 'package:cse_bpm_project/fragment/RequestFragment.dart';
+import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
-
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,9 +15,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    HomeFragment(),
-    NoChatScreen(),
-    SettingScreen(),
+    RequestFragment(),
+    ChatFragment(),
+    SettingsFragment(),
   ];
 
   void _onItemTapped(int index) {
