@@ -215,18 +215,19 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (response.statusCode == 200) {
-      if (userName.contains("sinhvien")) {
+      if (userName.contains("sv")) {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomeScreen()));
-      } else if (userName.contains("thuky")) {
+      } else if (userName.contains("tk")) {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => SecretaryHomeScreen()));
-      } else if (userName.contains("banchunhiem")) {
+      } else if (userName.contains("bcn")) {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => FalcutyHomeScreen()));
       }
       // _getUserRole();
     } else {
+      _isClicked = false;
       final snackBar = SnackBar(
         content: Text('Username or password is incorrect!'),
       );
