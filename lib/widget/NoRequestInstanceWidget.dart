@@ -2,11 +2,16 @@ import 'package:cse_bpm_project/screen/CreateRequestScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 
-class NoRequestWidget extends StatelessWidget {
+class NoRequestInstanceWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
+        Positioned(
+          top: 20,
+          right: 20,
+          child: Image.asset('images/arrow.png'),
+        ),
         Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -14,7 +19,7 @@ class NoRequestWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 40),
                 child: Text(
-                  'Hiện tại',
+                  'Bạn không',
                   style: TextStyle(
                     color: MyColors.brand,
                     fontSize: 42,
@@ -25,7 +30,7 @@ class NoRequestWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: Text(
-                  'không có yêu cầu nào',
+                  'có yêu cầu nào',
                   style: TextStyle(
                     color: MyColors.brand,
                     fontSize: 42,
@@ -50,6 +55,15 @@ class NoRequestWidget extends StatelessWidget {
                       color: MyColors.lightGray,
                     ),
                     borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'BẮT ĐẦU YÊU CẦU ĐẦU TIÊN!',
+                    style: TextStyle(
+                      color: MyColors.brand,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1.25,
+                    ),
                   ),
                 ),
               ),

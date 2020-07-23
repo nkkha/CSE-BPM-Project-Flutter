@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cse_bpm_project/model/RequestNVQS.dart';
+import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/screen/CreateRequestScreen.dart';
-import 'package:cse_bpm_project/widget/NoRequestWidget.dart';
+import 'package:cse_bpm_project/widget/NoRequestInstanceWidget.dart';
 import 'package:cse_bpm_project/widget/UserRequestListWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -16,7 +16,7 @@ class RequestFragment extends StatefulWidget {
 }
 
 class _RequestFragmentState extends State<RequestFragment> {
-  Future<List<RequestNVQS>> futureListRequest;
+  Future<List<RequestInstance>> futureListRequest;
   bool _noRequest = false;
 
   @override
@@ -52,11 +52,11 @@ class _RequestFragmentState extends State<RequestFragment> {
         ],
       ),
       body: Center(
-        child: FutureBuilder<List<RequestNVQS>>(
+        child: FutureBuilder<List<RequestInstance>>(
           future: futureListRequest,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              if (_noRequest) return NoRequestWidget();
+              if (_noRequest) return NoRequestInstanceWidget();
               return UserRequestListWidget(requestList: snapshot.data);
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");
@@ -68,15 +68,14 @@ class _RequestFragmentState extends State<RequestFragment> {
     );
   }
 
-  Future<List<RequestNVQS>> fetchListRequest() async {
-    final response =
-        await http.get('http://nkkha.somee.com/odata/tbRequestNVQS');
+  Future<List<RequestInstance>> fetchListRequest() async {
+    final response = await http.get('http://nkkha.somee.com/odata/tbRequestInstance');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<RequestNVQS> listRequest = new List();
+      List<RequestInstance> listRequest = new List();
       for (Map i in data) {
-        listRequest.add(RequestNVQS.fromJson(i));
+        listRequest.add(RequestInstance.fromJson(i));
       }
       if (listRequest.length == 0) _noRequest = true;
       return listRequest;

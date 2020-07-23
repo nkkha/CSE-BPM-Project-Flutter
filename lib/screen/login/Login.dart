@@ -27,19 +27,19 @@ class _LoginScreenState extends State<LoginScreen> {
   FocusNode _myFocusNode2 = new FocusNode();
 
   @override
-  void dispose() {
-    super.dispose();
-    _myFocusNode1.dispose();
-    _myFocusNode2.dispose();
-  }
-
-  @override
   void initState() {
     super.initState();
     _myFocusNode1 = new FocusNode();
     _myFocusNode2 = new FocusNode();
     _myFocusNode1.addListener(_onOnFocusNodeEvent);
     _myFocusNode2.addListener(_onOnFocusNodeEvent);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _myFocusNode1.dispose();
+    _myFocusNode2.dispose();
   }
 
   _onOnFocusNodeEvent() {
@@ -75,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               Text(
-                'Login to continue using CSE Project',
+                'Login to continue using BPM Project',
                 style: TextStyle(fontSize: 16, color: MyColors.mediumGray),
               ),
               Padding(
