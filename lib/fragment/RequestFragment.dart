@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/screen/CreateRequestScreen.dart';
 import 'package:cse_bpm_project/widget/NoRequestInstanceWidget.dart';
-import 'package:cse_bpm_project/widget/UserRequestListWidget.dart';
+import 'package:cse_bpm_project/widget/RequestInstanceListWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -57,7 +57,7 @@ class _RequestFragmentState extends State<RequestFragment> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               if (_noRequest) return NoRequestInstanceWidget();
-              return UserRequestListWidget(requestList: snapshot.data);
+              return RequestInstanceListWidget(requestList: snapshot.data);
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");
             }

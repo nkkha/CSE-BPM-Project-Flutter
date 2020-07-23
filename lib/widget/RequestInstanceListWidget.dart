@@ -2,16 +2,16 @@ import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/screen/RequestDetailsScreen.dart';
 import 'package:flutter/material.dart';
 
-class UserRequestListWidget extends StatefulWidget {
+class RequestInstanceListWidget extends StatefulWidget {
   final List<RequestInstance> requestList;
 
-  const UserRequestListWidget({Key key, this.requestList}) : super(key: key);
+  const RequestInstanceListWidget({Key key, this.requestList}) : super(key: key);
 
   @override
-  _UserRequestListWidgetState createState() => _UserRequestListWidgetState();
+  _RequestInstanceListWidgetState createState() => _RequestInstanceListWidgetState();
 }
 
-class _UserRequestListWidgetState extends State<UserRequestListWidget> {
+class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
