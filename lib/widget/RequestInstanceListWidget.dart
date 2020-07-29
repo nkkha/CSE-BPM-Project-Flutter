@@ -173,7 +173,7 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 90),
+            padding: const EdgeInsets.only(left: 96),
             child: Divider(
               height: 0.0,
             ),
