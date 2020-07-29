@@ -8,6 +8,7 @@ import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:progress_dialog/progress_dialog.dart';
 
 import '../../source/MyColors.dart';
 import 'Register.dart';
@@ -19,6 +20,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   bool _isClicked = false;
 
   TextEditingController _userController = new TextEditingController();
@@ -195,6 +197,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _onLoginClicked() async {
+    final ProgressDialog pr = ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+    pr.update(message: "Đăng nhập...");
+
+    await pr.show();
+
     _isClicked = true;
     String userName = _userController.text;
     String pass = _passController.text;
@@ -215,6 +223,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (response.statusCode == 200) {
+      await pr.hide();
       if (userName.contains("sv")) {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomeScreen()));
@@ -229,8 +238,20 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       _isClicked = false;
       final snackBar = SnackBar(
-        content: Text('Username or password is incorrect!'),
+        content: Row(
+          children: [
+            Icon(
+              Icons.error,
+              color: MyColors.red,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Text('Username or password is incorrect!'),
+            ),
+          ],
+        ),
       );
+      await pr.hide();
       _scaffoldKey.currentState.showSnackBar(snackBar);
     }
   }

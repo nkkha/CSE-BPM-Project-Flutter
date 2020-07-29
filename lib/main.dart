@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 void main() {
+  FlutterStatusbarcolor.setStatusBarColor(MyColors.white);
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    FlutterStatusbarcolor.setStatusBarColor(Colors.white);
     return MaterialApp(
       title: 'CSE BPM Project',
       debugShowCheckedModeBanner: false,

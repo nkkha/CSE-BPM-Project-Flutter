@@ -1,20 +1,26 @@
+import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
+import 'package:cse_bpm_project/widget/StepDetailsWidget.dart';
+import 'package:cse_bpm_project/widget/StepInfoWidget.dart';
 import 'package:flutter/material.dart';
 
 class RequestDetailsScreen extends StatefulWidget {
-  final int numOfStep;
+  final RequestInstance requestInstance;
 
-  RequestDetailsScreen({Key key, @required this.numOfStep}) : super(key: key);
+  RequestDetailsScreen({Key key, @required this.requestInstance})
+      : super(key: key);
 
   @override
   _RequestDetailsScreenState createState() =>
-      _RequestDetailsScreenState(numOfStep);
+      _RequestDetailsScreenState(requestInstance);
 }
 
 class _RequestDetailsScreenState extends State<RequestDetailsScreen> {
-  final int _numOfStep;
+  final RequestInstance _requestInstance;
 
-  _RequestDetailsScreenState(this._numOfStep);
+  _RequestDetailsScreenState(this._requestInstance);
+
+  final int _numOfStep = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +40,13 @@ class _RequestDetailsScreenState extends State<RequestDetailsScreen> {
           ),
         ),
         body: TabBarView(
-            children: List<Widget>.generate(
-                _numOfStep, (index) => Center(child: Text('HelloWorld ${index + 1}')))),
+          children: List<Widget>.generate(
+            _numOfStep,
+            (index) => index == 0
+                ? StepInfoWidget(requestInstance: _requestInstance)
+                : StepDetailsWidget(index: index),
+          ),
+        ),
       ),
     );
   }

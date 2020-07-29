@@ -1,5 +1,6 @@
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/screen/RequestDetailsScreen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class RequestInstanceListWidget extends StatefulWidget {
@@ -30,15 +31,16 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
           status = 'Thành công';
         }
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
           child: Card(
+            margin: index == 0 ? const EdgeInsets.only(top: 20) : const EdgeInsets.all(0),
             child: InkWell(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => RequestDetailsScreen(
-                            numOfStep: 3,
+                            requestInstance: requestInstance,
                           )),
                 );
               },
