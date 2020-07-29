@@ -3,15 +3,18 @@ import 'package:cse_bpm_project/fragment/RequestFragment.dart';
 import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
+import 'package:after_layout/after_layout.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key key}) : super(key: key);
+  final bool isCreatedNew;
+  const HomeScreen({Key key, this.isCreatedNew}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
@@ -29,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
@@ -61,5 +65,19 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: _onItemTapped,
       ),
     );
+  }
+
+  @override
+  void afterFirstLayout(BuildContext context) {
+    if (widget.isCreatedNew) {
+      final snackBar = SnackBar(
+        content: Text(
+          'Tạo yêu cầu thành công!',
+          style: TextStyle(fontSize: 14, color: MyColors.white),
+        ),
+        backgroundColor: MyColors.black,
+      );
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+    }
   }
 }

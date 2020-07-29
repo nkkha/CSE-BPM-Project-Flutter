@@ -278,7 +278,7 @@ class _RequestInstanceDetailsScreenState
 
     if (response.statusCode == 200) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomeScreen()));
+          context, MaterialPageRoute(builder: (context) => HomeScreen(isCreatedNew: true,)));
     } else {
       throw Exception('Failed to create request.');
     }

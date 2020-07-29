@@ -7,12 +7,11 @@ import 'package:cse_bpm_project/secretary/Secretary.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 
 import '../../source/MyColors.dart';
-import 'Register.dart';
+import 'RegisterScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override

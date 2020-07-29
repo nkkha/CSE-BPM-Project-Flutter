@@ -1,7 +1,7 @@
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'Login.dart';
+import 'LoginScreen.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override

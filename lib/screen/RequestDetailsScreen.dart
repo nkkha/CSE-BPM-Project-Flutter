@@ -26,7 +26,7 @@ class _RequestDetailsScreenState extends State<RequestDetailsScreen> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: _numOfStep,
-      initialIndex: 0,
+      initialIndex: _requestInstance.currentStepIndex - 1,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Chi tiết yêu cầu'),
@@ -40,6 +40,7 @@ class _RequestDetailsScreenState extends State<RequestDetailsScreen> {
           ),
         ),
         body: TabBarView(
+          physics: NeverScrollableScrollPhysics(),
           children: List<Widget>.generate(
             _numOfStep,
             (index) => index == 0
