@@ -55,13 +55,13 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
     Color color;
     if (index == 1) {
       title = "Đang thực hiện";
-      color = MyColors.green;
+      color = Colors.green;
     } else if (index == 2) {
       title = "Đã hoàn thành";
-      color = MyColors.red;
+      color = Colors.red;
     } else {
       title = "Đã thất bại";
-      color = MyColors.black;
+      color = Colors.black;
     }
 
     return Column(
