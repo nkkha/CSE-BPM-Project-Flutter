@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class StepDetailsWidget extends StatefulWidget {
-  final int index;
+  final int stepIndex;
+  final int tabIndex;
 
-  const StepDetailsWidget({Key key, this.index}) : super(key: key);
+  const StepDetailsWidget({Key key, this.stepIndex, this.tabIndex}) : super(key: key);
 
   @override
   _StepDetailsWidgetState createState() => _StepDetailsWidgetState();
@@ -11,6 +12,6 @@ class StepDetailsWidget extends StatefulWidget {
 
 class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   Widget build(BuildContext context) {
-    return Center(child: Text('HelloWorld ${widget.index + 1}'));
+    return Center(child: Text('${widget.tabIndex > widget.stepIndex - 1 ? 'Bước ${widget.stepIndex} chưa hoàn thành' : 'HelloWorld'}'));
   }
 }

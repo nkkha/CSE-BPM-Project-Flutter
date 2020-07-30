@@ -1,5 +1,5 @@
 import 'package:cse_bpm_project/model/RequestInstance.dart';
-import 'package:cse_bpm_project/screen/RequestDetailsScreen.dart';
+import 'package:cse_bpm_project/screen/RequestInstanceDetailsScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -90,7 +90,7 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => RequestDetailsScreen(
+              builder: (context) => RequestInstanceDetailsScreen(
                     requestInstance: requestInstance,
                   )),
         );
@@ -224,7 +224,7 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RequestDetailsScreen(
+                      builder: (context) => RequestInstanceDetailsScreen(
                             requestInstance: requestInstance,
                           )),
                 );

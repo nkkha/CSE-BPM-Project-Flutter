@@ -69,15 +69,15 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
 
   @override
   void afterFirstLayout(BuildContext context) {
-    if (widget.isCreatedNew) {
-      final snackBar = SnackBar(
-        content: Text(
-          'Tạo yêu cầu thành công!',
-          style: TextStyle(fontSize: 14, color: MyColors.white),
-        ),
-        backgroundColor: MyColors.black,
-      );
-      _scaffoldKey.currentState.showSnackBar(snackBar);
-    }
+//    if (widget.isCreatedNew) {
+//      final snackBar = SnackBar(
+//        content: Text(
+//          'Tạo yêu cầu thành công!',
+//          style: TextStyle(fontSize: 14, color: MyColors.white),
+//        ),
+//        backgroundColor: MyColors.black,
+//      );
+//      _scaffoldKey.currentState.showSnackBar(snackBar);
+//    }
   }
 }

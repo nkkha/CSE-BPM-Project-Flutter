@@ -1,5 +1,5 @@
 import 'package:cse_bpm_project/model/Request.dart';
-import 'package:cse_bpm_project/screen/RequestInstanceDetailsScreen.dart';
+import 'package:cse_bpm_project/screen/CreateRequestInstanceDetailsScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -28,7 +28,7 @@ class _RequestListWidgetState extends State<RequestListWidget> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RequestInstanceDetailsScreen(requestID: request.id,)),
+                      builder: (context) => CreateRequestInstanceDetailsScreen(requestID: request.id,)),
                 );
               },
               child: ListTile(

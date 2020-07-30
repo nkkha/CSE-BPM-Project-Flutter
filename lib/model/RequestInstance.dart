@@ -6,16 +6,23 @@ class RequestInstance {
   final int currentStepIndex;
   final String status;
   final int numOfSteps;
+  final String userName;
+  final String email;
+  final String phone;
+  final String fullName;
 
-  RequestInstance({
-    this.id,
-    this.userID,
-    this.requestID,
-    this.defaultContent,
-    this.currentStepIndex,
-    this.status,
-    this.numOfSteps,
-  });
+  RequestInstance(
+      {this.id,
+      this.userID,
+      this.requestID,
+      this.defaultContent,
+      this.currentStepIndex,
+      this.status,
+      this.numOfSteps,
+      this.userName,
+      this.email,
+      this.phone,
+      this.fullName});
 
   factory RequestInstance.fromJson(Map<String, dynamic> json) {
     return RequestInstance(
@@ -26,6 +33,10 @@ class RequestInstance {
       currentStepIndex: json['CurrentStepIndex'],
       status: json['Status'],
       numOfSteps: json['NumOfSteps'],
+      userName: json['UserName'],
+      email: json['Mail'],
+      phone: json['Phone'],
+      fullName: json['FullName'],
     );
   }
 }

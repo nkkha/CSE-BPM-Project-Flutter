@@ -69,7 +69,7 @@ class _RequestFragmentState extends State<RequestFragment> {
   }
 
   Future<List<RequestInstance>> fetchListRequest() async {
-    final response = await http.get('http://nkkha.somee.com/odata/tbRequestInstance');
+    final response = await http.get('http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
