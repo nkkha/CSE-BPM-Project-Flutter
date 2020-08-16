@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
         primaryColorDark: MyColors.lightGray,
         appBarTheme: AppBarTheme(
           elevation: 1,
+          centerTitle: false
         ),
       ),
     );
