@@ -51,19 +51,17 @@ class _RequestFragmentState extends State<RequestFragment> {
           ),
         ],
       ),
-      body: Center(
-        child: FutureBuilder<List<RequestInstance>>(
-          future: futureListRequest,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              if (_noRequest) return NoRequestInstanceWidget();
-              return RequestInstanceListWidget(requestList: snapshot.data);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
-            return CircularProgressIndicator();
-          },
-        ),
+      body: FutureBuilder<List<RequestInstance>>(
+        future: futureListRequest,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            if (_noRequest) return Center(child: NoRequestInstanceWidget());
+            return RequestInstanceListWidget(requestList: snapshot.data);
+          } else if (snapshot.hasError) {
+            return Text("${snapshot.error}");
+          }
+          return Center(child: CircularProgressIndicator());
+        },
       ),
     );
   }

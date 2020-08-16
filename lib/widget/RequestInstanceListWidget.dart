@@ -37,9 +37,10 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
     }
 
     return SingleChildScrollView(
-      child: Container(
+      child: Padding(
         padding: const EdgeInsets.only(top: 20),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             _buildListRequestInstance(inProgressRequests, 1),
             _buildListRequestInstance(doneRequests, 2),
@@ -55,16 +56,17 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
     Color color;
     if (index == 1) {
       title = "Đang thực hiện";
-      color = Colors.green;
+      color = MyColors.amber;
     } else if (index == 2) {
       title = "Đã hoàn thành";
-      color = Colors.red;
+      color = MyColors.green;
     } else {
       title = "Đã thất bại";
-      color = Colors.black;
+      color = MyColors.red;
     }
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         _buildTitle(title),
@@ -194,53 +196,6 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
           color: MyColors.mediumGray,
         ),
       ),
-    );
-  }
-
-  Widget _buildListRqIns() {
-    return ListView.builder(
-      itemBuilder: (context, index) {
-        RequestInstance requestInstance = widget.requestList[index];
-        String status = requestInstance.status;
-        if (status.contains('TK')) {
-          status = 'Thư ký khoa đang xét duyệt';
-        } else if (status.contains('BCN')) {
-          status = 'Ban chủ nhiệm khoa đang xét duyệt';
-        } else if (status.contains('PDT')) {
-          status = 'Phòng đào tạo khoa đang xét duyệt';
-        } else if (status.contains('PTC')) {
-          status = 'Phòng tài chính khoa đang xét duyệt';
-        } else {
-          status = 'Thành công';
-        }
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-          child: Card(
-            margin: index == 0
-                ? const EdgeInsets.only(top: 20)
-                : const EdgeInsets.all(0),
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => RequestInstanceDetailsScreen(
-                            requestInstance: requestInstance,
-                          )),
-                );
-              },
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(8.0),
-                title: Text(
-                  'Nội dung: ${requestInstance.defaultContent}',
-                ),
-                subtitle: Text('Trạng thái: $status'),
-              ),
-            ),
-          ),
-        );
-      },
-      itemCount: widget.requestList.length,
     );
   }
 }

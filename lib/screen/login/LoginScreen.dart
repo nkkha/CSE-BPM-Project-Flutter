@@ -58,115 +58,111 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
         constraints: BoxConstraints.expand(),
         color: Colors.white,
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              SizedBox(
-                height: 60,
-              ),
-              Container(
-                height: 150,
-                width: 150,
-                child: Image.asset('images/logo-cse.png'),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 6),
-                child: Text(
-                  'Welcome Back!',
-                  style: TextStyle(fontSize: 22, color: MyColors.black),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                Container(
+                  height: 150,
+                  width: 150,
+                  child: Image.asset('images/logo-cse.png'),
                 ),
-              ),
-              Text(
-                'Login to continue using BPM Project',
-                style: TextStyle(fontSize: 16, color: MyColors.mediumGray),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 30, 0, 20),
-                child: TextField(
-                  focusNode: _myFocusNode1,
-                  controller: _userController,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 6),
+                  child: Text(
+                    'Welcome Back!',
+                    style: TextStyle(fontSize: 22, color: MyColors.black),
+                  ),
+                ),
+                Text(
+                  'Login to continue using BPM Project',
+                  style: TextStyle(fontSize: 16, color: MyColors.mediumGray),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 30, 0, 20),
+                  child: TextField(
+                    focusNode: _myFocusNode1,
+                    controller: _userController,
+                    style: TextStyle(fontSize: 18, color: Colors.black),
+                    decoration: InputDecoration(
+                      labelText: 'Username',
+                      labelStyle: TextStyle(
+                          color: _myFocusNode1.hasFocus
+                              ? MyColors.lightBrand
+                              : MyColors.mediumGray),
+                      prefixIcon: Container(
+                        width: 50,
+                        child: Image.asset('images/ic_user.png'),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: MyColors.lightGray, width: 1),
+                        borderRadius: BorderRadius.all(Radius.circular(6)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: MyColors.lightBrand, width: 2.0),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                    ),
+                  ),
+                ),
+                TextField(
+                  focusNode: _myFocusNode2,
+                  controller: _passController,
+                  obscureText: true,
                   style: TextStyle(fontSize: 18, color: Colors.black),
                   decoration: InputDecoration(
-                    labelText: 'Username',
+                    labelText: 'Password',
                     labelStyle: TextStyle(
-                        color: _myFocusNode1.hasFocus
+                        color: _myFocusNode2.hasFocus
                             ? MyColors.lightBrand
                             : MyColors.mediumGray),
                     prefixIcon: Container(
                       width: 50,
-                      child: Image.asset('images/ic_user.png'),
+                      child: Image.asset('images/ic_lock.png'),
                     ),
                     border: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: MyColors.lightGray, width: 1),
+                      borderSide: BorderSide(color: MyColors.lightGray, width: 1),
                       borderRadius: BorderRadius.all(Radius.circular(6)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: MyColors.lightBrand, width: 2.0),
+                          BorderSide(color: MyColors.lightBrand, width: 2),
                       borderRadius: BorderRadius.circular(6.0),
                     ),
                   ),
                 ),
-              ),
-              TextField(
-                focusNode: _myFocusNode2,
-                controller: _passController,
-                obscureText: true,
-                style: TextStyle(fontSize: 18, color: Colors.black),
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  labelStyle: TextStyle(
-                      color: _myFocusNode2.hasFocus
-                          ? MyColors.lightBrand
-                          : MyColors.mediumGray),
-                  prefixIcon: Container(
-                    width: 50,
-                    child: Image.asset('images/ic_lock.png'),
-                  ),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: MyColors.lightGray, width: 1),
-                    borderRadius: BorderRadius.all(Radius.circular(6)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: MyColors.lightBrand, width: 2),
-                    borderRadius: BorderRadius.circular(6.0),
-                  ),
-                ),
-              ),
-              Container(
-                constraints: BoxConstraints.loose(Size(double.infinity, 40)),
-                alignment: AlignmentDirectional.centerEnd,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-                  child: Text(
-                    'Forgot password?',
-                    style: TextStyle(fontSize: 16, color: MyColors.mediumGray),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: RaisedButton(
-                    onPressed: _isClicked == false ? _onLoginClicked : () {},
+                Container(
+                  constraints: BoxConstraints.loose(Size(double.infinity, 40)),
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                     child: Text(
-                      'Log In',
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                    color: MyColors.lightBrand,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(6)),
+                      'Forgot password?',
+                      style: TextStyle(fontSize: 16, color: MyColors.mediumGray),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
-                child: RichText(
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: RaisedButton(
+                      onPressed: _isClicked == false ? _onLoginClicked : () {},
+                      child: Text(
+                        'Log In',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                      color: MyColors.lightBrand,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(6)),
+                      ),
+                    ),
+                  ),
+                ),
+                RichText(
                   text: TextSpan(
                     text: 'New user? ',
                     style: TextStyle(color: MyColors.darkGray, fontSize: 16),
@@ -187,9 +183,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),
