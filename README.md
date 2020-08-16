@@ -1,4 +1,4 @@
-# cse_bpm_project
+# CSE BPM Project
 
 A new Flutter project.
 
