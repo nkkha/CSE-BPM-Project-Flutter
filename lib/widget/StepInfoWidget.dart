@@ -67,14 +67,14 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              "Trạng thái yêu cầu: ${_requestInstance.status.contains('TK') ? 'Đang chờ xét duyệt' : 'Đã được xét duyệt'}",
+              "Trạng thái yêu cầu: ${_requestInstance.status.contains('new') ? 'Đang chờ xét duyệt' : 'Đã được xét duyệt'}",
               style: TextStyle(fontSize: 16, color: MyColors.darkGray),
             ),
           ),
           Center(
             child: Padding(
               padding: const EdgeInsets.all(24),
-              child: _requestInstance.status.contains('TK')
+              child: _requestInstance.status.contains('new')
                   ? Image.asset('images/timer.png', width: 48, height: 48)
                   : Image.asset(
                       'images/ok.png',

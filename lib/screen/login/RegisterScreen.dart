@@ -63,14 +63,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 6),
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 6),
                 child: Text(
                   'Welcome Aboard!',
                   style: TextStyle(fontSize: 22, color: MyColors.black),
                 ),
               ),
               Text(
-                'Signup with CSE in single steps',
+                'Signup with BPM in single steps',
                 style: TextStyle(fontSize: 16, color: MyColors.mediumGray),
               ),
               Padding(

@@ -45,7 +45,7 @@ class _RequestInstanceDetailsScreenState extends State<RequestInstanceDetailsScr
             _numOfStep,
             (index) => index == 0
                 ? StepInfoWidget(requestInstance: _requestInstance)
-                : StepDetailsWidget(stepIndex: _requestInstance.currentStepIndex, tabIndex: index),
+                : StepDetailsWidget(currentStepIndex: _requestInstance.currentStepIndex, tabIndex: index),
           ),
         ),
       ),
