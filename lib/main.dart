@@ -18,11 +18,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: MyColors.white,
         primaryColorDark: MyColors.lightGray,
-        backgroundColor: MyColors.white,
         appBarTheme: AppBarTheme(
           elevation: 1,
           centerTitle: false
         ),
+        scaffoldBackgroundColor: MyColors.white,
       ),
     );
   }

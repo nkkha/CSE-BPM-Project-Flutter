@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cse_bpm_project/falcuty/FalcutyScreen.dart';
+import 'package:cse_bpm_project/faculty/FacultyScreen.dart';
+import 'package:cse_bpm_project/model/User.dart';
 import 'package:cse_bpm_project/screen/HomeScreen.dart';
 import 'package:cse_bpm_project/secretary/Secretary.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../source/MyColors.dart';
 import 'RegisterScreen.dart';
@@ -123,7 +125,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Image.asset('images/ic_lock.png'),
                     ),
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: MyColors.lightGray, width: 1),
+                      borderSide:
+                          BorderSide(color: MyColors.lightGray, width: 1),
                       borderRadius: BorderRadius.all(Radius.circular(6)),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -140,7 +143,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                     child: Text(
                       'Forgot password?',
-                      style: TextStyle(fontSize: 16, color: MyColors.mediumGray),
+                      style:
+                          TextStyle(fontSize: 16, color: MyColors.mediumGray),
                     ),
                   ),
                 ),
@@ -219,16 +223,27 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['value'];
+      User user = User.fromJson(data[0]);
+
+      // Save data to shared preferences
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setInt('UserId', user.id);
+      prefs.setInt('RoleId', user.roleId);
+
       await pr.hide();
-      if (userName.contains("sv")) {
+      if (user.roleId == 1) // User is student
+      {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomeScreen()));
-      } else if (userName.contains("tk")) {
+      } else if (user.roleId == 2) // User is secretary
+      {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => SecretaryHomeScreen()));
-      } else if (userName.contains("bcn")) {
+      } else // User is faculty
+      {
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => FalcutyHomeScreen()));
+            MaterialPageRoute(builder: (context) => FacultyHomeScreen()));
       }
       // _getUserRole();
     } else {

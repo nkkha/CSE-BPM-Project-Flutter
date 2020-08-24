@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:cse_bpm_project/model/RequestNVQS.dart';
+import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ class StudentRequestScreen extends StatefulWidget {
 }
 
 class _StudentRequestScreenState extends State<StudentRequestScreen> {
-  Future<List<RequestNVQS>> futureListRequest;
+  Future<List<RequestInstance>> futureListRequest;
 
   @override
   void initState() {
@@ -26,11 +26,11 @@ class _StudentRequestScreenState extends State<StudentRequestScreen> {
         title: Text('Yêu cầu của sinh viên'),
       ),
       body: Center(
-        child: FutureBuilder<List<RequestNVQS>>(
+        child: FutureBuilder<List<RequestInstance>>(
           future: futureListRequest,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return RequestList(requestList: snapshot.data);
+              return RequestInstanceList(requestInstanceList: snapshot.data);
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");
             }
@@ -42,14 +42,14 @@ class _StudentRequestScreenState extends State<StudentRequestScreen> {
   }
 }
 
-Future<List<RequestNVQS>> fetchListRequest() async {
-  final response = await http.get('http://nkkha.somee.com/odata/tbRequestNVQS');
+Future<List<RequestInstance>> fetchListRequest() async {
+  final response = await http.get('http://nkkha.somee.com/odata/tbRequestInstance');
 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body)['value'];
-    List<RequestNVQS> listRequest = new List();
+    List<RequestInstance> listRequest = new List();
     for (Map i in data) {
-      listRequest.add(RequestNVQS.fromJson(i));
+      listRequest.add(RequestInstance.fromJson(i));
     }
     return listRequest;
   } else {
@@ -57,9 +57,9 @@ Future<List<RequestNVQS>> fetchListRequest() async {
   }
 }
 
-class RequestList extends StatelessWidget {
-  final List<RequestNVQS> requestList;
-  const RequestList({Key key, this.requestList}) : super(key: key);
+class RequestInstanceList extends StatelessWidget {
+  final List<RequestInstance> requestInstanceList;
+  const RequestInstanceList({Key key, this.requestInstanceList}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -81,12 +81,12 @@ class RequestList extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Họ và tên: ${requestList[index].studentName}"),
-                          Text("MSSV: ${requestList[index].id}"),
-                          Text("Email: ${requestList[index].email}"),
-                          Text("Phone: ${requestList[index].phone}"),
+                          Text("Họ và tên: ${requestInstanceList[index].userName}"),
+                          Text("MSSV: ${requestInstanceList[index].id}"),
+                          Text("Email: ${requestInstanceList[index].email}"),
+                          Text("Phone: ${requestInstanceList[index].phone}"),
                           Text(
-                              "Nội dung yêu cầu: ${requestList[index].content}"),
+                              "Nội dung yêu cầu: ${requestInstanceList[index].defaultContent}"),
                           Text("Trạng thái: Thư ký khoa xét duyệt"),
                         ],
                       ),
@@ -115,9 +115,9 @@ class RequestList extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: ListTile(
                   title: Text(
-                    'Mã yêu cầu: ${requestList[index].id}',
+                    'Mã yêu cầu: ${requestInstanceList[index].id}',
                   ),
-                  subtitle: Text('''Nội dung: ${requestList[index].content}
+                  subtitle: Text('''Nội dung: ${requestInstanceList[index].defaultContent}
 Trạng thái: Thư ký khoa đang xét duyệt.'''),
                 ),
               ),
@@ -125,7 +125,7 @@ Trạng thái: Thư ký khoa đang xét duyệt.'''),
           ),
         );
       },
-      itemCount: requestList.length,
+      itemCount: requestInstanceList.length,
     );
   }
 }

@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:cse_bpm_project/model/RequestNVQS.dart';
+import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 
-class FalcutyHomeScreen extends StatefulWidget {
+class FacultyHomeScreen extends StatefulWidget {
   @override
-  _FalcutyHomeScreenState createState() => _FalcutyHomeScreenState();
+  _FacultyHomeScreenState createState() => _FacultyHomeScreenState();
 }
 
-class _FalcutyHomeScreenState extends State<FalcutyHomeScreen> {
-  Future<List<RequestNVQS>> futureListRequest;
+class _FacultyHomeScreenState extends State<FacultyHomeScreen> {
+  Future<List<RequestInstance>> futureListRequest;
 
   @override
   void initState() {
@@ -28,7 +28,7 @@ class _FalcutyHomeScreenState extends State<FalcutyHomeScreen> {
         automaticallyImplyLeading: false,
       ),
       body: Center(
-        child: FutureBuilder<List<RequestNVQS>>(
+        child: FutureBuilder<List<RequestInstance>>(
           future: futureListRequest,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
@@ -44,15 +44,15 @@ class _FalcutyHomeScreenState extends State<FalcutyHomeScreen> {
   }
 }
 
-Future<List<RequestNVQS>> fetchListRequest() async {
+Future<List<RequestInstance>> fetchListRequest() async {
   final response =
       await http.get('http://nkkha.somee.com/odata/tbRequestNVQS');
 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body)['value'];
-    List<RequestNVQS> listRequest = new List();
+    List<RequestInstance> listRequest = new List();
     for (Map i in data) {
-      listRequest.add(RequestNVQS.fromJson(i));
+      listRequest.add(RequestInstance.fromJson(i));
     }
     return listRequest;
   } else {
@@ -61,16 +61,16 @@ Future<List<RequestNVQS>> fetchListRequest() async {
 }
 
 class RequestList extends StatelessWidget {
-  final List<RequestNVQS> requestList;
+  final List<RequestInstance> requestList;
   const RequestList({Key key, this.requestList}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    List<RequestNVQS> newRequestList = new List();
+    List<RequestInstance> newRequestList = new List();
 
-    for(RequestNVQS requestNVQS in requestList) {
-      if (requestNVQS.status.contains("BCN")) {
-        newRequestList.add(requestNVQS);
+    for(RequestInstance request in requestList) {
+      if (request.status.contains("BCN")) {
+        newRequestList.add(request);
       }
     }
 
@@ -78,7 +78,7 @@ class RequestList extends StatelessWidget {
       itemBuilder: (context, index) {
         return ListTile(
           title: Text('Request ID: ${newRequestList[index].id}, User ID: ${newRequestList[index].userID}'),
-          subtitle: Text('Content: ${newRequestList[index].content}, Status: ${newRequestList[index].status}'),
+          subtitle: Text('Content: ${newRequestList[index].defaultContent}, Status: ${newRequestList[index].status}'),
         );
       },
       itemCount: newRequestList.length,
