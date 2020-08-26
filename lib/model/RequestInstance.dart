@@ -4,7 +4,7 @@ class RequestInstance {
   final int requestID;
   final String defaultContent;
   final int currentStepIndex;
-  final String status;
+  String status;
   final int numOfSteps;
   final String userName;
   final String email;

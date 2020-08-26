@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 
 class RequestInstanceDetailsScreen extends StatefulWidget {
   final RequestInstance requestInstance;
+  final bool isStudent;
 
-  RequestInstanceDetailsScreen({Key key, @required this.requestInstance})
+  RequestInstanceDetailsScreen(
+      {Key key, @required this.requestInstance, this.isStudent})
       : super(key: key);
 
   @override
@@ -15,7 +17,8 @@ class RequestInstanceDetailsScreen extends StatefulWidget {
       _RequestInstanceDetailsScreenState(requestInstance);
 }
 
-class _RequestInstanceDetailsScreenState extends State<RequestInstanceDetailsScreen> {
+class _RequestInstanceDetailsScreenState
+    extends State<RequestInstanceDetailsScreen> {
   final RequestInstance _requestInstance;
 
   _RequestInstanceDetailsScreenState(this._requestInstance);
@@ -27,25 +30,32 @@ class _RequestInstanceDetailsScreenState extends State<RequestInstanceDetailsScr
     return DefaultTabController(
       length: _numOfStep,
       initialIndex: _requestInstance.currentStepIndex - 1,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Chi tiết yêu cầu'),
-          titleSpacing: 0,
-          bottomOpacity: 1,
-          bottom: TabBar(
-            labelColor: MyColors.blue,
-            unselectedLabelColor: MyColors.mediumGray,
-            tabs: List<Widget>.generate(
-                _numOfStep, (index) => Tab(text: 'Bước ${index + 1}')),
+      child: Center(
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('Chi tiết yêu cầu'),
+            titleSpacing: 0,
+            bottomOpacity: 1,
+            bottom: TabBar(
+              labelColor: MyColors.blue,
+              unselectedLabelColor: MyColors.mediumGray,
+              tabs: List<Widget>.generate(
+                  _numOfStep, (index) => Tab(text: 'Bước ${index + 1}')),
+            ),
           ),
-        ),
-        body: TabBarView(
-          physics: NeverScrollableScrollPhysics(),
-          children: List<Widget>.generate(
-            _numOfStep,
-            (index) => index == 0
-                ? StepInfoWidget(requestInstance: _requestInstance)
-                : StepDetailsWidget(currentStepIndex: _requestInstance.currentStepIndex, tabIndex: index),
+          body: TabBarView(
+            physics: NeverScrollableScrollPhysics(),
+            children: List<Widget>.generate(
+              _numOfStep,
+              (index) => index == 0
+                  ? StepInfoWidget(
+                      requestInstance: _requestInstance,
+                      isStudent: widget.isStudent,
+                    )
+                  : StepDetailsWidget(
+                      currentStepIndex: _requestInstance.currentStepIndex,
+                      tabIndex: index),
+            ),
           ),
         ),
       ),

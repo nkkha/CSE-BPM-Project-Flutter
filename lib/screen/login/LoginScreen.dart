@@ -245,7 +245,6 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => FacultyHomeScreen()));
       }
-      // _getUserRole();
     } else {
       _isClicked = false;
       final snackBar = SnackBar(
@@ -266,6 +265,4 @@ class _LoginScreenState extends State<LoginScreen> {
       _scaffoldKey.currentState.showSnackBar(snackBar);
     }
   }
-
-// void _getUserRole() {}
 }

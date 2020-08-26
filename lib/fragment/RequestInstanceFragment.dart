@@ -7,15 +7,16 @@ import 'package:cse_bpm_project/widget/NoRequestInstanceWidget.dart';
 import 'package:cse_bpm_project/widget/RequestInstanceListWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-class RequestFragment extends StatefulWidget {
-  const RequestFragment({Key key}) : super(key: key);
+class RequestInstanceFragment extends StatefulWidget {
+  const RequestInstanceFragment({Key key}) : super(key: key);
 
   @override
-  _RequestFragmentState createState() => _RequestFragmentState();
+  _RequestInstanceFragmentState createState() => _RequestInstanceFragmentState();
 }
 
-class _RequestFragmentState extends State<RequestFragment> {
+class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
   Future<List<RequestInstance>> futureListRequest;
   bool _noRequest = false;
 
@@ -55,7 +56,7 @@ class _RequestFragmentState extends State<RequestFragment> {
         future: futureListRequest,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            if (_noRequest) return Center(child: NoRequestInstanceWidget());
+            if (_noRequest) return Center(child: NoRequestInstanceWidget(true));
             return RequestInstanceListWidget(requestList: snapshot.data);
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
@@ -67,7 +68,9 @@ class _RequestFragmentState extends State<RequestFragment> {
   }
 
   Future<List<RequestInstance>> fetchListRequest() async {
-    final response = await http.get('http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance');
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('UserId') ?? 0;
+    final response = await http.get('http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?\$filter=userid eq $userId');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];

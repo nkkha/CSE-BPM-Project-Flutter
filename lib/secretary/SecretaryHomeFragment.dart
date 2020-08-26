@@ -1,4 +1,5 @@
-import 'package:cse_bpm_project/secretary/StudentRequest.dart';
+import 'package:cse_bpm_project/secretary/RequestScreen.dart';
+import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 
 class SecretaryHomeFragment extends StatefulWidget {
@@ -30,44 +31,56 @@ class _SecretaryHomeFragmentState extends State<SecretaryHomeFragment> {
             SizedBox(
               height: 30,
             ),
-            GestureDetector(
+            Container(
+              padding: const EdgeInsets.all(8.0),
               child: Card(
-                child: ListTile(
-                  title: Text(
-                    'Yêu cầu của sinh viên',
-                    style: TextStyle(
-                      fontSize: 18,
-                    ),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => RequestScreen()));
+                  },
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 24, horizontal: 16),
+                          child: Text(
+                            "Yêu cầu của sinh viên",
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: MyColors.darkGray,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => StudentRequestScreen()));
-              },
             ),
-            Divider(),
-            GestureDetector(
-              child: Card(
-                child: ListTile(
-                  title: Text(
-                    'Thông báo từ ban chủ nhiệm',
-                    style: TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-              ),
-              onTap: () {
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => CreateRequestScreen()));
-              },
-            ),
-            Divider(),
+//            Divider(),
+//            GestureDetector(
+//              child: Card(
+//                child: ListTile(
+//                  title: Text(
+//                    'Thông báo từ ban chủ nhiệm',
+//                    style: TextStyle(
+//                      fontSize: 18,
+//                    ),
+//                  ),
+//                ),
+//              ),
+//              onTap: () {
+//                // Navigator.push(
+//                //     context,
+//                //     MaterialPageRoute(
+//                //         builder: (context) => CreateRequestScreen()));
+//              },
+//            ),
+//            Divider(),
           ],
         ),
       ),

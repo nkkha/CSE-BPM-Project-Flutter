@@ -1,6 +1,9 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:cse_bpm_project/model/StepInstance.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class StepDetailsWidget extends StatefulWidget {
   final int currentStepIndex;
@@ -14,36 +17,28 @@ class StepDetailsWidget extends StatefulWidget {
 }
 
 class _StepDetailsWidgetState extends State<StepDetailsWidget> {
-  Widget build(BuildContext context) {
-    List<StepInstance> stepInstanceList = new List();
-    stepInstanceList.add(new StepInstance(
-        id: 2,
-        requestInstanceID: 1,
-        approverID: null,
-        defaultContent: null,
-        status: "active",
-        stepIndex: 2,
-        description: "Ban chu nhiem kiem tra"));
-    stepInstanceList.add(new StepInstance(
-        id: 3,
-        requestInstanceID: 1,
-        approverID: null,
-        defaultContent: null,
-        status: "active",
-        stepIndex: 2,
-        description: "Phong dao tao kiem tra"));
-    stepInstanceList.add(new StepInstance(
-        id: 4,
-        requestInstanceID: 1,
-        approverID: null,
-        defaultContent: null,
-        status: "active",
-        stepIndex: 2,
-        description: "Phong tai chinh kiem tra"));
+  Future<List<StepInstance>> futureListStep;
 
+  @override
+  void initState() {
+    super.initState();
+    futureListStep = fetchListStep();
+  }
+
+  Widget build(BuildContext context) {
     return widget.tabIndex > widget.currentStepIndex - 1
         ? Center(child: Text('Bước ${widget.currentStepIndex} chưa hoàn thành'))
-        : _buildStepDetails(stepInstanceList);
+        : FutureBuilder<List<StepInstance>>(
+            future: futureListStep,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return _buildStepDetails(snapshot.data);
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return Center(child: CircularProgressIndicator());
+            },
+          );
   }
 
   Widget _buildStepDetails(List<StepInstance> stepInstanceList) {
@@ -122,7 +117,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
             children: [
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
                   child: Text(
                     stepInstance.description,
                     style: TextStyle(fontSize: 16, color: MyColors.darkGray),
@@ -152,5 +148,21 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         ),
       ),
     );
+  }
+
+  Future<List<StepInstance>> fetchListStep() async {
+    final response = await http.get(
+        'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails?\$filter=StepIndex eq ${widget.tabIndex + 1}');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['value'];
+      List<StepInstance> listStep = new List();
+      for (Map i in data) {
+        listStep.add(StepInstance.fromJson(i));
+      }
+      return listStep;
+    } else {
+      throw Exception('Failed to load');
+    }
   }
 }

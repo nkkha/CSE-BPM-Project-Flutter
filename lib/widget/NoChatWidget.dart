@@ -8,11 +8,11 @@ class NoChatWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        Positioned(
-          top: 20,
-          right: 20,
-          child: Image.asset('images/arrow.png'),
-        ),
+//          Positioned(
+//            top: 20,
+//            right: 20,
+//            child: Image.asset('images/arrow.png'),
+//          ),
         Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

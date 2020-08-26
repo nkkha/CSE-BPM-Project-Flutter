@@ -4,30 +4,34 @@ import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class RequestInstanceListWidget extends StatefulWidget {
+class StudentRequestInstanceListWidget extends StatefulWidget {
   final List<RequestInstance> requestList;
 
-  const RequestInstanceListWidget({Key key, this.requestList})
+  const StudentRequestInstanceListWidget({Key key, this.requestList})
       : super(key: key);
 
   @override
-  _RequestInstanceListWidgetState createState() =>
-      _RequestInstanceListWidgetState(requestList);
+  _StudentRequestInstanceListWidgetState createState() =>
+      _StudentRequestInstanceListWidgetState(requestList);
 }
 
-class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
+class _StudentRequestInstanceListWidgetState
+    extends State<StudentRequestInstanceListWidget> {
   final List<RequestInstance> requestList;
 
-  _RequestInstanceListWidgetState(this.requestList);
+  _StudentRequestInstanceListWidgetState(this.requestList);
 
   @override
   Widget build(BuildContext context) {
+    List<RequestInstance> newRequests = new List();
     List<RequestInstance> inProgressRequests = new List();
     List<RequestInstance> doneRequests = new List();
     List<RequestInstance> failedRequests = new List();
 
     for (RequestInstance request in requestList) {
-      if (request.status.contains("done")) {
+      if (request.status.contains("new")) {
+        newRequests.add(request);
+      } else if (request.status.contains("done")) {
         doneRequests.add(request);
       } else if (request.status.contains("failed")) {
         failedRequests.add(request);
@@ -42,9 +46,10 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            _buildListRequestInstance(inProgressRequests, 1),
-            _buildListRequestInstance(doneRequests, 2),
-            _buildListRequestInstance(failedRequests, 3),
+            _buildListRequestInstance(newRequests, 1),
+            _buildListRequestInstance(inProgressRequests, 2),
+            _buildListRequestInstance(doneRequests, 3),
+            _buildListRequestInstance(failedRequests, 4),
           ],
         ),
       ),
@@ -55,9 +60,12 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
     String title = "";
     Color color;
     if (index == 1) {
+      title = "Yêu cầu mới";
+      color = MyColors.indigo;
+    } else if (index == 2) {
       title = "Đang thực hiện";
       color = MyColors.amber;
-    } else if (index == 2) {
+    } else if (index == 3) {
       title = "Đã hoàn thành";
       color = MyColors.green;
     } else {
@@ -93,7 +101,7 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
           context,
           MaterialPageRoute(
               builder: (context) => RequestInstanceDetailsScreen(
-                    requestInstance: requestInstance, isStudent: true,
+                    requestInstance: requestInstance, isStudent: false,
                   )),
         );
       },
@@ -154,7 +162,7 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 4, right: 12),
                       child: Text(
-                        'Nội dung: ${requestInstance.defaultContent}',
+                        'Tên sinh viên: ${requestInstance.fullName}',
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 15,

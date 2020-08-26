@@ -3,15 +3,19 @@ import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 
 class NoRequestInstanceWidget extends StatelessWidget {
+  final bool isStudent;
+
+  NoRequestInstanceWidget(this.isStudent);
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        Positioned(
-          top: 20,
-          right: 20,
-          child: Image.asset('images/arrow.png'),
-        ),
+//        Positioned(
+//          top: 20,
+//          right: 20,
+//          child: Image.asset('images/arrow.png'),
+//        ),
         Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -19,7 +23,7 @@ class NoRequestInstanceWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 40),
                 child: Text(
-                  'Bạn không',
+                  isStudent ? 'Bạn không' : 'Hiện tại',
                   style: TextStyle(
                     color: MyColors.brand,
                     fontSize: 42,

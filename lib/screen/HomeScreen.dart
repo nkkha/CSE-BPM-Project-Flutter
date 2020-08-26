@@ -1,5 +1,5 @@
 import 'package:cse_bpm_project/fragment/ChatFragment.dart';
-import 'package:cse_bpm_project/fragment/RequestFragment.dart';
+import 'package:cse_bpm_project/fragment/RequestInstanceFragment.dart';
 import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    RequestFragment(),
+    RequestInstanceFragment(),
     ChatFragment(),
     SettingsFragment(),
   ];
