@@ -103,7 +103,12 @@ class _StudentRequestInstanceListWidgetState
               builder: (context) => RequestInstanceDetailsScreen(
                     requestInstance: requestInstance, isStudent: false,
                   )),
-        );
+        ).then((value) {
+          setState(() {
+            // Re-render
+            print("Re-render");
+          });
+        });
       },
       child: Column(
         children: <Widget>[

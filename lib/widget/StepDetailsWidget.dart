@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/model/StepInstance.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class StepDetailsWidget extends StatefulWidget {
-  final int currentStepIndex;
+  final RequestInstance requestInstance;
   final int tabIndex;
 
-  const StepDetailsWidget({Key key, this.currentStepIndex, this.tabIndex})
+  const StepDetailsWidget({Key key, this.requestInstance, this.tabIndex})
       : super(key: key);
 
   @override
@@ -26,8 +27,9 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   }
 
   Widget build(BuildContext context) {
-    return widget.tabIndex > widget.currentStepIndex - 1
-        ? Center(child: Text('Bước ${widget.currentStepIndex} chưa hoàn thành'))
+    int currentStepIndex = widget.requestInstance.currentStepIndex;
+    return widget.tabIndex > currentStepIndex - 1
+        ? Center(child: Text('Bước ${currentStepIndex} chưa hoàn thành'))
         : FutureBuilder<List<StepInstance>>(
             future: futureListStep,
             builder: (context, snapshot) {
@@ -152,7 +154,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
 
   Future<List<StepInstance>> fetchListStep() async {
     final response = await http.get(
-        'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails?\$filter=StepIndex eq ${widget.tabIndex + 1}');
+        'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails?\$filter=StepIndex eq ${widget.tabIndex + 1} and RequestInstanceID eq ${widget.requestInstance.id}');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];

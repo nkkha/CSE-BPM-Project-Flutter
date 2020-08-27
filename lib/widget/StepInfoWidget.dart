@@ -9,10 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 class StepInfoWidget extends StatefulWidget {
+  Function(RequestInstance) passData;
   final RequestInstance requestInstance;
   final bool isStudent;
 
-  const StepInfoWidget({Key key, this.requestInstance, this.isStudent})
+  StepInfoWidget({Key key, this.requestInstance, this.isStudent, this.passData})
       : super(key: key);
 
   @override
@@ -171,6 +172,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
     var resBody = {};
     // indexType = 1: Reject, indexType = 2: Approve
     resBody["Status"] = indexType == 1 ? "failed" : "active";
+    resBody["CurrentStepIndex"] = indexType == 1 ? 1 : 2;
     String str = json.encode(resBody);
 
     final http.Response response = await http.patch(
@@ -187,7 +189,9 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
         _requestInstance.status = 'failed';
       } else {
         _requestInstance.status = 'active';
+        _requestInstance.currentStepIndex = 2;
       }
+      widget.passData(_requestInstance);
       setState(() {
         // Re-render
       });

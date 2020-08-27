@@ -21,19 +21,19 @@ class _ChatFragmentState extends State<ChatFragment> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: Image.asset(
-              'images/ic-toolbar-new.png',
-            ),
-            onPressed: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => null),
-              // );
-            },
-          ),
-        ],
+//        actions: <Widget>[
+//          IconButton(
+//            icon: Image.asset(
+//              'images/ic-toolbar-new.png',
+//            ),
+//            onPressed: () {
+//               Navigator.push(
+//                 context,
+//                 MaterialPageRoute(builder: (context) => null),
+//               );
+//            },
+//          ),
+//        ],
       ),
       body: NoChatWidget(),
     );

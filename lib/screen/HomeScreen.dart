@@ -4,10 +4,11 @@ import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 import 'package:after_layout/after_layout.dart';
+import 'package:flushbar/flushbar.dart';
 
 class HomeScreen extends StatefulWidget {
-  final bool isCreatedNew;
-  const HomeScreen({Key key, this.isCreatedNew}) : super(key: key);
+  bool isCreatedNew = false;
+  HomeScreen({Key key, this.isCreatedNew}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -69,15 +70,17 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
 
   @override
   void afterFirstLayout(BuildContext context) {
-//    if (widget.isCreatedNew) {
-//      final snackBar = SnackBar(
-//        content: Text(
-//          'Tạo yêu cầu thành công!',
-//          style: TextStyle(fontSize: 14, color: MyColors.white),
-//        ),
-//        backgroundColor: MyColors.black,
-//      );
-//      _scaffoldKey.currentState.showSnackBar(snackBar);
-//    }
+    if (widget.isCreatedNew != null) {
+      if (widget.isCreatedNew) {
+        Flushbar(
+          icon: Image.asset('images/ic-check-circle.png', width: 24, height: 24),
+          message:  'Tạo yêu cầu thành công!',
+          duration:  Duration(seconds: 3),
+          margin: EdgeInsets.all(8),
+          borderRadius: 8,
+        )..show(context);
+        widget.isCreatedNew = false;
+      }
+    }
   }
 }

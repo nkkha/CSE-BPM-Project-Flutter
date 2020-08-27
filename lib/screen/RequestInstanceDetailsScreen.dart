@@ -19,7 +19,7 @@ class RequestInstanceDetailsScreen extends StatefulWidget {
 
 class _RequestInstanceDetailsScreenState
     extends State<RequestInstanceDetailsScreen> {
-  final RequestInstance _requestInstance;
+  RequestInstance _requestInstance;
 
   _RequestInstanceDetailsScreenState(this._requestInstance);
 
@@ -51,14 +51,22 @@ class _RequestInstanceDetailsScreenState
                   ? StepInfoWidget(
                       requestInstance: _requestInstance,
                       isStudent: widget.isStudent,
+                      passData: (data) => updateData(data),
                     )
                   : StepDetailsWidget(
-                      currentStepIndex: _requestInstance.currentStepIndex,
+                      requestInstance: _requestInstance,
                       tabIndex: index),
             ),
           ),
         ),
       ),
     );
+  }
+
+  void updateData(RequestInstance requestInstance) {
+    _requestInstance = requestInstance;
+    setState(() {
+      // Re-render
+    });
   }
 }

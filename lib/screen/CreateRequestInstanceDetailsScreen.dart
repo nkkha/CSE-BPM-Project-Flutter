@@ -5,6 +5,7 @@ import 'package:cse_bpm_project/screen/HomeScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateRequestInstanceDetailsScreen extends StatefulWidget {
   final int requestID;
@@ -104,12 +105,12 @@ class _CreateRequestInstanceDetailsScreenState
                                 : MyColors.mediumGray),
                         border: OutlineInputBorder(
                           borderSide:
-                          BorderSide(color: MyColors.lightGray, width: 1),
+                              BorderSide(color: MyColors.lightGray, width: 1),
                           borderRadius: BorderRadius.all(Radius.circular(6)),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide:
-                          BorderSide(color: MyColors.lightBrand, width: 2.0),
+                          borderSide: BorderSide(
+                              color: MyColors.lightBrand, width: 2.0),
                           borderRadius: BorderRadius.circular(6.0),
                         ),
                       ),
@@ -131,12 +132,12 @@ class _CreateRequestInstanceDetailsScreenState
                               : MyColors.mediumGray),
                       border: OutlineInputBorder(
                         borderSide:
-                        BorderSide(color: MyColors.lightGray, width: 1),
+                            BorderSide(color: MyColors.lightGray, width: 1),
                         borderRadius: BorderRadius.all(Radius.circular(6)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide:
-                        BorderSide(color: MyColors.lightBrand, width: 2.0),
+                            BorderSide(color: MyColors.lightBrand, width: 2.0),
                         borderRadius: BorderRadius.circular(6.0),
                       ),
                     ),
@@ -159,12 +160,12 @@ class _CreateRequestInstanceDetailsScreenState
                                 : MyColors.mediumGray),
                         border: OutlineInputBorder(
                           borderSide:
-                          BorderSide(color: MyColors.lightGray, width: 1),
+                              BorderSide(color: MyColors.lightGray, width: 1),
                           borderRadius: BorderRadius.all(Radius.circular(6)),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide:
-                          BorderSide(color: MyColors.lightBrand, width: 2.0),
+                          borderSide: BorderSide(
+                              color: MyColors.lightBrand, width: 2.0),
                           borderRadius: BorderRadius.circular(6.0),
                         ),
                       ),
@@ -186,12 +187,12 @@ class _CreateRequestInstanceDetailsScreenState
                               : MyColors.mediumGray),
                       border: OutlineInputBorder(
                         borderSide:
-                        BorderSide(color: MyColors.lightGray, width: 1),
+                            BorderSide(color: MyColors.lightGray, width: 1),
                         borderRadius: BorderRadius.all(Radius.circular(6)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide:
-                        BorderSide(color: MyColors.lightBrand, width: 2.0),
+                            BorderSide(color: MyColors.lightBrand, width: 2.0),
                         borderRadius: BorderRadius.circular(6.0),
                       ),
                     ),
@@ -217,12 +218,12 @@ class _CreateRequestInstanceDetailsScreenState
                                 : MyColors.mediumGray),
                         border: OutlineInputBorder(
                           borderSide:
-                          BorderSide(color: MyColors.lightGray, width: 1),
+                              BorderSide(color: MyColors.lightGray, width: 1),
                           borderRadius: BorderRadius.all(Radius.circular(6)),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide:
-                          BorderSide(color: MyColors.lightBrand, width: 2.0),
+                          borderSide: BorderSide(
+                              color: MyColors.lightBrand, width: 2.0),
                           borderRadius: BorderRadius.circular(6.0),
                         ),
                       ),
@@ -262,23 +263,29 @@ class _CreateRequestInstanceDetailsScreenState
     String email = _emailController.text;
     String phone = _phoneController.text;
 
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('UserId') ?? 0;
+
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbRequestInstance',
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
-        "UserID": "2",
+        "UserID": "$userId",
         "RequestID": "${widget.requestID}",
         "DefaultContent": "$content",
         "CurrentStepIndex": "1",
-        "Status": "TK"
+        "Status": "new"
       }),
     );
 
     if (response.statusCode == 200) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomeScreen(isCreatedNew: true,)));
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen(isCreatedNew: true)),
+        (Route<dynamic> route) => false,
+      );
     } else {
       throw Exception('Failed to create request.');
     }

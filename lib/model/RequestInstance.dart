@@ -3,7 +3,7 @@ class RequestInstance {
   final int userID;
   final int requestID;
   final String defaultContent;
-  final int currentStepIndex;
+  int currentStepIndex;
   String status;
   final int numOfSteps;
   final String userName;
