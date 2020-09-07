@@ -3,6 +3,7 @@ import 'package:cse_bpm_project/screen/login/LoginScreen.dart';
 import 'package:http/http.dart' as http;
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsFragment extends StatelessWidget {
   const SettingsFragment({Key key}) : super(key: key);
@@ -76,6 +77,10 @@ class SettingsFragment extends StatelessWidget {
     );
 
     if (response.statusCode == 200) {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setInt('userId', null);
+      prefs.setInt('roleId', null);
+      prefs.setBool('isLogin', false);
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginScreen()));
     } else {

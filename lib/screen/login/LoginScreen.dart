@@ -11,8 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../source/MyColors.dart';
 import 'RegisterScreen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -22,7 +20,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-
+  Timer _timer;
   bool _isClicked = false;
 
   TextEditingController _userController = new TextEditingController();
@@ -30,13 +28,36 @@ class _LoginScreenState extends State<LoginScreen> {
   FocusNode _myFocusNode1 = new FocusNode();
   FocusNode _myFocusNode2 = new FocusNode();
 
+  ProgressDialog progressDialog;
+  int _roleId;
+
   @override
   void initState() {
     super.initState();
+
+    _roleId = null;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      progressDialog = ProgressDialog(context,
+          type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+      progressDialog.update(message: "Vui lòng đợi...");
+      await progressDialog.show();
+      getSharedPrefs();
+    });
+
     _myFocusNode1 = new FocusNode();
     _myFocusNode2 = new FocusNode();
     _myFocusNode1.addListener(_onOnFocusNodeEvent);
     _myFocusNode2.addListener(_onOnFocusNodeEvent);
+  }
+
+  Future<Null> getSharedPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _roleId = prefs.getInt("roleId");
+    _timer = new Timer(const Duration(milliseconds: 500), () {
+      progressDialog.hide();
+      getHomeScreen(_roleId);
+    });
   }
 
   @override
@@ -200,7 +221,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final ProgressDialog pr = ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
     pr.update(message: "Đăng nhập...");
-
     await pr.show();
 
     _isClicked = true;
@@ -228,8 +248,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Save data to shared preferences
       final prefs = await SharedPreferences.getInstance();
-      prefs.setInt('UserId', user.id);
-      prefs.setInt('RoleId', user.roleId);
+      prefs.setInt('userId', user.id);
+      prefs.setInt('roleId', user.roleId);
+      prefs.setBool('isLogin', true);
 
       await pr.hide();
       if (user.roleId == 1) // User is student
@@ -263,6 +284,25 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       await pr.hide();
       _scaffoldKey.currentState.showSnackBar(snackBar);
+    }
+  }
+
+  void getHomeScreen(int roleId) {
+    switch (roleId) {
+      case 1:
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        break;
+      case 2:
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => SecretaryHomeScreen()));
+        break;
+      case 3:
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => FacultyHomeScreen()));
+        break;
+      default:
+        break;
     }
   }
 }

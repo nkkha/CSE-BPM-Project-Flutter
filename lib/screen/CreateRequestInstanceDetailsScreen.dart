@@ -264,7 +264,7 @@ class _CreateRequestInstanceDetailsScreenState
     String phone = _phoneController.text;
 
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('UserId') ?? 0;
+    final userId = prefs.getInt('userId') ?? 0;
 
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbRequestInstance',

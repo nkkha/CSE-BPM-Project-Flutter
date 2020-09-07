@@ -69,7 +69,7 @@ class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
 
   Future<List<RequestInstance>> fetchListRequest() async {
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('UserId') ?? 0;
+    final userId = prefs.getInt('userId') ?? 0;
     final response = await http.get('http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?\$filter=userid eq $userId');
 
     if (response.statusCode == 200) {
