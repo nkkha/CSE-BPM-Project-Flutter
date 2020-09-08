@@ -125,7 +125,7 @@ class _CreateRequestInstanceDetailsScreenState
                     style: TextStyle(fontSize: 18, color: Colors.black),
                     decoration: InputDecoration(
                       errorText: snapshot.hasError ? snapshot.error : null,
-                      labelText: 'MSSV',
+                      labelText: 'Mssv',
                       labelStyle: TextStyle(
                           color: _myFocusNode2.hasFocus
                               ? MyColors.lightBrand
@@ -206,9 +206,9 @@ class _CreateRequestInstanceDetailsScreenState
                       focusNode: _myFocusNode5,
                       controller: _contentController,
                       maxLines: 3,
-                      textAlign: TextAlign.start,
-                      textAlignVertical: TextAlignVertical.top,
-                      style: TextStyle(fontSize: 18, color: Colors.black),
+                      keyboardType: TextInputType.multiline,
+                      textInputAction: TextInputAction.done,
+                        style: TextStyle(fontSize: 18, color: Colors.black),
                       decoration: InputDecoration(
                         errorText: snapshot.hasError ? snapshot.error : null,
                         labelText: 'Nội dung',

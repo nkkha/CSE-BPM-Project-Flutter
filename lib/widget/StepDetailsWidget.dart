@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/model/StepInstance.dart';
+import 'package:cse_bpm_project/screen/EditStepInstanceScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -29,7 +30,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   Widget build(BuildContext context) {
     int currentStepIndex = widget.requestInstance.currentStepIndex;
     return widget.tabIndex > currentStepIndex - 1
-        ? Center(child: Text('Bước ${currentStepIndex} chưa hoàn thành'))
+        ? Center(child: Text('Bước $currentStepIndex chưa hoàn thành'))
         : FutureBuilder<List<StepInstance>>(
             future: futureListStep,
             builder: (context, snapshot) {
@@ -79,6 +80,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
+                  Image.asset(imgUrl, width: 48, height: 48),
+                  SizedBox(height: 20),
                   Text(
                     stepStatusInfo,
                     style: TextStyle(
@@ -86,8 +89,6 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                         fontWeight: FontWeight.bold,
                         color: MyColors.darkGray),
                   ),
-                  SizedBox(height: 20),
-                  Image.asset(imgUrl, width: 48, height: 48),
                 ],
               )),
         ),
@@ -114,7 +115,12 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       padding: const EdgeInsets.all(8.0),
       child: Card(
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EditStepInstanceScreen(stepInstance: stepInstance)),
+            );
+          },
           child: Row(
             children: [
               Expanded(
