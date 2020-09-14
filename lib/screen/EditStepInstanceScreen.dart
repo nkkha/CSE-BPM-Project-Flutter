@@ -8,10 +8,13 @@ import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flushbar/flushbar.dart';
 
+// ignore: must_be_immutable
 class EditStepInstanceScreen extends StatefulWidget {
+  Function(StepInstance) passData;
+  final int roleId;
   final StepInstance stepInstance;
 
-  EditStepInstanceScreen({Key key, @required this.stepInstance})
+  EditStepInstanceScreen({Key key, this.roleId, this.stepInstance, this.passData})
       : super(key: key);
 
   @override
@@ -261,6 +264,7 @@ class _EditStepInstanceScreenState extends State<EditStepInstanceScreen> {
   Future<void> _onSaveClicked() async {
     var resBody = {};
     resBody["Status"] = _selectedItem.name.toLowerCase();
+    resBody["ResponseMessage"] = _messageController.text;
     String str = json.encode(resBody);
 
     final http.Response response = await http.patch(
@@ -279,6 +283,9 @@ class _EditStepInstanceScreenState extends State<EditStepInstanceScreen> {
         margin: EdgeInsets.all(8),
         borderRadius: 8,
       )..show(context);
+      _stepInstance.status = _selectedItem.name.toLowerCase();
+      _stepInstance.responseMessage = _messageController.text;
+      widget.passData(_stepInstance);
     } else {
       Flushbar(
         icon: Image.asset('images/icons8-cross-mark-48.png',

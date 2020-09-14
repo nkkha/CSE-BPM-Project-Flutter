@@ -1,28 +1,20 @@
 import 'package:cse_bpm_project/fragment/ChatFragment.dart';
-import 'package:cse_bpm_project/fragment/RequestInstanceFragment.dart';
 import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
-import 'package:after_layout/after_layout.dart';
-import 'package:flushbar/flushbar.dart';
 
-class HomeScreen extends StatefulWidget {
-  bool isCreatedNew = false;
-  HomeScreen({Key key, this.isCreatedNew}) : super(key: key);
+import 'OfficesHomeFragment.dart';
+
+class OfficesScreen extends StatefulWidget {
+  final int roleID;
+  const OfficesScreen({Key key, this.roleID}) : super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _OfficesScreenState createState() => _OfficesScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScreen> {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+class _OfficesScreenState extends State<OfficesScreen> {
   int _selectedIndex = 0;
-
-  static const List<Widget> _widgetOptions = <Widget>[
-    RequestInstanceFragment(),
-    ChatFragment(),
-    SettingsFragment(),
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -32,8 +24,13 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> _widgetOptions = <Widget>[
+      OfficesHomeFragment(roleID: widget.roleID),
+      ChatFragment(),
+      SettingsFragment(),
+    ];
+
     return Scaffold(
-      key: _scaffoldKey,
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
@@ -66,21 +63,5 @@ class _HomeScreenState extends State<HomeScreen> with AfterLayoutMixin<HomeScree
         onTap: _onItemTapped,
       ),
     );
-  }
-
-  @override
-  void afterFirstLayout(BuildContext context) {
-    if (widget.isCreatedNew != null) {
-      if (widget.isCreatedNew) {
-        Flushbar(
-          icon: Image.asset('images/ic-check-circle.png', width: 24, height: 24),
-          message:  'Tạo yêu cầu thành công!',
-          duration:  Duration(seconds: 3),
-          margin: EdgeInsets.all(8),
-          borderRadius: 8,
-        )..show(context);
-        widget.isCreatedNew = false;
-      }
-    }
   }
 }

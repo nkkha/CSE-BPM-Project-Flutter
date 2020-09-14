@@ -1,20 +1,24 @@
 class StepInstance {
   final int id;
   final int requestInstanceID;
-  final int approverID;
-  final String defaultContent;
-  final String status;
+  int approverID;
+  String defaultContent;
+  String status;
+  String responseMessage;
   final int stepIndex;
-  final  description;
+  final String description;
+  int approverRoleID;
 
   StepInstance({
     this.id,
     this.requestInstanceID,
     this.approverID,
-    this.defaultContent,String
+    this.defaultContent,
     this.status,
+    this.responseMessage,
     this.stepIndex,
     this.description,
+    this.approverRoleID
   });
 
   factory StepInstance.fromJson(Map<String, dynamic> json) {
@@ -24,8 +28,10 @@ class StepInstance {
       approverID: json['ApproverID'],
       defaultContent: json['DefaultContent'],
       status: json['Status'],
+      responseMessage: json['ResponseMessage'],
       stepIndex: json['StepIndex'],
       description: json['Description'],
+      approverRoleID: json['ApproverRoleID'],
     );
   }
 }

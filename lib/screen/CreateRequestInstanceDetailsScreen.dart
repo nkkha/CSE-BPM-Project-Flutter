@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cse_bpm_project/screen/HomeScreen.dart';
+import 'package:cse_bpm_project/screen/StudentScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -283,7 +283,7 @@ class _CreateRequestInstanceDetailsScreenState
     if (response.statusCode == 200) {
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen(isCreatedNew: true)),
+        MaterialPageRoute(builder: (context) => StudentScreen(isCreatedNew: true)),
         (Route<dynamic> route) => false,
       );
     } else {

@@ -1,11 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/model/StepInstance.dart';
 import 'package:cse_bpm_project/screen/EditStepInstanceScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
+import 'package:cse_bpm_project/source/SharedPreferencesHelper.dart';
+import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:progress_dialog/progress_dialog.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class StepDetailsWidget extends StatefulWidget {
   final RequestInstance requestInstance;
@@ -20,11 +25,15 @@ class StepDetailsWidget extends StatefulWidget {
 
 class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   Future<List<StepInstance>> futureListStep;
+  List<StepInstance> stepInstanceList = new List();
+  ProgressDialog pr;
+  var webService = WebService();
 
   @override
   void initState() {
     super.initState();
-    futureListStep = fetchListStep();
+    futureListStep = webService.getListStepInstance(
+        widget.tabIndex + 1, widget.requestInstance.id);
   }
 
   Widget build(BuildContext context) {
@@ -35,7 +44,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
             future: futureListStep,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return _buildStepDetails(snapshot.data);
+                stepInstanceList = snapshot.data;
+                return _buildStepDetails(stepInstanceList);
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
               }
@@ -58,7 +68,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
 
     for (var stepInstance in stepInstanceList) {
       if (stepInstance.status.contains("failed")) {
-        stepStatusInfo = "Yêu cầu của bạn đã thất bại!";
+        stepStatusInfo = "Yêu cầu đã thất bại!";
         imgUrl = "images/ic-failed.png";
         break;
       }
@@ -72,7 +82,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
-            return _buildStepRow(stepInstanceList[index]);
+            return _buildStepRow(stepInstanceList[index], index);
           },
         ),
         Center(
@@ -96,7 +106,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     );
   }
 
-  Widget _buildStepRow(StepInstance stepInstance) {
+  Widget _buildStepRow(StepInstance stepInstance, int index) {
     Color statusColor;
 
     switch (stepInstance.status) {
@@ -111,66 +121,238 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         break;
     }
 
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => EditStepInstanceScreen(stepInstance: stepInstance)),
-            );
-          },
-          child: Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
-                  child: Text(
-                    stepInstance.description,
-                    style: TextStyle(fontSize: 16, color: MyColors.darkGray),
+    return FutureBuilder<int>(
+        future: SharedPreferencesHelper.getRoleId(),
+        initialData: null,
+        builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+          return snapshot.hasData
+              ? Container(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      side: BorderSide(width: 2, color: Colors.green),
+                    ),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditStepInstanceScreen(
+                              roleId: snapshot.data,
+                              stepInstance: stepInstance,
+                              passData: (data) {
+                                setState(() {
+                                  // Re-render
+                                  stepInstanceList[index] = data;
+                                });
+                                if (data.status == 'failed') {
+                                  updateRequestInstanceFailed();
+                                } else {
+                                  checkAllSteps();
+                                }
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    stepInstance.description,
+                                    style: TextStyle(
+                                        fontSize: 16, color: MyColors.darkGray),
+                                  ),
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: statusColor,
+                                    borderRadius: BorderRadius.circular(16.0),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 16),
+                                    child: Text(
+                                      stepInstance.status,
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: MyColors.white,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              _buildCheckBox(
+                                stepInstance,
+                                snapshot.data,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(right: 16.0),
-                decoration: BoxDecoration(
-                  color: statusColor,
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  child: Text(
-                    stepInstance.status,
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: MyColors.white,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+                )
+              : SizedBox();
+        });
   }
 
-  Future<List<StepInstance>> fetchListStep() async {
-    final response = await http.get(
-        'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails?\$filter=StepIndex eq ${widget.tabIndex + 1} and RequestInstanceID eq ${widget.requestInstance.id}');
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)['value'];
-      List<StepInstance> listStep = new List();
-      for (Map i in data) {
-        listStep.add(StepInstance.fromJson(i));
-      }
-      return listStep;
+  _buildCheckBox(StepInstance stepInstance, int roleId) {
+    if (stepInstance.approverRoleID == roleId && !stepInstance.status.contains('failed')) {
+      return Padding(
+        padding: const EdgeInsets.only(right: 16.0, bottom: 8),
+        child: Row(
+          children: [
+            Container(
+              padding:
+                  const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 8),
+              width: 75,
+              child: RaisedButton(
+                onPressed: () => _showAlertDialog(context, 1, stepInstance),
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                    side: BorderSide(color: Colors.red)),
+                child: Image.asset(
+                  'images/icons8-cross-mark-48.png',
+                  width: 28,
+                  height: 28,
+                ),
+              ),
+            ),
+            Container(
+              padding:
+                  const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 8),
+              width: 75,
+              child: RaisedButton(
+                onPressed: () => _showAlertDialog(context, 2, stepInstance),
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                    side: BorderSide(color: Colors.green)),
+                child: Image.asset(
+                  'images/icons8-check-mark-48.png',
+                  width: 28,
+                  height: 28,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
     } else {
-      throw Exception('Failed to load');
+      return SizedBox();
+    }
+  }
+
+  _showAlertDialog(BuildContext context, index, StepInstance stepInstance) {
+    TextEditingController messageController = new TextEditingController();
+    Alert(
+        context: context,
+        title: "Xác nhận",
+        content: Column(
+          children: <Widget>[
+            TextField(
+              controller: messageController,
+              maxLines: 3,
+              decoration: InputDecoration(
+                icon: Icon(Icons.message_outlined),
+                labelText: 'Ghi chú',
+              ),
+            ),
+          ],
+        ),
+        buttons: [
+          DialogButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              "Huỷ bỏ",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          ),
+          DialogButton(
+            onPressed: () => _didTapButton(index, messageController.text, stepInstance),
+            child: Text(
+              "Đồng ý",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          )
+        ]).show();
+  }
+
+  Future<void> _didTapButton(int indexType, String message, StepInstance stepInstance) async {
+    Navigator.pop(context);
+    pr = ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+    pr.update(message: "Đang xử lý...");
+    await pr.show();
+
+    final userID = await SharedPreferencesHelper.getUserId();
+
+    if (userID != null) {
+      var resBody = {};
+      // indexType = 1: Reject, indexType = 2: Approve
+      resBody["Status"] = indexType == 1 ? "failed" : "done";
+      resBody["ResponseMessage"] = message;
+      resBody["ApproverID"] = userID;
+      String str = json.encode(resBody);
+
+      final http.Response response = await http.patch(
+        'http://nkkha.somee.com/odata/tbStepInstance(${stepInstance.id})',
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: str,
+      );
+
+      if (response.statusCode == 200) {
+        if (indexType == 1) {
+          stepInstance.status = 'failed';
+          webService.patchRequestInstanceFailed(stepInstance.requestInstanceID, () => _hidePr());
+        } else {
+          stepInstance.status = 'done';
+          if (stepInstanceList.length == 1) {
+            webService.patchRequestInstanceStep(stepInstance.requestInstanceID, () => _hidePr());
+          } else if (stepInstanceList.length > 1) {
+            webService.getNextStep(widget.requestInstance, widget.tabIndex + 2, () => _hidePr());
+          }
+        }
+      } else {
+        throw Exception('Failed to update');
+      }
+    }
+  }
+
+  void _hidePr() async {
+    await pr.hide();
+    setState(() {
+      // Re-render
+    });
+  }
+
+  void updateRequestInstanceFailed() {}
+
+  void checkAllSteps() {
+    int index = 0;
+    for (StepInstance stepInstance in stepInstanceList) {
+      if (stepInstance.status == 'active' || stepInstance.status == 'failed') {
+        break;
+      }
+      if (index == stepInstanceList.length - 1) {
+//        _getNextStep();
+      }
+      index++;
     }
   }
 }

@@ -36,6 +36,7 @@ dependencies:
   progress_dialog: ^1.2.4
   shared_preferences: ^0.5.10
   flushbar: ^1.10.4
+  rflutter_alert: ^1.0.8
 
 dev_dependencies:
   flutter_test:

@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:cse_bpm_project/model/Request.dart';
-import 'package:cse_bpm_project/secretary/StudentRequestInstanceScreen.dart';
-import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
+import 'package:cse_bpm_project/model/Request.dart';
+import 'package:cse_bpm_project/secretary/StudentRequestInstanceScreen.dart';
+import 'package:cse_bpm_project/source/MyColors.dart';
 
 class RequestScreen extends StatefulWidget {
   @override
@@ -27,18 +27,16 @@ class _RequestScreenState extends State<RequestScreen> {
       appBar: AppBar(
         title: Text('Yêu cầu của sinh viên'),
       ),
-      body: Center(
-        child: FutureBuilder<List<Request>>(
-          future: futureListRequest,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return RequestList(requestList: snapshot.data);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
-            return CircularProgressIndicator();
-          },
-        ),
+      body: FutureBuilder<List<Request>>(
+        future: futureListRequest,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return RequestList(requestList: snapshot.data);
+          } else if (snapshot.hasError) {
+            return Center(child: Text("${snapshot.error}"));
+          }
+          return Center(child: CircularProgressIndicator());
+        },
       ),
     );
   }
@@ -61,6 +59,7 @@ Future<List<Request>> fetchListRequest() async {
 
 class RequestList extends StatelessWidget {
   final List<Request> requestList;
+
   const RequestList({Key key, this.requestList}) : super(key: key);
 
   @override
@@ -78,12 +77,20 @@ class RequestList extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8.0),
                 child: Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    side: BorderSide(width: 2, color: Colors.green),
+                  ),
                   child: InkWell(
                     onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => StudentRequestInstanceScreen(requestID: requestList[index].id,)));
+                              builder: (context) =>
+                                  StudentRequestInstanceScreen(
+                                    requestID: requestList[index].id,
+                                  )));
                     },
                     child: Row(
                       children: [

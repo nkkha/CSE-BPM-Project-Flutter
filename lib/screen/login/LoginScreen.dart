@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cse_bpm_project/faculty/FacultyScreen.dart';
+import 'package:cse_bpm_project/dean/DeanScreen.dart';
+import 'package:cse_bpm_project/offices/OfficesScreen.dart';
 import 'package:cse_bpm_project/model/User.dart';
-import 'package:cse_bpm_project/screen/HomeScreen.dart';
-import 'package:cse_bpm_project/secretary/Secretary.dart';
+import 'package:cse_bpm_project/screen/StudentScreen.dart';
+import 'package:cse_bpm_project/secretary/SecretaryScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  Timer _timer;
   bool _isClicked = false;
 
   TextEditingController _userController = new TextEditingController();
@@ -54,9 +54,11 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<Null> getSharedPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _roleId = prefs.getInt("roleId");
-    _timer = new Timer(const Duration(milliseconds: 500), () {
+    new Timer(const Duration(milliseconds: 500), () {
       progressDialog.hide();
-      getHomeScreen(_roleId);
+      if (_roleId != null) {
+        getHomeScreen(_roleId);
+      }
     });
   }
 
@@ -253,18 +255,23 @@ class _LoginScreenState extends State<LoginScreen> {
       prefs.setBool('isLogin', true);
 
       await pr.hide();
-      if (user.roleId == 1) // User is student
-      {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
-      } else if (user.roleId == 2) // User is secretary
-      {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => SecretaryHomeScreen()));
-      } else // User is faculty
-      {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => FacultyHomeScreen()));
+      switch (user.roleId) {
+        case 1:
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => StudentScreen()));
+          break;
+        case 2:
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => SecretaryScreen()));
+          break;
+        case 3:
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => DeanScreen()));
+          break;
+        default:
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => OfficesScreen(roleID: user.roleId)));
+          break;
       }
     } else {
       _isClicked = false;
@@ -291,17 +298,19 @@ class _LoginScreenState extends State<LoginScreen> {
     switch (roleId) {
       case 1:
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+            context, MaterialPageRoute(builder: (context) => StudentScreen()));
         break;
       case 2:
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => SecretaryHomeScreen()));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => SecretaryScreen()));
         break;
       case 3:
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => FacultyHomeScreen()));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => DeanScreen()));
         break;
       default:
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => OfficesScreen(roleID: _roleId,)));
         break;
     }
   }

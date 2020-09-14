@@ -11,7 +11,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 // ignore: must_be_immutable
 class StepInfoWidget extends StatefulWidget {
   Function(RequestInstance) passData;
-  final RequestInstance requestInstance;
+  RequestInstance requestInstance;
   final bool isStudent;
 
   StepInfoWidget({Key key, this.requestInstance, this.isStudent, this.passData})
@@ -26,7 +26,6 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
 
   _StepInfoWidgetState(this._requestInstance);
 
-  bool _isClicked = false;
   int count = 0;
   int nextStepSize = 0;
   ProgressDialog pr;
@@ -171,8 +170,6 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
     pr.update(message: "Đang xử lý...");
     await pr.show();
 
-    _isClicked = true;
-
     var resBody = {};
     // indexType = 1: Reject, indexType = 2: Approve
     resBody["Status"] = indexType == 1 ? "failed" : "active";
@@ -197,7 +194,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
       widget.passData(_requestInstance);
       _getNextStep();
     } else {
-      _isClicked = false;
+      throw Exception('Failed to update');
     }
   }
 

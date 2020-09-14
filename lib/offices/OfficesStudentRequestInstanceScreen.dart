@@ -7,29 +7,29 @@ import 'package:cse_bpm_project/secretary/StudentRequestInstanceListWidget.dart'
 import 'package:cse_bpm_project/widget/NoRequestInstanceWidget.dart';
 import 'package:flutter/material.dart';
 
-class StudentRequestInstanceScreen extends StatefulWidget {
-  final int requestID;
+class OfficesStudentRequestInstanceScreen extends StatefulWidget {
+  final List<RequestInstance> requestInstanceList;
 
-  const StudentRequestInstanceScreen({Key key, this.requestID})
+  const OfficesStudentRequestInstanceScreen({Key key, this.requestInstanceList})
       : super(key: key);
 
   @override
-  _StudentRequestInstanceScreenState createState() =>
-      _StudentRequestInstanceScreenState(requestID);
+  _OfficesStudentRequestInstanceScreenState createState() =>
+      _OfficesStudentRequestInstanceScreenState(requestInstanceList);
 }
 
-class _StudentRequestInstanceScreenState
-    extends State<StudentRequestInstanceScreen> {
+class _OfficesStudentRequestInstanceScreenState
+    extends State<OfficesStudentRequestInstanceScreen> {
   Future<List<RequestInstance>> futureListRequest;
   bool _noRequest = false;
-  final int _requestID;
+  final List<RequestInstance> _requestInstanceList;
 
-  _StudentRequestInstanceScreenState(this._requestID);
+  _OfficesStudentRequestInstanceScreenState(this._requestInstanceList);
 
   @override
   void initState() {
     super.initState();
-    futureListRequest = fetchListRequest();
+//    futureListRequest = fetchListRequest();
   }
 
   @override
@@ -44,27 +44,17 @@ class _StudentRequestInstanceScreenState
           ),
         ),
       ),
-      body: FutureBuilder<List<RequestInstance>>(
-        future: futureListRequest,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (_noRequest)
-              return Center(child: NoRequestInstanceWidget(false));
-            return StudentRequestInstanceListWidget(
-              requestList: snapshot.data,
-            );
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
-          }
-          return Center(child: CircularProgressIndicator());
-        },
-      ),
+      body: _requestInstanceList.length > 0
+          ? StudentRequestInstanceListWidget(
+              requestList: _requestInstanceList,
+            )
+          : NoRequestInstanceWidget(false),
     );
   }
 
   Future<List<RequestInstance>> fetchListRequest() async {
     final response = await http.get(
-        'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?\$filter=requestid eq $_requestID');
+        'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?\$filter=requestid eq');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];

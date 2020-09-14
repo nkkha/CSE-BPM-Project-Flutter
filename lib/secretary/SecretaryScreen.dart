@@ -4,14 +4,14 @@ import 'package:cse_bpm_project/secretary/SecretaryHomeFragment.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 
-class SecretaryHomeScreen extends StatefulWidget {
-  const SecretaryHomeScreen({Key key}) : super(key: key);
+class SecretaryScreen extends StatefulWidget {
+  const SecretaryScreen({Key key}) : super(key: key);
 
   @override
-  _SecretaryHomeScreenState createState() => _SecretaryHomeScreenState();
+  _SecretaryScreenState createState() => _SecretaryScreenState();
 }
 
-class _SecretaryHomeScreenState extends State<SecretaryHomeScreen> {
+class _SecretaryScreenState extends State<SecretaryScreen> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[

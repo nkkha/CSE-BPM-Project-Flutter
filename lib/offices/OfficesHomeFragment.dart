@@ -1,22 +1,38 @@
-import 'package:cse_bpm_project/secretary/RequestScreen.dart';
+import 'package:cse_bpm_project/offices/OfficesRequestScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 
-class SecretaryHomeFragment extends StatefulWidget {
-  const SecretaryHomeFragment({Key key}) : super(key: key);
+class OfficesHomeFragment extends StatefulWidget {
+  final int roleID;
+
+  const OfficesHomeFragment({Key key, this.roleID}) : super(key: key);
 
   @override
-  _SecretaryHomeFragmentState createState() => _SecretaryHomeFragmentState();
+  _OfficesHomeFragmentState createState() => _OfficesHomeFragmentState();
 }
 
-class _SecretaryHomeFragmentState extends State<SecretaryHomeFragment> {
+class _OfficesHomeFragmentState extends State<OfficesHomeFragment> {
+  var title = "";
+
   @override
   Widget build(BuildContext context) {
+    switch (widget.roleID) {
+      case 4:
+        title = 'PDT';
+        break;
+      case 5:
+        title = 'PTC';
+        break;
+      default:
+        title = 'Offices';
+        break;
+    }
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          'Trang chủ',
+          title,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w500,
@@ -44,7 +60,7 @@ class _SecretaryHomeFragmentState extends State<SecretaryHomeFragment> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => RequestScreen()));
+                            builder: (context) => OfficesRequestScreen(roleID: widget.roleID,)));
                   },
                   child: Row(
                     children: [
@@ -53,7 +69,7 @@ class _SecretaryHomeFragmentState extends State<SecretaryHomeFragment> {
                           padding: const EdgeInsets.symmetric(
                               vertical: 24, horizontal: 16),
                           child: Text(
-                            "Yêu cầu của sinh viên",
+                            "Yêu cầu cần xử lý",
                             style: TextStyle(
                                 fontSize: 16,
                                 color: MyColors.darkGray,
@@ -66,26 +82,6 @@ class _SecretaryHomeFragmentState extends State<SecretaryHomeFragment> {
                 ),
               ),
             ),
-//            Divider(),
-//            GestureDetector(
-//              child: Card(
-//                child: ListTile(
-//                  title: Text(
-//                    'Thông báo từ ban chủ nhiệm',
-//                    style: TextStyle(
-//                      fontSize: 18,
-//                    ),
-//                  ),
-//                ),
-//              ),
-//              onTap: () {
-//                // Navigator.push(
-//                //     context,
-//                //     MaterialPageRoute(
-//                //         builder: (context) => CreateRequestScreen()));
-//              },
-//            ),
-//            Divider(),
           ],
         ),
       ),
