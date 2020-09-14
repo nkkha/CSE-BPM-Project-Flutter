@@ -4,15 +4,15 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:cse_bpm_project/model/Request.dart';
-import 'package:cse_bpm_project/secretary/StudentRequestInstanceScreen.dart';
+import 'package:cse_bpm_project/secretary/SecretaryRequestInstanceScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 
-class RequestScreen extends StatefulWidget {
+class SecretaryRequestScreen extends StatefulWidget {
   @override
-  _RequestScreenState createState() => _RequestScreenState();
+  _SecretaryRequestScreenState createState() => _SecretaryRequestScreenState();
 }
 
-class _RequestScreenState extends State<RequestScreen> {
+class _SecretaryRequestScreenState extends State<SecretaryRequestScreen> {
   Future<List<Request>> futureListRequest;
 
   @override
@@ -88,7 +88,7 @@ class RequestList extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  StudentRequestInstanceScreen(
+                                  SecretaryRequestInstanceScreen(
                                     requestID: requestList[index].id,
                                   )));
                     },

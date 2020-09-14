@@ -3,28 +3,28 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/RequestInstance.dart';
-import 'package:cse_bpm_project/secretary/StudentRequestInstanceListWidget.dart';
+import 'package:cse_bpm_project/secretary/SecretaryRequestInstanceListWidget.dart';
 import 'package:cse_bpm_project/widget/NoRequestInstanceWidget.dart';
 import 'package:flutter/material.dart';
 
-class StudentRequestInstanceScreen extends StatefulWidget {
+class SecretaryRequestInstanceScreen extends StatefulWidget {
   final int requestID;
 
-  const StudentRequestInstanceScreen({Key key, this.requestID})
+  const SecretaryRequestInstanceScreen({Key key, this.requestID})
       : super(key: key);
 
   @override
-  _StudentRequestInstanceScreenState createState() =>
-      _StudentRequestInstanceScreenState(requestID);
+  _SecretaryRequestInstanceScreenState createState() =>
+      _SecretaryRequestInstanceScreenState(requestID);
 }
 
-class _StudentRequestInstanceScreenState
-    extends State<StudentRequestInstanceScreen> {
+class _SecretaryRequestInstanceScreenState
+    extends State<SecretaryRequestInstanceScreen> {
   Future<List<RequestInstance>> futureListRequest;
   bool _noRequest = false;
   final int _requestID;
 
-  _StudentRequestInstanceScreenState(this._requestID);
+  _SecretaryRequestInstanceScreenState(this._requestID);
 
   @override
   void initState() {
@@ -50,7 +50,7 @@ class _StudentRequestInstanceScreenState
           if (snapshot.hasData) {
             if (_noRequest)
               return Center(child: NoRequestInstanceWidget(false));
-            return StudentRequestInstanceListWidget(
+            return SecretaryRequestInstanceListWidget(
               requestList: snapshot.data,
             );
           } else if (snapshot.hasError) {

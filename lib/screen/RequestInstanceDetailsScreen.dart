@@ -4,6 +4,7 @@ import 'package:cse_bpm_project/widget/StepDetailsWidget.dart';
 import 'package:cse_bpm_project/widget/StepInfoWidget.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class RequestInstanceDetailsScreen extends StatefulWidget {
   final RequestInstance requestInstance;
   final bool isStudent;
@@ -51,22 +52,17 @@ class _RequestInstanceDetailsScreenState
                   ? StepInfoWidget(
                       requestInstance: _requestInstance,
                       isStudent: widget.isStudent,
-                      passData: (data) => updateData(data),
+                      numOfSteps: _requestInstance.numOfSteps,
                     )
                   : StepDetailsWidget(
                       requestInstance: _requestInstance,
-                      tabIndex: index),
+                      tabIndex: index,
+                      numOfSteps: _numOfStep,
+                    ),
             ),
           ),
         ),
       ),
     );
-  }
-
-  void updateData(RequestInstance requestInstance) {
-    _requestInstance = requestInstance;
-    setState(() {
-      // Re-render
-    });
   }
 }

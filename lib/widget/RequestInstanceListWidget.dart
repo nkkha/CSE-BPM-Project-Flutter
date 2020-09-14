@@ -92,9 +92,11 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => RequestInstanceDetailsScreen(
-                    requestInstance: requestInstance, isStudent: true,
-                  )),
+            builder: (context) => RequestInstanceDetailsScreen(
+              requestInstance: requestInstance,
+              isStudent: true,
+            ),
+          ),
         );
       },
       child: Column(

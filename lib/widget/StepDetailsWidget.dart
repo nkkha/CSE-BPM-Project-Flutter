@@ -12,11 +12,14 @@ import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
+// ignore: must_be_immutable
 class StepDetailsWidget extends StatefulWidget {
-  final RequestInstance requestInstance;
+  RequestInstance requestInstance;
   final int tabIndex;
+  final int numOfSteps;
 
-  const StepDetailsWidget({Key key, this.requestInstance, this.tabIndex})
+  StepDetailsWidget(
+      {Key key, this.requestInstance, this.tabIndex, this.numOfSteps})
       : super(key: key);
 
   @override
@@ -32,7 +35,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   @override
   void initState() {
     super.initState();
-    futureListStep = webService.getListStepInstance(
+    futureListStep = webService.getStepInstances(
         widget.tabIndex + 1, widget.requestInstance.id);
   }
 
@@ -55,7 +58,9 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   }
 
   Widget _buildStepDetails(List<StepInstance> stepInstanceList) {
-    String stepStatusInfo = "Tất cả các bước bên trên đã hoàn thành!";
+    String stepStatusInfo = widget.tabIndex + 1 == widget.numOfSteps
+        ? "Yêu cầu đã hoàn thành!"
+        : "Tất cả các bước bên trên đã hoàn thành!";
     String imgUrl = "images/ok.png";
 
     for (var stepInstance in stepInstanceList) {
@@ -147,11 +152,6 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                                   // Re-render
                                   stepInstanceList[index] = data;
                                 });
-                                if (data.status == 'failed') {
-                                  updateRequestInstanceFailed();
-                                } else {
-                                  checkAllSteps();
-                                }
                               },
                             ),
                           ),
@@ -164,10 +164,14 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                             child: Row(
                               children: [
                                 Expanded(
-                                  child: Text(
-                                    stepInstance.description,
-                                    style: TextStyle(
-                                        fontSize: 16, color: MyColors.darkGray),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: Text(
+                                      stepInstance.description,
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: MyColors.darkGray),
+                                    ),
                                   ),
                                 ),
                                 Container(
@@ -209,7 +213,9 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   }
 
   _buildCheckBox(StepInstance stepInstance, int roleId) {
-    if (stepInstance.approverRoleID == roleId && !stepInstance.status.contains('failed')) {
+    if (stepInstance.approverRoleID == roleId &&
+        !stepInstance.status.contains('failed') &&
+        !stepInstance.status.contains('done')) {
       return Padding(
         padding: const EdgeInsets.only(right: 16.0, bottom: 8),
         child: Row(
@@ -282,7 +288,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
             ),
           ),
           DialogButton(
-            onPressed: () => _didTapButton(index, messageController.text, stepInstance),
+            onPressed: () =>
+                _didTapButton(index, messageController.text, stepInstance),
             child: Text(
               "Đồng ý",
               style: TextStyle(color: Colors.white, fontSize: 20),
@@ -291,7 +298,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         ]).show();
   }
 
-  Future<void> _didTapButton(int indexType, String message, StepInstance stepInstance) async {
+  Future<void> _didTapButton(
+      int indexType, String message, StepInstance stepInstance) async {
     Navigator.pop(context);
     pr = ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
@@ -319,13 +327,25 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       if (response.statusCode == 200) {
         if (indexType == 1) {
           stepInstance.status = 'failed';
-          webService.patchRequestInstanceFailed(stepInstance.requestInstanceID, () => _hidePr());
+          webService.patchRequestInstanceFailed(
+              stepInstance.requestInstanceID, () => _hidePr(0, false));
         } else {
           stepInstance.status = 'done';
           if (stepInstanceList.length == 1) {
-            webService.patchRequestInstanceStep(stepInstance.requestInstanceID, () => _hidePr());
+            if (widget.tabIndex + 1 == widget.numOfSteps) {
+              webService.patchRequestInstanceFinished(
+                  stepInstance.requestInstanceID, () => _hidePr(1, false));
+            } else {
+              widget.requestInstance.currentStepIndex++;
+              webService.patchRequestInstanceStepIndex(
+                  widget.requestInstance, (data) => _hidePr(2, data));
+            }
           } else if (stepInstanceList.length > 1) {
-            webService.getNextStep(widget.requestInstance, widget.tabIndex + 2, () => _hidePr());
+            webService.getOtherCurrentStepInstances(
+                widget.requestInstance,
+                stepInstance.id,
+                widget.tabIndex + 1,
+                (data) => _hidePr(2, data));
           }
         }
       } else {
@@ -334,25 +354,23 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     }
   }
 
-  void _hidePr() async {
+  void _hidePr(int index, bool isUpdatedStep) async {
     await pr.hide();
+    if (index == 0) {
+      // Update request instance status failed
+      widget.requestInstance.status = 'failed';
+    } else if (index == 1) {
+      // Update request instance status done
+      widget.requestInstance.status = 'done';
+    }
+    if (isUpdatedStep) {
+      if (index == 2) {
+        // Update request instance step index
+        widget.requestInstance.currentStepIndex++;
+      }
+    }
     setState(() {
       // Re-render
     });
-  }
-
-  void updateRequestInstanceFailed() {}
-
-  void checkAllSteps() {
-    int index = 0;
-    for (StepInstance stepInstance in stepInstanceList) {
-      if (stepInstance.status == 'active' || stepInstance.status == 'failed') {
-        break;
-      }
-      if (index == stepInstanceList.length - 1) {
-//        _getNextStep();
-      }
-      index++;
-    }
   }
 }

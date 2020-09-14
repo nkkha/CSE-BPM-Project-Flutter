@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:cse_bpm_project/model/StepModel.dart';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +10,11 @@ import 'package:progress_dialog/progress_dialog.dart';
 
 // ignore: must_be_immutable
 class StepInfoWidget extends StatefulWidget {
-  Function(RequestInstance) passData;
   RequestInstance requestInstance;
+  final int numOfSteps;
   final bool isStudent;
 
-  StepInfoWidget({Key key, this.requestInstance, this.isStudent, this.passData})
+  StepInfoWidget({Key key, this.requestInstance, this.isStudent, this.numOfSteps})
       : super(key: key);
 
   @override
@@ -29,6 +29,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
   int count = 0;
   int nextStepSize = 0;
   ProgressDialog pr;
+  var webService = WebService();
 
   @override
   Widget build(BuildContext context) {
@@ -191,54 +192,20 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
         _requestInstance.status = 'active';
         _requestInstance.currentStepIndex = 2;
       }
-      widget.passData(_requestInstance);
-      _getNextStep();
+      if (widget.numOfSteps == 1) {
+        webService.patchRequestInstanceFinished(_requestInstance.id, () => _hidePr(false));
+      } else {
+        webService.getNextStep(_requestInstance, 2, (data) => _hidePr(data));
+      }
     } else {
       throw Exception('Failed to update');
     }
   }
 
-  Future<void> _getNextStep() async {
-    final response = await http.get('http://nkkha.somee.com/odata/tbStep?\$filter=RequestID eq ${_requestInstance.requestID} and StepIndex eq ${_requestInstance.currentStepIndex}');
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)['value'];
-      List<StepModel> listStep = new List();
-      for (Map i in data) {
-        listStep.add(StepModel.fromJson(i));
-      }
-      nextStepSize = listStep.length;
-      for (int i = 0; i <listStep.length ; i++) {
-        _createNextStep(listStep[i].id);
-      }
-    } else {
-      throw Exception('Failed to load');
-    }
-  }
-
-  Future<void> _createNextStep(int stepID) async {
-    final http.Response response = await http.post(
-      'http://nkkha.somee.com/odata/tbStepInstance',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        "RequestInstanceID": "${_requestInstance.id}",
-        "ApproverID": null,
-        "DefaultContent": "",
-        "Status": "active",
-        "StepID": "$stepID",
-        "ResponseMessage": ""
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      count++;
-      if (count == nextStepSize) {
-        await pr.hide();
-      }
-    } else {
-      throw Exception('Failed to create next step instances.');
-    }
+  void _hidePr(boolData) async {
+    await pr.hide();
+    setState(() {
+      // Re-render
+    });
   }
 }

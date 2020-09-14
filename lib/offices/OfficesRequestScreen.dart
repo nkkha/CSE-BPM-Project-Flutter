@@ -78,9 +78,10 @@ Future<List<RequestInstance>> fetchListRequestInstance(String query) async {
         'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?$query');
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      listRequestInstance = new List();
       for (Map i in data) {
-        listRequestInstance.add(RequestInstance.fromJson(i));
+        if (!RequestInstance.fromJson(i).status.contains('failed')) {
+          listRequestInstance.add(RequestInstance.fromJson(i));
+        }
       }
       return listRequestInstance;
     } else {

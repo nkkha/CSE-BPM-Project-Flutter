@@ -1,4 +1,4 @@
-import 'package:cse_bpm_project/secretary/RequestScreen.dart';
+import 'package:cse_bpm_project/secretary/SecretaryRequestScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +44,7 @@ class _SecretaryHomeFragmentState extends State<SecretaryHomeFragment> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => RequestScreen()));
+                            builder: (context) => SecretaryRequestScreen()));
                   },
                   child: Row(
                     children: [

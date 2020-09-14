@@ -23,6 +23,11 @@ class _RequestListWidgetState extends State<RequestListWidget> {
         return Padding(
           padding: const EdgeInsets.all(8.0),
           child: Card(
+            elevation: 5,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              side: BorderSide(width: 2, color: Colors.green),
+            ),
             child: InkWell(
               onTap: () {
                 Navigator.push(
@@ -32,7 +37,7 @@ class _RequestListWidgetState extends State<RequestListWidget> {
                 );
               },
               child: ListTile(
-                contentPadding: const EdgeInsets.all(8.0),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 title: Text(
                   '${request.description}',
                 ),

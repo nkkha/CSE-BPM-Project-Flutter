@@ -68,7 +68,8 @@ class _OfficesStudentRequestInstanceListWidgetState
           context,
           MaterialPageRoute(
               builder: (context) => RequestInstanceDetailsScreen(
-                    requestInstance: requestInstance, isStudent: false,
+                    requestInstance: requestInstance,
+                    isStudent: false,
                   )),
         ).then((value) {
           setState(() {

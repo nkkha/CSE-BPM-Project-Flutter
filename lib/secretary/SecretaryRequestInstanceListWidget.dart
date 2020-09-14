@@ -4,22 +4,22 @@ import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class StudentRequestInstanceListWidget extends StatefulWidget {
+class SecretaryRequestInstanceListWidget extends StatefulWidget {
   final List<RequestInstance> requestList;
 
-  const StudentRequestInstanceListWidget({Key key, this.requestList})
+  const SecretaryRequestInstanceListWidget({Key key, this.requestList})
       : super(key: key);
 
   @override
-  _StudentRequestInstanceListWidgetState createState() =>
-      _StudentRequestInstanceListWidgetState(requestList);
+  _SecretaryRequestInstanceListWidgetState createState() =>
+      _SecretaryRequestInstanceListWidgetState(requestList);
 }
 
-class _StudentRequestInstanceListWidgetState
-    extends State<StudentRequestInstanceListWidget> {
+class _SecretaryRequestInstanceListWidgetState
+    extends State<SecretaryRequestInstanceListWidget> {
   final List<RequestInstance> requestList;
 
-  _StudentRequestInstanceListWidgetState(this.requestList);
+  _SecretaryRequestInstanceListWidgetState(this.requestList);
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +101,8 @@ class _StudentRequestInstanceListWidgetState
           context,
           MaterialPageRoute(
               builder: (context) => RequestInstanceDetailsScreen(
-                    requestInstance: requestInstance, isStudent: false,
+                    requestInstance: requestInstance,
+                    isStudent: false,
                   )),
         ).then((value) {
           setState(() {

@@ -23,7 +23,7 @@ class NoRequestInstanceWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 40),
                 child: Text(
-                  isStudent ? 'Bạn không' : 'Hiện tại',
+                  isStudent ? 'Bạn không' : 'Hiện tại không',
                   style: TextStyle(
                     color: MyColors.brand,
                     fontSize: 42,
@@ -34,7 +34,7 @@ class NoRequestInstanceWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: Text(
-                  'có yêu cầu nào',
+                  'có yêu cầu nào!',
                   style: TextStyle(
                     color: MyColors.brand,
                     fontSize: 42,
@@ -44,10 +44,11 @@ class NoRequestInstanceWidget extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CreateRequestScreen()),
-                    );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CreateRequestScreen()),
+                  );
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -60,15 +61,17 @@ class NoRequestInstanceWidget extends StatelessWidget {
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
-                    'BẮT ĐẦU YÊU CẦU ĐẦU TIÊN!',
-                    style: TextStyle(
-                      color: MyColors.brand,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 1.25,
-                    ),
-                  ),
+                  child: isStudent
+                      ? Text(
+                          'BẮT ĐẦU YÊU CẦU ĐẦU TIÊN!',
+                          style: TextStyle(
+                            color: MyColors.brand,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 1.25,
+                          ),
+                        )
+                      : SizedBox(),
                 ),
               ),
             ],
