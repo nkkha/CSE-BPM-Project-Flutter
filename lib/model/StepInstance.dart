@@ -8,7 +8,7 @@ class StepInstance {
   final int stepIndex;
   final String description;
   int approverRoleID;
-  String startedDate;
+  String createdDate;
   String finishedDate;
 
   StepInstance({
@@ -21,7 +21,7 @@ class StepInstance {
     this.stepIndex,
     this.description,
     this.approverRoleID,
-    this.startedDate,
+    this.createdDate,
     this.finishedDate
   });
 
@@ -36,7 +36,7 @@ class StepInstance {
       stepIndex: json['StepIndex'],
       description: json['Description'],
       approverRoleID: json['ApproverRoleID'],
-      startedDate: json['StartedDate'],
+      createdDate: json['StartedDate'],
       finishedDate: json['FinishedDate'],
     );
   }

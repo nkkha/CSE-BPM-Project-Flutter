@@ -35,6 +35,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
   List<DropdownMenuItem<Role>> _dropdownMenuItems;
   Role _selectedItem;
   bool isCreated = false;
+  int count = 0;
 
   @override
   void initState() {
@@ -131,7 +132,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                 children: [
                   Text(
                     "Người xử lý: ",
-                    style: TextStyle(fontSize: 16, color: MyColors.darkGray),
+                    style: TextStyle(fontSize: 16),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8, right: 8),
@@ -217,11 +218,11 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.add, size: 36),
-                          Text(' Câu hỏi',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: MyColors.darkGray))
+                          Text(
+                            ' Câu hỏi',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
                         ],
                       ),
                     ),
@@ -249,11 +250,11 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                             Icons.add,
                             size: 36,
                           ),
-                          Text(' Tải tệp lên',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: MyColors.darkGray))
+                          Text(
+                            ' Tải tệp lên',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
                         ],
                       ),
                     ),
@@ -351,19 +352,43 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
         (data) => update(data));
   }
 
-  void update(bool isSuccessful) {
+  void update(int stepID) {
+    if (stepID != null) {
+      createStepInputField(stepID);
+    } else {
+      Flushbar(
+        icon: Image.asset('images/icons8-cross-mark-48.png',
+            width: 24, height: 24),
+        message: 'Thất bại!',
+        duration: Duration(seconds: 3),
+        margin: EdgeInsets.all(8),
+        borderRadius: 8,
+      )..show(context);
+    }
+  }
+
+  void createStepInputField(stepID) {
+    for (StepInputField stepInputField in listStepInputField) {
+      webService.postCreateStepInputField(stepID, null, stepInputField.inputFieldID, stepInputField.title, (data) => updateIF(data));
+    }
+  }
+
+  void updateIF(bool isSuccessful) {
     if (isSuccessful) {
-      setState(() {
-        isCreated = true;
-        Flushbar(
-          icon:
-              Image.asset('images/ic-check-circle.png', width: 24, height: 24),
-          message: 'Thành công!',
-          duration: Duration(seconds: 3),
-          margin: EdgeInsets.all(8),
-          borderRadius: 8,
-        )..show(context);
-      });
+      count++;
+      if (count == listStepInputField.length) {
+        setState(() {
+          isCreated = true;
+          Flushbar(
+            icon:
+            Image.asset('images/ic-check-circle.png', width: 24, height: 24),
+            message: 'Thành công!',
+            duration: Duration(seconds: 3),
+            margin: EdgeInsets.all(8),
+            borderRadius: 8,
+          )..show(context);
+        });
+      }
     } else {
       Flushbar(
         icon: Image.asset('images/icons8-cross-mark-48.png',

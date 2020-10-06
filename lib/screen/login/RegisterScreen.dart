@@ -221,7 +221,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               RichText(
                 text: TextSpan(
                   text: 'Already a User? ',
-                  style: TextStyle(color: MyColors.darkGray, fontSize: 16),
+                  style: TextStyle(fontSize: 16),
                   children: [
                     TextSpan(
                       text: 'Login Now',

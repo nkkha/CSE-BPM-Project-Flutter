@@ -28,10 +28,11 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
 
   _StepInfoWidgetState(this._requestInstance);
 
+  var webService = WebService();
+
   int count = 0;
   int nextStepSize = 0;
   ProgressDialog pr;
-  var webService = WebService();
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +59,6 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                 "Phê duyệt yêu cầu",
                 style: TextStyle(
                     fontSize: 20,
-                    color: MyColors.darkGray,
                     fontWeight: FontWeight.bold),
               ),
             ),
@@ -67,35 +67,35 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
             padding: const EdgeInsets.all(8.0),
             child: Text(
               "Họ và tên: ${_requestInstance.fullName}",
-              style: TextStyle(fontSize: 16, color: MyColors.darkGray),
+              style: TextStyle(fontSize: 16),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
               "Email: ${_requestInstance.email}",
-              style: TextStyle(fontSize: 16, color: MyColors.darkGray),
+              style: TextStyle(fontSize: 16),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
               "Phone: ${_requestInstance.phone}",
-              style: TextStyle(fontSize: 16, color: MyColors.darkGray),
+              style: TextStyle(fontSize: 16),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
               "Nội dung yêu cầu: ${_requestInstance.defaultContent}",
-              style: TextStyle(fontSize: 16, color: MyColors.darkGray),
+              style: TextStyle(fontSize: 16),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
               "Trạng thái yêu cầu: $status",
-              style: TextStyle(fontSize: 16, color: MyColors.darkGray),
+              style: TextStyle(fontSize: 16),
             ),
           ),
           Center(

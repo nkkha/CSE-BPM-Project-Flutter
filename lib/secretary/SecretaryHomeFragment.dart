@@ -57,7 +57,6 @@ class _SecretaryHomeFragmentState extends State<SecretaryHomeFragment> {
                             "Yêu cầu của sinh viên",
                             style: TextStyle(
                                 fontSize: 16,
-                                color: MyColors.darkGray,
                                 fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -95,7 +94,6 @@ class _SecretaryHomeFragmentState extends State<SecretaryHomeFragment> {
                             "Tạo yêu cầu mới",
                             style: TextStyle(
                                 fontSize: 16,
-                                color: MyColors.darkGray,
                                 fontWeight: FontWeight.bold),
                           ),
                         ),

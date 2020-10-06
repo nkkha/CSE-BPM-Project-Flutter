@@ -27,7 +27,6 @@ class SettingsFragment extends StatelessWidget {
               Text(
                 '$title',
                 style: TextStyle(
-                  color: MyColors.darkGray,
                   fontSize: 16,
                 ),
               ),

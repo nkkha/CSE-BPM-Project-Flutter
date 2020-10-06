@@ -5,6 +5,8 @@ class RequestInstance {
   final String defaultContent;
   int currentStepIndex;
   String status;
+  String createdDate;
+  String finishedDate;
   final int numOfSteps;
   final String userName;
   final String email;
@@ -18,6 +20,8 @@ class RequestInstance {
       this.defaultContent,
       this.currentStepIndex,
       this.status,
+      this.createdDate,
+      this.finishedDate,
       this.numOfSteps,
       this.userName,
       this.email,
@@ -32,6 +36,8 @@ class RequestInstance {
       defaultContent: json['DefaultContent'],
       currentStepIndex: json['CurrentStepIndex'],
       status: json['Status'],
+      createdDate: json['CreatedDate'],
+      finishedDate: json['FinishedDate'],
       numOfSteps: json['NumOfSteps'],
       userName: json['UserName'],
       email: json['Mail'],

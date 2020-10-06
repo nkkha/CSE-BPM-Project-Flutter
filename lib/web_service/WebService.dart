@@ -226,4 +226,28 @@ class WebService {
       throw Exception('Failed to get list role!');
     }
   }
+
+  /// StepInputField
+
+  Future<void> postCreateStepInputField(
+      int stepID, String requestID, int inputFieldID, String title, Function update) async {
+    final http.Response response = await http.post(
+      'http://nkkha.somee.com/odata/tbStepInputField',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        "StepID": "$stepID",
+        "RequestID": requestID,
+        "InputFieldID": "$inputFieldID",
+        "Title": title
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      update(true);
+    } else {
+      throw Exception("Failed to create step input field");
+    }
+  }
 }

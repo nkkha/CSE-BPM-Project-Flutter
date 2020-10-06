@@ -146,7 +146,6 @@ Future<List<StepInstance>> fetchListStepInstance(int roleID) async {
 //                              "${requestList[index].description}",
 //                              style: TextStyle(
 //                                  fontSize: 16,
-//                                  color: MyColors.darkGray,
 //                                  fontWeight: FontWeight.bold),
 //                            ),
 //                          ),

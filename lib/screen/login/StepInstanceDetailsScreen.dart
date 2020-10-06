@@ -78,7 +78,6 @@ class _StepInstanceDetailsScreenState extends State<StepInstanceDetailsScreen> {
                       "Thông tin chi tiết",
                       style: TextStyle(
                           fontSize: 20,
-                          color: MyColors.darkGray,
                           fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -88,7 +87,7 @@ class _StepInstanceDetailsScreenState extends State<StepInstanceDetailsScreen> {
                   const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                   child: Text(
                     "Nội dung: ${_stepInstance.description}",
-                    style: TextStyle(fontSize: 16, color: MyColors.darkGray),
+                    style: TextStyle(fontSize: 16),
                   ),
                 ),
                 Padding(
@@ -96,7 +95,7 @@ class _StepInstanceDetailsScreenState extends State<StepInstanceDetailsScreen> {
                   const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                   child: Text(
                     "Nơi xử lý: ...",
-                    style: TextStyle(fontSize: 16, color: MyColors.darkGray),
+                    style: TextStyle(fontSize: 16),
                   ),
                 ),
                 Padding(
@@ -106,7 +105,7 @@ class _StepInstanceDetailsScreenState extends State<StepInstanceDetailsScreen> {
                       Text(
                         "Trạng thái: ${_stepInstance.status}",
                         style:
-                        TextStyle(fontSize: 16, color: MyColors.darkGray),
+                        TextStyle(fontSize: 16),
                       ),
                     ],
                   ),

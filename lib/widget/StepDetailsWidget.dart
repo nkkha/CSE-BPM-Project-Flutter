@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cse_bpm_project/widget/StepInputFieldInstanceWidget.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/RequestInstance.dart';
@@ -47,7 +48,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 stepInstanceList = snapshot.data;
-                return _buildStepDetails(stepInstanceList);
+                return SingleChildScrollView(
+                    child: _buildStepDetails(stepInstanceList));
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
               }
@@ -91,17 +93,17 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         ),
         Center(
           child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  Image.asset(imgUrl, width: 48, height: 48),
                   SizedBox(height: 20),
                   Text(
                     stepStatusInfo,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: MyColors.darkGray),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: Image.asset(imgUrl, width: 48, height: 48),
                   ),
                 ],
               )),
@@ -131,7 +133,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
           return snapshot.hasData
               ? Container(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   child: Card(
                     elevation: 5,
                     shape: RoundedRectangleBorder(
@@ -167,9 +169,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                                     padding: const EdgeInsets.only(right: 8.0),
                                     child: Text(
                                       stepInstance.description,
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: MyColors.darkGray),
+                                      style: TextStyle(fontSize: 16),
                                     ),
                                   ),
                                 ),

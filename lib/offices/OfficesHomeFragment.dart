@@ -72,7 +72,6 @@ class _OfficesHomeFragmentState extends State<OfficesHomeFragment> {
                             "Yêu cầu cần xử lý",
                             style: TextStyle(
                                 fontSize: 16,
-                                color: MyColors.darkGray,
                                 fontWeight: FontWeight.bold),
                           ),
                         ),
