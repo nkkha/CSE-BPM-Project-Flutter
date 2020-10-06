@@ -1,19 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/RequestInstance.dart';
-import 'package:cse_bpm_project/screen/CreateRequestScreen.dart';
+import 'package:cse_bpm_project/screen/CreateRequestInstanceScreen.dart';
 import 'package:cse_bpm_project/widget/NoRequestInstanceWidget.dart';
 import 'package:cse_bpm_project/widget/RequestInstanceListWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RequestInstanceFragment extends StatefulWidget {
   const RequestInstanceFragment({Key key}) : super(key: key);
 
   @override
-  _RequestInstanceFragmentState createState() => _RequestInstanceFragmentState();
+  _RequestInstanceFragmentState createState() =>
+      _RequestInstanceFragmentState();
 }
 
 class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
@@ -46,7 +47,8 @@ class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CreateRequestScreen()),
+                MaterialPageRoute(
+                    builder: (context) => CreateRequestInstanceScreen()),
               );
             },
           ),
@@ -70,7 +72,8 @@ class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
   Future<List<RequestInstance>> fetchListRequest() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('userId') ?? 0;
-    final response = await http.get('http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?\$filter=userid eq $userId');
+    final response = await http.get(
+        'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?\$filter=userid eq $userId');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];

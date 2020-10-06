@@ -8,6 +8,8 @@ class StepInstance {
   final int stepIndex;
   final String description;
   int approverRoleID;
+  String startedDate;
+  String finishedDate;
 
   StepInstance({
     this.id,
@@ -18,7 +20,9 @@ class StepInstance {
     this.responseMessage,
     this.stepIndex,
     this.description,
-    this.approverRoleID
+    this.approverRoleID,
+    this.startedDate,
+    this.finishedDate
   });
 
   factory StepInstance.fromJson(Map<String, dynamic> json) {
@@ -32,6 +36,8 @@ class StepInstance {
       stepIndex: json['StepIndex'],
       description: json['Description'],
       approverRoleID: json['ApproverRoleID'],
+      startedDate: json['StartedDate'],
+      finishedDate: json['FinishedDate'],
     );
   }
 }

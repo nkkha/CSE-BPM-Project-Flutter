@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/model/StepInstance.dart';
-import 'package:cse_bpm_project/screen/EditStepInstanceScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:cse_bpm_project/source/SharedPreferencesHelper.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
@@ -141,21 +140,21 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                     ),
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EditStepInstanceScreen(
-                              roleId: snapshot.data,
-                              stepInstance: stepInstance,
-                              passData: (data) {
-                                setState(() {
-                                  // Re-render
-                                  stepInstanceList[index] = data;
-                                });
-                              },
-                            ),
-                          ),
-                        );
+//                        Navigator.push(
+//                          context,
+//                          MaterialPageRoute(
+//                            builder: (context) => StepInstanceDetailsScreen(
+//                              roleId: snapshot.data,
+//                              stepInstance: stepInstance,
+//                              passData: (data) {
+//                                setState(() {
+//                                  // Re-render
+//                                  stepInstanceList[index] = data;
+//                                });
+//                              },
+//                            ),
+//                          ),
+//                        );
                       },
                       child: Column(
                         children: [
@@ -301,6 +300,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   Future<void> _didTapButton(
       int indexType, String message, StepInstance stepInstance) async {
     Navigator.pop(context);
+
     pr = ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
     pr.update(message: "Đang xử lý...");

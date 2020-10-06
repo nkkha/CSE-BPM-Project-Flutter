@@ -1,3 +1,4 @@
+import 'package:cse_bpm_project/screen/CreateRequestScreen.dart';
 import 'package:cse_bpm_project/secretary/SecretaryRequestScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
@@ -66,26 +67,44 @@ class _SecretaryHomeFragmentState extends State<SecretaryHomeFragment> {
                 ),
               ),
             ),
-//            Divider(),
-//            GestureDetector(
-//              child: Card(
-//                child: ListTile(
-//                  title: Text(
-//                    'Thông báo từ ban chủ nhiệm',
-//                    style: TextStyle(
-//                      fontSize: 18,
-//                    ),
-//                  ),
-//                ),
-//              ),
-//              onTap: () {
-//                // Navigator.push(
-//                //     context,
-//                //     MaterialPageRoute(
-//                //         builder: (context) => CreateRequestScreen()));
-//              },
-//            ),
-//            Divider(),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  side: BorderSide(width: 2, color: Colors.green),
+                ),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CreateRequestScreen()));
+                  },
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 24, horizontal: 16),
+                          child: Text(
+                            "Tạo yêu cầu mới",
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: MyColors.darkGray,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

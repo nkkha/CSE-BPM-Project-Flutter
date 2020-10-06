@@ -1,11 +1,11 @@
-class StepModel {
+class Step {
   final int id;
   final int requestID;
   final String description;
   final int approverRoleID;
   final int stepIndex;
 
-  StepModel({
+  Step({
     this.id,
     this.requestID,
     this.description,
@@ -13,8 +13,8 @@ class StepModel {
     this.stepIndex,
   });
 
-  factory StepModel.fromJson(Map<String, dynamic> json) {
-    return StepModel(
+  factory Step.fromJson(Map<String, dynamic> json) {
+    return Step(
       id: json['ID'],
       requestID: json['RequestID'],
       description: json['Description'],

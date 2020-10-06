@@ -7,6 +7,7 @@ import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 // ignore: must_be_immutable
 class StepInfoWidget extends StatefulWidget {
@@ -14,7 +15,8 @@ class StepInfoWidget extends StatefulWidget {
   final int numOfSteps;
   final bool isStudent;
 
-  StepInfoWidget({Key key, this.requestInstance, this.isStudent, this.numOfSteps})
+  StepInfoWidget(
+      {Key key, this.requestInstance, this.isStudent, this.numOfSteps})
       : super(key: key);
 
   @override
@@ -38,7 +40,8 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
     if (_requestInstance.status.contains('new')) {
       status = 'Đang chờ phê duyệt';
       imgUrl = 'images/timer.png';
-    } else if (_requestInstance.status.contains('active') || _requestInstance.status.contains('done')){
+    } else if (_requestInstance.status.contains('active') ||
+        _requestInstance.status.contains('done')) {
       status = 'Đã được phê duyệt';
       imgUrl = 'images/ok.png';
     }
@@ -97,9 +100,8 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
           ),
           Center(
             child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Image.asset(imgUrl, width: 48, height: 48)
-            ),
+                padding: const EdgeInsets.all(24),
+                child: Image.asset(imgUrl, width: 48, height: 48)),
           ),
           _requestInstance.status.contains("new") && !widget.isStudent
               ? _buildCheckBox()
@@ -112,17 +114,16 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
   _buildCheckBox() {
     return Expanded(
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly  ,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Container(
             width: 155,
             child: RaisedButton(
-              onPressed: () => _didTapButton(1),
+              onPressed: () => _showAlertDialog(context, 1),
               color: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
-                  side: BorderSide(color: Colors.red)
-              ),
+                  side: BorderSide(color: Colors.red)),
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -132,7 +133,11 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                     width: 36,
                     height: 36,
                   ),
-                  Text(' Từ chối', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: MyColors.red))
+                  Text(' Từ chối',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: MyColors.red))
                 ],
               ),
             ),
@@ -140,12 +145,11 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
           Container(
             width: 155,
             child: RaisedButton(
-              onPressed: () => _didTapButton(2),
+              onPressed: () => _showAlertDialog(context, 2),
               color: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
-                  side: BorderSide(color: Colors.green)
-              ),
+                  side: BorderSide(color: Colors.green)),
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -155,7 +159,11 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                     width: 36,
                     height: 36,
                   ),
-                  Text(' Phê duyệt', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: MyColors.green))
+                  Text(' Phê duyệt',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: MyColors.green))
                 ],
               ),
             ),
@@ -165,7 +173,44 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
     );
   }
 
-  Future<void> _didTapButton(int indexType) async {
+  _showAlertDialog(BuildContext context, index) {
+    TextEditingController messageController = new TextEditingController();
+    Alert(
+        context: context,
+        title: "Xác nhận",
+        content: Column(
+          children: <Widget>[
+            TextField(
+              controller: messageController,
+              maxLines: 3,
+              decoration: InputDecoration(
+                icon: Icon(Icons.message_outlined),
+                labelText: 'Ghi chú',
+              ),
+            ),
+          ],
+        ),
+        buttons: [
+          DialogButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              "Huỷ bỏ",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          ),
+          DialogButton(
+            onPressed: () => _didTapButton(index, messageController.text),
+            child: Text(
+              "Đồng ý",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          )
+        ]).show();
+  }
+
+  Future<void> _didTapButton(int indexType, String message) async {
+    Navigator.pop(context);
+
     pr = ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
     pr.update(message: "Đang xử lý...");
@@ -193,7 +238,8 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
         _requestInstance.currentStepIndex = 2;
       }
       if (widget.numOfSteps == 1) {
-        webService.patchRequestInstanceFinished(_requestInstance.id, () => _hidePr(false));
+        webService.patchRequestInstanceFinished(
+            _requestInstance.id, () => _hidePr(false));
       } else {
         webService.getNextStep(_requestInstance, 2, (data) => _hidePr(data));
       }

@@ -38,6 +38,7 @@ class _RequestInstanceDetailsScreenState
             titleSpacing: 0,
             bottomOpacity: 1,
             bottom: TabBar(
+              isScrollable: true,
               labelColor: MyColors.blue,
               unselectedLabelColor: MyColors.mediumGray,
               tabs: List<Widget>.generate(
@@ -45,7 +46,6 @@ class _RequestInstanceDetailsScreenState
             ),
           ),
           body: TabBarView(
-            physics: NeverScrollableScrollPhysics(),
             children: List<Widget>.generate(
               _numOfStep,
               (index) => index == 0

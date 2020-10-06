@@ -1,4 +1,4 @@
-import 'package:cse_bpm_project/screen/CreateRequestScreen.dart';
+import 'package:cse_bpm_project/screen/CreateRequestInstanceScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 
@@ -47,7 +47,7 @@ class NoRequestInstanceWidget extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => CreateRequestScreen()),
+                        builder: (context) => CreateRequestInstanceScreen()),
                   );
                 },
                 child: Container(

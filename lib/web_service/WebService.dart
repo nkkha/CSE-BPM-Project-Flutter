@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
-import 'package:cse_bpm_project/model/StepModel.dart';
+import 'package:cse_bpm_project/model/Role.dart';
+import 'package:cse_bpm_project/model/Step.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/StepInstance.dart';
@@ -118,13 +119,13 @@ class WebService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<StepModel> listStep = new List();
+      List<Step> listStep = new List();
       for (Map i in data) {
-        listStep.add(StepModel.fromJson(i));
+        listStep.add(Step.fromJson(i));
       }
       nextStepSize = listStep.length;
       for (int i = 0; i < nextStepSize; i++) {
-        postCreateNextStep(requestInstance.id, listStep[i].id, update);
+        postCreateNextStepInstances(requestInstance.id, listStep[i].id, update);
       }
     } else {
       throw Exception('Failed to load');
@@ -159,7 +160,7 @@ class WebService {
     }
   }
 
-  Future<void> postCreateNextStep(
+  Future<void> postCreateNextStepInstances(
       int requestInstanceID, int stepID, Function update) async {
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbStepInstance',
@@ -183,6 +184,46 @@ class WebService {
       }
     } else {
       throw Exception('Failed to create next step instances.');
+    }
+  }
+
+  Future<void> postCreateStep(
+      String requestID, String description, int approverRoleID, int stepIndex, Function update) async {
+    final http.Response response = await http.post(
+      'http://nkkha.somee.com/odata/tbStep',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        "RequestID": "3",
+        "Description": "$description",
+        "ApproverRoleID": "$approverRoleID",
+        "StepIndex": "$stepIndex"
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      update(true);
+    } else {
+      throw Exception('Failed to create next step instances.');
+    }
+  }
+
+  /// Role
+
+  Future<List<Role>> getRole() async {
+    final response = await http.get(
+        'http://nkkha.somee.com/odata/tbRole');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['value'];
+      List<Role> listRole = new List();
+      for (Map i in data) {
+        listRole.add(Role.fromJson(i));
+      }
+      return listRole;
+    } else {
+      throw Exception('Failed to get list role!');
     }
   }
 }

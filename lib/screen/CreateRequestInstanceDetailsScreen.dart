@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/screen/StudentScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateRequestInstanceDetailsScreen extends StatefulWidget {
@@ -208,7 +208,7 @@ class _CreateRequestInstanceDetailsScreenState
                       maxLines: 3,
                       keyboardType: TextInputType.multiline,
                       textInputAction: TextInputAction.done,
-                        style: TextStyle(fontSize: 18, color: Colors.black),
+                      style: TextStyle(fontSize: 18, color: Colors.black),
                       decoration: InputDecoration(
                         errorText: snapshot.hasError ? snapshot.error : null,
                         labelText: 'Nội dung',
@@ -283,11 +283,12 @@ class _CreateRequestInstanceDetailsScreenState
     if (response.statusCode == 200) {
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => StudentScreen(isCreatedNew: true)),
+        MaterialPageRoute(
+            builder: (context) => StudentScreen(isCreatedNew: true)),
         (Route<dynamic> route) => false,
       );
     } else {
-      throw Exception('Failed to create request.');
+      throw Exception('Failed to create request instance.');
     }
   }
 }
