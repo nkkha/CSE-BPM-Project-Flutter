@@ -1,6 +1,7 @@
 class StepInputFieldInstance {
   final int id;
   final int stepInstanceID;
+  final int requestInstanceID;
   final String inputFieldTypeID;
   String title;
   String content;
@@ -8,6 +9,7 @@ class StepInputFieldInstance {
   StepInputFieldInstance({
     this.id,
     this.stepInstanceID,
+    this.requestInstanceID,
     this.inputFieldTypeID,
     this.title,
     this.content,
@@ -17,6 +19,7 @@ class StepInputFieldInstance {
     return StepInputFieldInstance(
       id: json['ID'],
       stepInstanceID: json['StepInstanceID'],
+      requestInstanceID: json['RequestInstanceID'],
       inputFieldTypeID: json['InputFieldTypeID'],
       title: json['Title'],
       content: json['Content'],

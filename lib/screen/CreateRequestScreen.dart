@@ -300,7 +300,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                         child: RaisedButton(
                           onPressed: () {
                             StepInputField stepInputField = new StepInputField(
-                                id: null, inputFieldID: 1, stepID: 1, title: "");
+                                id: null, inputFieldTypeID: 1, stepID: 1, title: "");
                             setState(() {
                               listStepInputField.add(stepInputField);
                             });
@@ -329,7 +329,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                         child: RaisedButton(
                           onPressed: () {
                             StepInputField stepInputField = new StepInputField(
-                                id: null, inputFieldID: 2, stepID: 1, title: "");
+                                id: null, inputFieldTypeID: 2, stepID: 1, title: "");
                             setState(() {
                               listStepInputField.add(stepInputField);
                             });
@@ -410,7 +410,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                 style: TextStyle(fontSize: 16, color: Colors.black),
                 decoration: InputDecoration(
                   errorText: snapshot.hasError ? snapshot.error : null,
-                  labelText: listStepInputField[index].inputFieldID == 1
+                  labelText: listStepInputField[index].inputFieldTypeID == 1
                       ? 'Tiêu đề câu hỏi'
                       : 'Tiêu đề tải tệp lên',
 //              labelStyle: TextStyle(
@@ -500,7 +500,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
 
   void createStepInputField(int numOfSteps, requestID) {
     for (StepInputField stepInputField in listStepInputField) {
-      webService.postCreateStepInputField(null, requestID, stepInputField.inputFieldID, stepInputField.title, (data) => update(data, numOfSteps));
+      webService.postCreateStepInputField(null, requestID, stepInputField.inputFieldTypeID, stepInputField.title, (data) => update(data, numOfSteps));
     }
   }
 

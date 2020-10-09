@@ -203,7 +203,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                     child: RaisedButton(
                       onPressed: () {
                         StepInputField stepInputField = new StepInputField(
-                            id: null, inputFieldID: 1, stepID: 1, title: "");
+                            id: null, inputFieldTypeID: 1, stepID: 1, title: "");
                         setState(() {
                           listStepInputField.add(stepInputField);
                         });
@@ -232,7 +232,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                     child: RaisedButton(
                       onPressed: () {
                         StepInputField stepInputField = new StepInputField(
-                            id: null, inputFieldID: 2, stepID: 1, title: "");
+                            id: null, inputFieldTypeID: 2, stepID: 1, title: "");
                         setState(() {
                           listStepInputField.add(stepInputField);
                         });
@@ -310,7 +310,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                 style: TextStyle(fontSize: 16, color: Colors.black),
                 decoration: InputDecoration(
                   errorText: snapshot.hasError ? snapshot.error : null,
-                  labelText: listStepInputField[index].inputFieldID == 1
+                  labelText: listStepInputField[index].inputFieldTypeID == 1
                       ? 'Tiêu đề câu hỏi'
                       : 'Tiêu đề tải tệp lên',
 //              labelStyle: TextStyle(
@@ -369,7 +369,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
 
   void createStepInputField(stepID) {
     for (StepInputField stepInputField in listStepInputField) {
-      webService.postCreateStepInputField(stepID, null, stepInputField.inputFieldID, stepInputField.title, (data) => updateIF(data));
+      webService.postCreateStepInputField(stepID, null, stepInputField.inputFieldTypeID, stepInputField.title, (data) => updateIF(data));
     }
   }
 
