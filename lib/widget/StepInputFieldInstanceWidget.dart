@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:cse_bpm_project/model/StepInputFieldInstance.dart';
+import 'package:cse_bpm_project/model/InputFieldInstance.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
 
@@ -26,7 +26,7 @@ class _StepInputFieldInstanceWidgetState
 
   int count = 0;
   ProgressDialog pr;
-  List<StepInputFieldInstance> listIFInstance = new List();
+  List<InputFieldInstance> listIFInstance = new List();
   HashMap listImage = new HashMap<int, File>();
 
   _imgFromCamera(Function updateImage) async {
@@ -47,22 +47,22 @@ class _StepInputFieldInstanceWidgetState
   void initState() {
     super.initState();
 
-    listIFInstance.add(new StepInputFieldInstance(
+    listIFInstance.add(new InputFieldInstance(
         id: 0,
         stepInstanceID: 0,
-        inputFieldTypeID: "Image",
+        inputFieldTypeID: 2,
         title: "CMND mặt trước:",
         content: null));
-    listIFInstance.add(new StepInputFieldInstance(
+    listIFInstance.add(new InputFieldInstance(
         id: 1,
         stepInstanceID: 0,
-        inputFieldTypeID: "Image",
+        inputFieldTypeID: 2,
         title: "CMND mặt sau:",
         content: null));
-    listIFInstance.add(new StepInputFieldInstance(
+    listIFInstance.add(new InputFieldInstance(
         id: 2,
         stepInstanceID: 0,
-        inputFieldTypeID: "Text",
+        inputFieldTypeID: 2,
         title: "Bạn đã có chứng chỉ tiếng Anh hay chưa?",
         content: null));
   }
@@ -111,7 +111,7 @@ class _StepInputFieldInstanceWidgetState
 
   Widget _buildInputFieldInstance(int index) {
     final int key = listIFInstance[index].id;
-    if (listIFInstance[index].inputFieldTypeID.contains('Image')) {
+    if (listIFInstance[index].inputFieldTypeID == 2) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         child: Column(
@@ -157,7 +157,7 @@ class _StepInputFieldInstanceWidgetState
           ],
         ),
       );
-    } else if (listIFInstance[index].inputFieldTypeID.contains('Text')) {
+    } else if (listIFInstance[index].inputFieldTypeID == 1) {
       TextEditingController _textController = new TextEditingController();
       _textController.text = listIFInstance[index].content;
       _textController.addListener(() {

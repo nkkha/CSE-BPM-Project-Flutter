@@ -188,22 +188,24 @@ class WebService {
   }
 
   Future<void> postCreateStep(
-      String requestID, String description, int approverRoleID, int stepIndex, Function update) async {
+      int requestID, String name, String description, int approverRoleID, int stepIndex, Function update) async {
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbStep',
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
-        "RequestID": "3",
-        "Description": "$description",
+        "RequestID": "$requestID",
+        "Name": name,
+        "Description": description,
         "ApproverRoleID": "$approverRoleID",
         "StepIndex": "$stepIndex"
       }),
     );
 
     if (response.statusCode == 200) {
-      update(true);
+      Step step = Step.fromJson(jsonDecode(response.body));
+      update(step.id);
     } else {
       throw Exception('Failed to create next step instances.');
     }
@@ -229,17 +231,17 @@ class WebService {
 
   /// StepInputField
 
-  Future<void> postCreateStepInputField(
-      int stepID, String requestID, int inputFieldID, String title, Function update) async {
+  Future<void> postCreateInputField(
+      int stepID, int requestID, int inputFieldTypeID, String title, Function update) async {
     final http.Response response = await http.post(
-      'http://nkkha.somee.com/odata/tbStepInputField',
+      'http://nkkha.somee.com/odata/tbInputField',
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
-        "StepID": "$stepID",
-        "RequestID": requestID,
-        "InputFieldID": "$inputFieldID",
+        "StepID": stepID == null ? null : "$stepID",
+        "RequestID": requestID == null ? null : "$requestID",
+        "InputFieldTypeID": "$inputFieldTypeID",
         "Title": title
       }),
     );
@@ -247,7 +249,7 @@ class WebService {
     if (response.statusCode == 200) {
       update(true);
     } else {
-      throw Exception("Failed to create step input field");
+      throw Exception("Failed to create input field");
     }
   }
 }

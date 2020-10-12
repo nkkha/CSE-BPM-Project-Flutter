@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:cse_bpm_project/model/StepInputField.dart';
+import 'package:cse_bpm_project/model/InputField.dart';
+import 'package:cse_bpm_project/model/Request.dart';
 import 'package:cse_bpm_project/screen/CreateStepScreen.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:flutter/services.dart';
@@ -20,14 +21,12 @@ class CreateRequestScreen extends StatefulWidget {
 }
 
 class _CreateRequestScreenState extends State<CreateRequestScreen> {
-  TextEditingController _idController = new TextEditingController();
   TextEditingController _nameController = new TextEditingController();
   TextEditingController _descriptionController = new TextEditingController();
   TextEditingController _numStepsController = new TextEditingController();
   FocusNode _myFocusNode1 = new FocusNode();
   FocusNode _myFocusNode2 = new FocusNode();
   FocusNode _myFocusNode3 = new FocusNode();
-  FocusNode _myFocusNode4 = new FocusNode();
 
   DateTime startDate, dueDate;
   TimeOfDay startTime, dueTime;
@@ -36,7 +35,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
 
   var webService = WebService();
 
-  List<StepInputField> listStepInputField = new List();
+  List<InputField> listInputField = new List();
   ProgressDialog pr;
   int count = 0;
 
@@ -46,11 +45,9 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     _myFocusNode1 = new FocusNode();
     _myFocusNode2 = new FocusNode();
     _myFocusNode3 = new FocusNode();
-    _myFocusNode4 = new FocusNode();
     _myFocusNode1.addListener(_onOnFocusNodeEvent);
     _myFocusNode2.addListener(_onOnFocusNodeEvent);
     _myFocusNode3.addListener(_onOnFocusNodeEvent);
-    _myFocusNode4.addListener(_onOnFocusNodeEvent);
 
     startDate = DateTime.now();
     dueDate = DateTime.now();
@@ -64,7 +61,6 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     _myFocusNode1.dispose();
     _myFocusNode2.dispose();
     _myFocusNode3.dispose();
-    _myFocusNode4.dispose();
   }
 
   _onOnFocusNodeEvent() {
@@ -97,42 +93,13 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                     // stream: authBloc.nameStream,
                     builder: (context, snapshot) => TextField(
                       focusNode: _myFocusNode1,
-                      controller: _idController,
-                      style: TextStyle(fontSize: 18, color: Colors.black),
-                      decoration: InputDecoration(
-                        errorText: snapshot.hasError ? snapshot.error : null,
-                        labelText: 'Mã yêu cầu',
-                        labelStyle: TextStyle(
-                            color: _myFocusNode1.hasFocus
-                                ? MyColors.lightBrand
-                                : MyColors.mediumGray),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: MyColors.mediumGray, width: 1),
-                          borderRadius: BorderRadius.all(Radius.circular(6)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: MyColors.lightBrand, width: 2.0),
-                          borderRadius: BorderRadius.circular(6.0),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 32),
-                  child: StreamBuilder(
-                    // stream: authBloc.nameStream,
-                    builder: (context, snapshot) => TextField(
-                      focusNode: _myFocusNode2,
                       controller: _nameController,
                       style: TextStyle(fontSize: 18, color: Colors.black),
                       decoration: InputDecoration(
                         errorText: snapshot.hasError ? snapshot.error : null,
                         labelText: 'Tên yêu cầu',
                         labelStyle: TextStyle(
-                            color: _myFocusNode2.hasFocus
+                            color: _myFocusNode1.hasFocus
                                 ? MyColors.lightBrand
                                 : MyColors.mediumGray),
                         enabledBorder: OutlineInputBorder(
@@ -154,7 +121,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                   child: StreamBuilder(
                     // stream: authBloc.phoneStream,
                     builder: (context, snapshot) => TextField(
-                      focusNode: _myFocusNode3,
+                      focusNode: _myFocusNode2,
                       controller: _descriptionController,
                       style: TextStyle(fontSize: 18, color: Colors.black),
                       keyboardType: TextInputType.multiline,
@@ -164,7 +131,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                         errorText: snapshot.hasError ? snapshot.error : null,
                         labelText: 'Mô tả',
                         labelStyle: TextStyle(
-                            color: _myFocusNode3.hasFocus
+                            color: _myFocusNode2.hasFocus
                                 ? MyColors.lightBrand
                                 : MyColors.mediumGray),
                         enabledBorder: OutlineInputBorder(
@@ -258,7 +225,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                   child: StreamBuilder(
                     // stream: authBloc.passStream,
                     builder: (context, snapshot) => TextField(
-                      focusNode: _myFocusNode4,
+                      focusNode: _myFocusNode3,
                       controller: _numStepsController,
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
@@ -269,7 +236,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                         errorText: snapshot.hasError ? snapshot.error : null,
                         labelText: 'Số bước',
                         labelStyle: TextStyle(
-                            color: _myFocusNode4.hasFocus
+                            color: _myFocusNode3.hasFocus
                                 ? MyColors.lightBrand
                                 : MyColors.mediumGray),
                         enabledBorder: OutlineInputBorder(
@@ -287,7 +254,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                   ),
                 ),
                 Column(
-                  children: List<Widget>.generate(listStepInputField.length,
+                  children: List<Widget>.generate(listInputField.length,
                           (index) => createStepInputFieldWidget(index)),
                 ),
                 Padding(
@@ -296,13 +263,12 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Container(
-                        width: 155,
+                        width: 110,
                         child: RaisedButton(
                           onPressed: () {
-                            StepInputField stepInputField = new StepInputField(
-                                id: null, inputFieldID: 1, stepID: 1, title: "");
+                            InputField inputField = new InputField(inputFieldTypeID: 1);
                             setState(() {
-                              listStepInputField.add(stepInputField);
+                              listInputField.add(inputField);
                             });
                           },
                           color: Colors.white,
@@ -314,7 +280,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.add, size: 36),
+                              Icon(Icons.add, size: 24),
                               Text(
                                 ' Câu hỏi',
                                 style: TextStyle(
@@ -325,13 +291,12 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                         ),
                       ),
                       Container(
-                        width: 155,
+                        width: 120,
                         child: RaisedButton(
                           onPressed: () {
-                            StepInputField stepInputField = new StepInputField(
-                                id: null, inputFieldID: 2, stepID: 1, title: "");
+                            InputField inputField = new InputField(inputFieldTypeID: 2);
                             setState(() {
-                              listStepInputField.add(stepInputField);
+                              listInputField.add(inputField);
                             });
                           },
                           color: Colors.white,
@@ -345,10 +310,41 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                             children: [
                               Icon(
                                 Icons.add,
-                                size: 36,
+                                size: 24,
                               ),
                               Text(
-                                ' Tải tệp lên',
+                                ' Hình ảnh',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 110,
+                        child: RaisedButton(
+                          onPressed: () {
+                            InputField inputField = new InputField(inputFieldTypeID: 3);
+                            setState(() {
+                              listInputField.add(inputField );
+                            });
+                          },
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18.0),
+                              side: BorderSide(color: MyColors.mediumGray)),
+                          padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add,
+                                size: 24,
+                              ),
+                              Text(
+                                ' Tài liệu',
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
@@ -392,10 +388,23 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
 
   Widget createStepInputFieldWidget(int index) {
     TextEditingController _textController = new TextEditingController();
-    _textController.text = listStepInputField[index].title;
+    _textController.text = listInputField[index].title;
     _textController.addListener(() {
-      listStepInputField[index].title = _textController.text;
+      listInputField[index].title = _textController.text;
     });
+
+    String title = "";
+    switch (listInputField[index].inputFieldTypeID) {
+      case 2:
+        title = "Tiêu đề hình ảnh";
+        break;
+      case 3:
+        title = "Tiêu đề tài liệu";
+        break;
+      default:
+        title = "Tiêu đề câu hỏi";
+        break;
+    }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 32),
@@ -410,9 +419,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                 style: TextStyle(fontSize: 16, color: Colors.black),
                 decoration: InputDecoration(
                   errorText: snapshot.hasError ? snapshot.error : null,
-                  labelText: listStepInputField[index].inputFieldID == 1
-                      ? 'Tiêu đề câu hỏi'
-                      : 'Tiêu đề tải tệp lên',
+                  labelText: title,
 //              labelStyle: TextStyle(
 //                  color: _myFocusNode.hasFocus
 //                      ? MyColors.lightBrand
@@ -435,7 +442,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
               icon: Icon(Icons.remove_circle_outline),
               onPressed: () {
                 setState(() {
-                  listStepInputField.removeAt(index);
+                  listInputField.removeAt(index);
                 });
               }),
         ],
@@ -449,7 +456,6 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     pr.update(message: "Đang xử lý...");
     await pr.show();
 
-    String requestID = _idController.text;
     String name = _nameController.text;
     String description = _descriptionController.text;
     DateTime currentDateTime = DateTime.now();
@@ -478,7 +484,6 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
-          "ID": requestID,
           "Name": name,
           "Description": description,
           "Status": 'active',
@@ -491,30 +496,39 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
       );
 
       if (response.statusCode == 200) {
-        createStepInputField(numOfSteps, requestID);
+        Request request = Request.fromJson(jsonDecode(response.body));
+        if (listInputField.length > 0) {
+          for (InputField inputField in listInputField) {
+            webService.postCreateInputField(null, request.id, inputField.inputFieldTypeID, inputField.title, (data) => update(data, numOfSteps, request.id));
+          }
+        } else {
+          await pr.hide();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => CreateStepScreen(
+                  numOfSteps: numOfSteps,
+                  requestID: request.id,
+                )),
+          );
+        }
       } else {
         throw Exception('Failed to create request.');
       }
     }
   }
 
-  void createStepInputField(int numOfSteps, requestID) {
-    for (StepInputField stepInputField in listStepInputField) {
-      webService.postCreateStepInputField(null, requestID, stepInputField.inputFieldID, stepInputField.title, (data) => update(data, numOfSteps));
-    }
-  }
-
-  void update(bool isSuccessful, int numOfSteps) async {
+  void update(bool isSuccessful, int numOfSteps, int requestID) async {
     if (isSuccessful) {
       count++;
-      if (count == listStepInputField.length) {
+      if (count == listInputField.length) {
         await pr.hide();
         Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => CreateStepScreen(
                 numOfSteps: numOfSteps,
-                requestID: _idController.text,
+                requestID: requestID,
               )),
         );
       }

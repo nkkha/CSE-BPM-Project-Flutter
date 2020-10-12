@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class CreateStepScreen extends StatefulWidget {
-  final String requestID;
+  final int requestID;
   final int numOfSteps;
 
   CreateStepScreen({Key key, @required this.requestID, this.numOfSteps}) : super(key: key);
@@ -13,34 +13,49 @@ class CreateStepScreen extends StatefulWidget {
   _CreateStepScreenState createState() => _CreateStepScreenState();
 }
 
-class _CreateStepScreenState extends State<CreateStepScreen> {
+class _CreateStepScreenState extends State<CreateStepScreen> with SingleTickerProviderStateMixin {
+  TabController tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    tabController = new TabController(vsync: this, length: widget.numOfSteps, initialIndex: 0);
+  }
+
   @override
   Widget build(BuildContext context) {
     int _numOfSteps = widget.numOfSteps;
 
-    return DefaultTabController(
-      length: _numOfSteps,
-      initialIndex: 0,
-      child: Center(
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text('Tạo các bước'),
-            titleSpacing: 0,
-            bottomOpacity: 1,
-            bottom: TabBar(
-              isScrollable: true,
-              labelColor: MyColors.blue,
-              unselectedLabelColor: MyColors.mediumGray,
-              tabs: List<Widget>.generate(
-                  _numOfSteps, (index) => Tab(text: 'Bước ${index + 1}')),
-            ),
-          ),
-          body: TabBarView(
-            children: List<Widget>.generate(
-              _numOfSteps,
-              (index) => CreateStepWidget(requestID: widget.requestID,)
-            ),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Tạo các bước'),
+        titleSpacing: 0,
+        bottomOpacity: 1,
+        bottom: TabBar(
+          controller: tabController,
+          isScrollable: true,
+          labelColor: MyColors.blue,
+          unselectedLabelColor: MyColors.mediumGray,
+          tabs: List<Widget>.generate(
+              _numOfSteps, (index) => Tab(text: 'Bước ${index + 1}')),
+        ),
+      ),
+      body: TabBarView(
+        controller: tabController,
+        children: List<Widget>.generate(
+          _numOfSteps,
+          (index) => CreateStepWidget(index: index, requestID: widget.requestID, update: (data) {
+            if (data < _numOfSteps) {
+              tabController.animateTo(data);
+            } else if (data == _numOfSteps) {
+              // Navigator.pushAndRemoveUntil(
+              //   context,
+              //   MaterialPageRoute(
+              //       builder: (context) => StudentScreen(isCreatedNew: true)),
+              //       (Route<dynamic> route) => false,
+              // );
+            }
+          })
         ),
       ),
     );

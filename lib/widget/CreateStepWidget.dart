@@ -1,18 +1,21 @@
 import 'dart:async';
 import 'package:cse_bpm_project/model/Role.dart';
-import 'package:cse_bpm_project/model/StepInputField.dart';
+import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:flutter/services.dart';
 
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 // ignore: must_be_immutable
 class CreateStepWidget extends StatefulWidget {
-  final String requestID;
+  final int index;
+  final int requestID;
+  Function update;
 
-  CreateStepWidget({Key key, this.requestID}) : super(key: key);
+  CreateStepWidget({Key key, this.index,this.requestID, this.update}) : super(key: key);
 
   @override
   _CreateStepWidgetState createState() => _CreateStepWidgetState();
@@ -25,12 +28,16 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
 
   var webService = WebService();
 
+  ProgressDialog pr;
+
+  TextEditingController _nameController = new TextEditingController();
   TextEditingController _descriptionController = new TextEditingController();
   TextEditingController _stepIndexController = new TextEditingController();
   FocusNode _myFocusNode1 = new FocusNode();
   FocusNode _myFocusNode2 = new FocusNode();
+  FocusNode _myFocusNode3 = new FocusNode();
 
-  List<StepInputField> listStepInputField = new List();
+  List<InputField> listInputField = new List();
   List<Role> _dropdownItems = new List();
   List<DropdownMenuItem<Role>> _dropdownMenuItems;
   Role _selectedItem;
@@ -42,6 +49,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
     super.initState();
     _myFocusNode1.addListener(_onOnFocusNodeEvent);
     _myFocusNode2.addListener(_onOnFocusNodeEvent);
+    _myFocusNode3.addListener(_onOnFocusNodeEvent);
 
     getListRole();
   }
@@ -76,6 +84,8 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
     super.dispose();
     _myFocusNode1.dispose();
     _myFocusNode2.dispose();
+    _myFocusNode3.dispose();
+    _nameController.dispose();
     _descriptionController.dispose();
     _stepIndexController.dispose();
   }
@@ -100,6 +110,36 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                 // stream: authBloc.passStream,
                 builder: (context, snapshot) => TextField(
                   focusNode: _myFocusNode1,
+                  controller: _nameController,
+                  textInputAction: TextInputAction.done,
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                  decoration: InputDecoration(
+                    errorText: snapshot.hasError ? snapshot.error : null,
+                    labelText: 'Tên bước',
+                    labelStyle: TextStyle(
+                        color: _myFocusNode1.hasFocus
+                            ? MyColors.lightBrand
+                            : MyColors.mediumGray),
+                    border: OutlineInputBorder(
+                      borderSide:
+                      BorderSide(color: MyColors.lightGray, width: 1),
+                      borderRadius: BorderRadius.all(Radius.circular(6)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                      BorderSide(color: MyColors.lightBrand, width: 2.0),
+                      borderRadius: BorderRadius.circular(6.0),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+              child: StreamBuilder(
+                // stream: authBloc.passStream,
+                builder: (context, snapshot) => TextField(
+                  focusNode: _myFocusNode2,
                   controller: _descriptionController,
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
@@ -109,7 +149,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                     errorText: snapshot.hasError ? snapshot.error : null,
                     labelText: 'Mô tả',
                     labelStyle: TextStyle(
-                        color: _myFocusNode1.hasFocus
+                        color: _myFocusNode2.hasFocus
                             ? MyColors.lightBrand
                             : MyColors.mediumGray),
                     border: OutlineInputBorder(
@@ -161,7 +201,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
               child: StreamBuilder(
                 // stream: authBloc.passStream,
                 builder: (context, snapshot) => TextField(
-                  focusNode: _myFocusNode2,
+                  focusNode: _myFocusNode3,
                   controller: _stepIndexController,
                   keyboardType: TextInputType.numberWithOptions(
                       signed: true, decimal: true),
@@ -172,7 +212,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                     errorText: snapshot.hasError ? snapshot.error : null,
                     labelText: 'Chỉ số bước',
                     labelStyle: TextStyle(
-                        color: _myFocusNode2.hasFocus
+                        color: _myFocusNode3.hasFocus
                             ? MyColors.lightBrand
                             : MyColors.mediumGray),
                     border: OutlineInputBorder(
@@ -190,7 +230,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
               ),
             ),
             Column(
-              children: List<Widget>.generate(listStepInputField.length,
+              children: List<Widget>.generate(listInputField.length,
                   (index) => createStepInputFieldWidget(index)),
             ),
             Padding(
@@ -199,13 +239,12 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Container(
-                    width: 155,
+                    width: 110,
                     child: RaisedButton(
                       onPressed: () {
-                        StepInputField stepInputField = new StepInputField(
-                            id: null, inputFieldID: 1, stepID: 1, title: "");
+                        InputField inputField = new InputField(inputFieldTypeID: 1);
                         setState(() {
-                          listStepInputField.add(stepInputField);
+                          listInputField.add(inputField);
                         });
                       },
                       color: Colors.white,
@@ -213,11 +252,11 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                           borderRadius: BorderRadius.circular(18.0),
                           side: BorderSide(color: MyColors.mediumGray)),
                       padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.add, size: 36),
+                          Icon(Icons.add, size: 24),
                           Text(
                             ' Câu hỏi',
                             style: TextStyle(
@@ -228,13 +267,12 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                     ),
                   ),
                   Container(
-                    width: 155,
+                    width: 120,
                     child: RaisedButton(
                       onPressed: () {
-                        StepInputField stepInputField = new StepInputField(
-                            id: null, inputFieldID: 2, stepID: 1, title: "");
+                        InputField inputField = new InputField(inputFieldTypeID: 2);
                         setState(() {
-                          listStepInputField.add(stepInputField);
+                          listInputField.add(inputField);
                         });
                       },
                       color: Colors.white,
@@ -242,16 +280,47 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                           borderRadius: BorderRadius.circular(18.0),
                           side: BorderSide(color: MyColors.mediumGray)),
                       padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             Icons.add,
-                            size: 36,
+                            size: 24,
                           ),
                           Text(
-                            ' Tải tệp lên',
+                            ' Hình ảnh',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 110,
+                    child: RaisedButton(
+                      onPressed: () {
+                        InputField inputField = new InputField(inputFieldTypeID: 3);
+                        setState(() {
+                          listInputField.add(inputField );
+                        });
+                      },
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                          side: BorderSide(color: MyColors.mediumGray)),
+                      padding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.add,
+                            size: 24,
+                          ),
+                          Text(
+                            ' Tài liệu',
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
@@ -270,7 +339,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                   height: 52,
                   child: !isCreated
                       ? RaisedButton(
-                          onPressed: _onSaveClicked,
+                          onPressed: _onContinueClicked,
                           child: Text(
                             'Tiếp tục',
                             style: TextStyle(color: Colors.white, fontSize: 18),
@@ -292,9 +361,9 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
 
   Widget createStepInputFieldWidget(int index) {
     TextEditingController _textController = new TextEditingController();
-    _textController.text = listStepInputField[index].title;
+    _textController.text = listInputField[index].title;
     _textController.addListener(() {
-      listStepInputField[index].title = _textController.text;
+      listInputField[index].title = _textController.text;
     });
 
     return Padding(
@@ -310,7 +379,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                 style: TextStyle(fontSize: 16, color: Colors.black),
                 decoration: InputDecoration(
                   errorText: snapshot.hasError ? snapshot.error : null,
-                  labelText: listStepInputField[index].inputFieldID == 1
+                  labelText: listInputField[index].inputFieldTypeID == 1
                       ? 'Tiêu đề câu hỏi'
                       : 'Tiêu đề tải tệp lên',
 //              labelStyle: TextStyle(
@@ -335,7 +404,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
               icon: Icon(Icons.remove_circle_outline),
               onPressed: () {
                 setState(() {
-                  listStepInputField.removeAt(index);
+                  listInputField.removeAt(index);
                 });
               }),
         ],
@@ -343,19 +412,43 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
     );
   }
 
-  Future<void> _onSaveClicked() async {
+  Future<void> _onContinueClicked() async {
+    pr = ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+    pr.update(message: "Đang xử lý...");
+    await pr.show();
     webService.postCreateStep(
         widget.requestID,
+        _nameController.text,
         _descriptionController.text,
         _selectedItem.id,
         int.parse(_stepIndexController.text),
         (data) => update(data));
   }
 
-  void update(int stepID) {
+  void update(int stepID) async {
     if (stepID != null) {
-      createStepInputField(stepID);
+      if (listInputField.length > 0) {
+        createInputField(stepID);
+      } else {
+        await pr.hide();
+        setState(() {
+          isCreated = true;
+          Flushbar(
+            icon:
+            Image.asset('images/ic-check-circle.png', width: 24, height: 24),
+            message: 'Thành công!',
+            duration: Duration(seconds: 3),
+            margin: EdgeInsets.all(8),
+            borderRadius: 8,
+          )..show(context);
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            widget.update(widget.index + 1);
+          });
+        });
+      }
     } else {
+      await pr.hide();
       Flushbar(
         icon: Image.asset('images/icons8-cross-mark-48.png',
             width: 24, height: 24),
@@ -367,16 +460,17 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
     }
   }
 
-  void createStepInputField(stepID) {
-    for (StepInputField stepInputField in listStepInputField) {
-      webService.postCreateStepInputField(stepID, null, stepInputField.inputFieldID, stepInputField.title, (data) => updateIF(data));
+  void createInputField(stepID) {
+    for (InputField inputField in listInputField) {
+      webService.postCreateInputField(stepID, null, inputField.inputFieldTypeID, inputField.title, (data) => updateIF(data));
     }
   }
 
-  void updateIF(bool isSuccessful) {
+  void updateIF(bool isSuccessful) async {
     if (isSuccessful) {
       count++;
-      if (count == listStepInputField.length) {
+      if (count == listInputField.length) {
+        await pr.hide();
         setState(() {
           isCreated = true;
           Flushbar(
@@ -387,9 +481,13 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
             margin: EdgeInsets.all(8),
             borderRadius: 8,
           )..show(context);
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            widget.update(widget.index + 1);
+          });
         });
       }
     } else {
+      await pr.hide();
       Flushbar(
         icon: Image.asset('images/icons8-cross-mark-48.png',
             width: 24, height: 24),

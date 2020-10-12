@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:cse_bpm_project/screen/StudentScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateRequestInstanceDetailsScreen extends StatefulWidget {
@@ -20,6 +22,10 @@ class CreateRequestInstanceDetailsScreen extends StatefulWidget {
 
 class _CreateRequestInstanceDetailsScreenState
     extends State<CreateRequestInstanceDetailsScreen> {
+
+  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss');
+  ProgressDialog pr;
+
   TextEditingController _nameController = new TextEditingController();
   TextEditingController _idController = new TextEditingController();
   TextEditingController _emailController = new TextEditingController();
@@ -257,11 +263,16 @@ class _CreateRequestInstanceDetailsScreenState
   }
 
   Future<void> _onSubmitRequest() async {
+    pr = ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+    pr.update(message: "Đang xử lý...");
+    await pr.show();
     String content = _contentController.text;
     String name = _nameController.text;
     String id = _idController.text;
     String email = _emailController.text;
     String phone = _phoneController.text;
+    String createdDate = formatterDateTime.format(DateTime.now()) + '\-07:00';
 
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('userId') ?? 0;
@@ -276,11 +287,13 @@ class _CreateRequestInstanceDetailsScreenState
         "RequestID": "${widget.requestID}",
         "DefaultContent": "$content",
         "CurrentStepIndex": "1",
-        "Status": "new"
+        "Status": "new",
+        "CreatedDate": createdDate
       }),
     );
 
     if (response.statusCode == 200) {
+      await pr.hide();
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(

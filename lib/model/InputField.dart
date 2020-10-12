@@ -1,24 +1,24 @@
-class StepInputField {
+class InputField {
   final int id;
   final int stepID;
   final int requestID;
-  final int inputFieldID;
+  final int inputFieldTypeID;
   String title;
 
-  StepInputField({
+  InputField({
     this.id,
     this.stepID,
     this.requestID,
-    this.inputFieldID,
+    this.inputFieldTypeID,
     this.title,
   });
 
-  factory StepInputField.fromJson(Map<String, dynamic> json) {
-    return StepInputField(
+  factory InputField.fromJson(Map<String, dynamic> json) {
+    return InputField(
       id: json['ID'],
       stepID: json['StepID'],
       requestID: json['RequestID'],
-      inputFieldID: json['InputFieldID'],
+      inputFieldTypeID: json['InputFieldTypeID'],
       title: json['Title'],
     );
   }
