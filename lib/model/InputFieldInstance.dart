@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 class InputFieldInstance {
   final int id;
   final int inputFieldID;

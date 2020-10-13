@@ -38,6 +38,9 @@ dependencies:
   flushbar: ^1.10.4
   rflutter_alert: ^1.0.8
   image_picker: ^0.6.7+11
+  file_picker: ^2.0.7
+  flutter_plugin_pdf_viewer: ^1.0.7
+  path_provider: ^1.6.18
 
 dev_dependencies:
   flutter_test:

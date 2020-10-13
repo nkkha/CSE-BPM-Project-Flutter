@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:collection';
@@ -50,23 +52,8 @@ class _CreateRequestInstanceDetailsScreenState
   FocusNode _myFocusNode4 = new FocusNode();
   FocusNode _myFocusNode5 = new FocusNode();
 
-  HashMap listImage = new HashMap<int, File>();
-
-  _imgFromCamera(Function updateImage) async {
-    // ignore: deprecated_member_use
-    File image = await ImagePicker.pickImage(
-        source: ImageSource.camera, imageQuality: 50);
-
-    updateImage(image);
-  }
-
-  _imgFromGallery(Function updateImage) async {
-    // ignore: deprecated_member_use
-    File image = await ImagePicker.pickImage(
-        source: ImageSource.gallery, imageQuality: 50);
-
-    updateImage(image);
-  }
+  HashMap listImageBytes = new HashMap<int, Uint8List>();
+  HashMap listFileBytes = new HashMap<int, Uint8List>();
 
   @override
   void initState() {
@@ -134,6 +121,39 @@ class _CreateRequestInstanceDetailsScreenState
         });
   }
 
+  void _imgFromCamera(Function updateImage) async {
+    // ignore: deprecated_member_use
+    File image = await ImagePicker.pickImage(
+        source: ImageSource.camera, imageQuality: 50);
+    var bytes = image.readAsBytesSync();
+    String imageB64 = base64Encode(bytes);
+    updateImage(imageB64);
+  }
+
+  void _imgFromGallery(Function updateImage) async {
+    // ignore: deprecated_member_use
+    File image = await ImagePicker.pickImage(
+        source: ImageSource.gallery, imageQuality: 50);
+    var bytes = image.readAsBytesSync();
+    String imageB64 = base64Encode(bytes);
+    updateImage(imageB64);
+  }
+
+  void _showFilePicker(Function updateFile) async {
+    FilePickerResult result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc'],
+    );
+
+    if(result != null) {
+      PlatformFile platformFile = result.files.first;
+      File file = File('${platformFile.path}');
+      var bytes = file.readAsBytesSync();
+      String fileB64 = base64Encode(bytes);
+      updateFile(fileB64);
+    }
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -152,8 +172,10 @@ class _CreateRequestInstanceDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
-    String startDate = DateFormat('kk:mm · dd/MM ').format(DateTime.parse(widget.request.startDate));
-    String dueDate = DateFormat('kk:mm · dd/MM').format(DateTime.parse(widget.request.dueDate));
+    String startDate = DateFormat('kk:mm · dd/MM ')
+        .format(DateTime.parse(widget.request.startDate));
+    String dueDate = DateFormat('kk:mm · dd/MM')
+        .format(DateTime.parse(widget.request.dueDate));
 
     return Scaffold(
       appBar: AppBar(
@@ -174,18 +196,18 @@ class _CreateRequestInstanceDetailsScreenState
                   child: Row(
                     children: [
                       Text(
-                        'Tên yêu cầu: ' ,
+                        'Tên yêu cầu: ',
                         style: TextStyle(
                           fontSize: 16,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      Text(' ${widget.request.description}',
+                      Text(
+                        ' ${widget.request.description}',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.italic
-                        ),
+                            fontStyle: FontStyle.italic),
                       )
                     ],
                   ),
@@ -205,10 +227,9 @@ class _CreateRequestInstanceDetailsScreenState
                   child: Text(
                     'Sinh viên vui lòng điền đầy đủ các thông tin sau:',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic
-                    ),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -464,16 +485,18 @@ class _CreateRequestInstanceDetailsScreenState
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(width: 10, height: 10),
-          listImage[key] == null
+          listImageBytes[key] == null
               ? IconButton(
                   onPressed: () {
                     _showPicker(context, (data) {
                       setState(() {
-                        File _image = data;
-                        if (listImage.containsKey(key)) {
-                          listImage.update(key, (value) => _image);
+                        Uint8List decodedBytes = base64Decode(data);
+                        if (listImageBytes.containsKey(key)) {
+                          listImageBytes.update(key, (value) => decodedBytes);
+                          listInputFieldInstance[index].fileContent = data;
                         } else {
-                          listImage.putIfAbsent(key, () => _image);
+                          listImageBytes.putIfAbsent(key, () => decodedBytes);
+                          listInputFieldInstance[index].fileContent = data;
                         }
                       });
                     });
@@ -483,18 +506,20 @@ class _CreateRequestInstanceDetailsScreenState
                   onTap: () {
                     _showPicker(context, (data) {
                       setState(() {
-                        File _image = data;
-                        if (listImage.containsKey(key)) {
-                          listImage.update(key, (value) => _image);
+                        Uint8List decodedBytes = base64Decode(data);
+                        if (listImageBytes.containsKey(key)) {
+                          listImageBytes.update(key, (value) => decodedBytes);
+                          listInputFieldInstance[index].fileContent = data;
                         } else {
-                          listImage.putIfAbsent(key, () => _image);
+                          listImageBytes.putIfAbsent(key, () => decodedBytes);
+                          listInputFieldInstance[index].fileContent = data;
                         }
                       });
                     });
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Image.file(listImage[key]),
+                    child: Image.memory(listImageBytes[key]),
                   ),
                 ),
         ],
@@ -503,7 +528,40 @@ class _CreateRequestInstanceDetailsScreenState
   }
 
   Widget createUploadFileFieldWidget(int index) {
-    return Container();
+    final int key = listInputFieldInstance[index].id;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      child: Column(
+        children: [
+          Text(
+            '${listInputFieldInstance[index].title}',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(width: 10, height: 10),
+          listFileBytes[key] == null
+              ? IconButton(
+                  onPressed: () {
+                    _showFilePicker((data) {
+                      setState(() {
+                        Uint8List decodedBytes = base64Decode(data);
+                        if (listFileBytes.containsKey(key)) {
+                          listFileBytes.update(key, (value) => decodedBytes);
+                          listInputFieldInstance[index].fileContent = data;
+                        } else {
+                          listFileBytes.putIfAbsent(key, () => decodedBytes);
+                          listInputFieldInstance[index].fileContent = data;
+                        }
+                      });
+                    });
+                  },
+                  icon: Icon(Icons.file_upload, size: 36))
+              : Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Text('Success'),
+                ),
+        ],
+      ),
+    );
   }
 
   Future<void> _onSubmitRequest() async {
@@ -537,18 +595,27 @@ class _CreateRequestInstanceDetailsScreenState
     );
 
     if (response.statusCode == 200) {
-      RequestInstance requestInstance = RequestInstance.fromJson(jsonDecode(response.body));
+      RequestInstance requestInstance =
+          RequestInstance.fromJson(jsonDecode(response.body));
       if (listInputFieldInstance.length > 0) {
         for (InputFieldInstance inputFieldInstance in listInputFieldInstance) {
           switch (inputFieldInstance.inputFieldTypeID) {
             case 1:
-              webService.postCreateInputTextFieldInstance(null, requestInstance.id, inputFieldInstance.inputFieldID, inputFieldInstance.textAnswer, (data) => update(data));
+              webService.postCreateInputTextFieldInstance(
+                  null,
+                  requestInstance.id,
+                  inputFieldInstance.inputFieldID,
+                  inputFieldInstance.textAnswer,
+                  (data) => update(data));
               break;
             case 2:
-              webService.postCreateInputImageFieldInstance((data) => update(data));
-              break;
             case 3:
-              webService.postCreateInputFileFieldInstance((data) => update(data));
+              webService.postCreateInputImageFieldInstance(
+                  null,
+                  requestInstance.id,
+                  inputFieldInstance.inputFieldID,
+                  inputFieldInstance.fileContent,
+                  (data) => update(data));
               break;
           }
         }
@@ -556,8 +623,7 @@ class _CreateRequestInstanceDetailsScreenState
     } else {
       await pr.hide();
       Flushbar(
-        icon:
-        Image.asset('images/ic-failed.png', width: 24, height: 24),
+        icon: Image.asset('images/ic-failed.png', width: 24, height: 24),
         message: 'Thất bại!',
         duration: Duration(seconds: 3),
         margin: EdgeInsets.all(8),
@@ -576,14 +642,13 @@ class _CreateRequestInstanceDetailsScreenState
           context,
           MaterialPageRoute(
               builder: (context) => StudentScreen(isCreatedNew: true)),
-              (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
         );
       }
     } else {
       await pr.hide();
       Flushbar(
-        icon:
-        Image.asset('images/ic-failed.png', width: 24, height: 24),
+        icon: Image.asset('images/ic-failed.png', width: 24, height: 24),
         message: 'Thất bại!',
         duration: Duration(seconds: 3),
         margin: EdgeInsets.all(8),
