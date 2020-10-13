@@ -5,20 +5,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class RequestInstanceListWidget extends StatefulWidget {
-  final List<RequestInstance> requestList;
+  final List<RequestInstance> requestInstanceList;
 
-  const RequestInstanceListWidget({Key key, this.requestList})
+  const RequestInstanceListWidget({Key key, this.requestInstanceList})
       : super(key: key);
 
   @override
   _RequestInstanceListWidgetState createState() =>
-      _RequestInstanceListWidgetState(requestList);
+      _RequestInstanceListWidgetState(requestInstanceList);
 }
 
 class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
-  final List<RequestInstance> requestList;
+  final List<RequestInstance> requestInstanceList;
 
-  _RequestInstanceListWidgetState(this.requestList);
+  _RequestInstanceListWidgetState(this.requestInstanceList);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
     List<RequestInstance> doneRequests = new List();
     List<RequestInstance> failedRequests = new List();
 
-    for (RequestInstance request in requestList) {
+    for (RequestInstance request in requestInstanceList) {
       if (request.status.contains("done")) {
         doneRequests.add(request);
       } else if (request.status.contains("failed")) {
@@ -126,8 +126,8 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
                           ),
                           Text(
                               requestInstance.status.contains('done')
-                                  ? '3/3'
-                                  : '${requestInstance.currentStepIndex}/3',
+                                  ? '${requestInstance.numOfSteps}/${requestInstance.numOfSteps}'
+                                  : '${requestInstance.currentStepIndex}/${requestInstance.numOfSteps}',
                               style: TextStyle(
                                   fontSize: 16,
                                   color: MyColors.white,

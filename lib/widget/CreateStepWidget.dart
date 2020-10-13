@@ -28,8 +28,6 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
 
   var webService = WebService();
 
-  ProgressDialog pr;
-
   TextEditingController _nameController = new TextEditingController();
   TextEditingController _descriptionController = new TextEditingController();
   TextEditingController _stepIndexController = new TextEditingController();
@@ -37,6 +35,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
   FocusNode _myFocusNode2 = new FocusNode();
   FocusNode _myFocusNode3 = new FocusNode();
 
+  ProgressDialog pr;
   List<InputField> listInputField = new List();
   List<Role> _dropdownItems = new List();
   List<DropdownMenuItem<Role>> _dropdownMenuItems;
@@ -56,7 +55,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
 
   void getListRole() async {
     _dropdownItems.clear();
-    _dropdownItems = await webService.getRole();
+    _dropdownItems = await webService.getListRole();
 
     if (_dropdownItems != null) {
       setState(() {
@@ -231,7 +230,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
             ),
             Column(
               children: List<Widget>.generate(listInputField.length,
-                  (index) => createStepInputFieldWidget(index)),
+                  (index) => createInputFieldWidget(index)),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
@@ -359,7 +358,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
     );
   }
 
-  Widget createStepInputFieldWidget(int index) {
+  Widget createInputFieldWidget(int index) {
     TextEditingController _textController = new TextEditingController();
     _textController.text = listInputField[index].title;
     _textController.addListener(() {

@@ -3,10 +3,18 @@ import 'package:cse_bpm_project/screen/login/LoginScreen.dart';
 import 'package:http/http.dart' as http;
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SettingsFragment extends StatelessWidget {
+class SettingsFragment extends StatefulWidget {
   const SettingsFragment({Key key}) : super(key: key);
+
+  @override
+  _SettingsFragmentState createState() => _SettingsFragmentState();
+}
+
+class _SettingsFragmentState extends State<SettingsFragment> {
+  ProgressDialog pr;
 
   Widget _buildRowSetting(
       String imgUrl, String title, int index, BuildContext context) {
@@ -71,11 +79,17 @@ class SettingsFragment extends StatelessWidget {
   }
 
   Future<void> _onLogOutClicked(BuildContext context) async {
+    pr = ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+    pr.update(message: "Đang xử lý...");
+    await pr.show();
+
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbUser/Logout',
     );
 
     if (response.statusCode == 200) {
+      await pr.hide();
       final prefs = await SharedPreferences.getInstance();
       prefs.setInt('userId', null);
       prefs.setInt('roleId', null);

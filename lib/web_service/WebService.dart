@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/model/Role.dart';
 import 'package:cse_bpm_project/model/Step.dart';
@@ -213,7 +214,7 @@ class WebService {
 
   /// Role
 
-  Future<List<Role>> getRole() async {
+  Future<List<Role>> getListRole() async {
     final response = await http.get(
         'http://nkkha.somee.com/odata/tbRole');
 
@@ -229,7 +230,7 @@ class WebService {
     }
   }
 
-  /// StepInputField
+  /// InputField
 
   Future<void> postCreateInputField(
       int stepID, int requestID, int inputFieldTypeID, String title, Function update) async {
@@ -251,5 +252,88 @@ class WebService {
     } else {
       throw Exception("Failed to create input field");
     }
+  }
+
+  Future<List<InputField>> getListInputField(int requestID) async {
+    final response = await http.get(
+        'http://nkkha.somee.com/odata/tbInputField?\$filter=RequestID eq $requestID');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['value'];
+      List<InputField> listInputField = new List();
+      for (Map i in data) {
+        listInputField.add(InputField.fromJson(i));
+      }
+      return listInputField;
+    } else {
+      throw Exception('Failed to get list input field!');
+    }
+  }
+
+  /// InputFieldInstance
+
+  Future<void> postCreateInputTextFieldInstance(
+      int stepInstanceID, int requestInstanceID, int inputFieldID, String textAnswer, Function update) async {
+    final http.Response response = await http.post(
+      'http://nkkha.somee.com/odata/tbInputFieldInstance',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        "StepInstanceID": stepInstanceID == null ? null : "$stepInstanceID",
+        "RequestInstanceID": requestInstanceID == null ? null : "$requestInstanceID",
+        "InputFieldID": "$inputFieldID",
+        "TextAnswer": textAnswer
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      update(true);
+    } else {
+      update(false);
+      throw Exception("Failed to create input field");
+    }
+  }
+
+  Future<void> postCreateInputImageFieldInstance(Function update) async {
+    // final http.Response response = await http.post(
+    //   'http://nkkha.somee.com/odata/tbInputFieldInstance',
+    //   headers: <String, String>{
+    //     'Content-Type': 'application/json; charset=UTF-8',
+    //   },
+    //   body: jsonEncode(<String, String>{
+    //     "StepInstanceID": stepInstanceID == null ? null : "$stepInstanceID",
+    //     "RequestInstanceID": requestInstanceID == null ? null : "$requestInstanceID",
+    //     "InputFieldID": "$inputFieldID",
+    //     "TextAnswer": textAnswer
+    //   }),
+    // );
+    //
+    // if (response.statusCode == 200) {
+    //   update(true);
+    // } else {
+    //   throw Exception("Failed to create input field");
+    // }
+  }
+
+  Future<void> postCreateInputFileFieldInstance(Function update) async {
+    // final http.Response response = await http.post(
+    //   'http://nkkha.somee.com/odata/tbInputFieldInstance',
+    //   headers: <String, String>{
+    //     'Content-Type': 'application/json; charset=UTF-8',
+    //   },
+    //   body: jsonEncode(<String, String>{
+    //     "StepInstanceID": stepInstanceID == null ? null : "$stepInstanceID",
+    //     "RequestInstanceID": requestInstanceID == null ? null : "$requestInstanceID",
+    //     "InputFieldID": "$inputFieldID",
+    //     "TextAnswer": textAnswer
+    //   }),
+    // );
+    //
+    // if (response.statusCode == 200) {
+    //   update(true);
+    // } else {
+    //   throw Exception("Failed to create input field");
+    // }
   }
 }

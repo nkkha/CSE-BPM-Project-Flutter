@@ -51,20 +51,17 @@ class _StepInputFieldInstanceWidgetState
         id: 0,
         stepInstanceID: 0,
         inputFieldTypeID: 2,
-        title: "CMND mặt trước:",
-        content: null));
+        title: "CMND mặt trước:"));
     listIFInstance.add(new InputFieldInstance(
         id: 1,
         stepInstanceID: 0,
         inputFieldTypeID: 2,
-        title: "CMND mặt sau:",
-        content: null));
+        title: "CMND mặt sau:"));
     listIFInstance.add(new InputFieldInstance(
         id: 2,
         stepInstanceID: 0,
         inputFieldTypeID: 2,
-        title: "Bạn đã có chứng chỉ tiếng Anh hay chưa?",
-        content: null));
+        title: "Bạn đã có chứng chỉ tiếng Anh hay chưa?"));
   }
 
   void _showPicker(BuildContext context, Function updateImage) {
@@ -159,9 +156,9 @@ class _StepInputFieldInstanceWidgetState
       );
     } else if (listIFInstance[index].inputFieldTypeID == 1) {
       TextEditingController _textController = new TextEditingController();
-      _textController.text = listIFInstance[index].content;
+      _textController.text = listIFInstance[index].textAnswer;
       _textController.addListener(() {
-        listIFInstance[index].content = _textController.text;
+        listIFInstance[index].textAnswer = _textController.text;
       });
 
       return Padding(

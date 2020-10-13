@@ -33,7 +33,7 @@ class _RequestListWidgetState extends State<RequestListWidget> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => CreateRequestInstanceDetailsScreen(requestID: request.id,)),
+                      builder: (context) => CreateRequestInstanceDetailsScreen(request: request)),
                 );
               },
               child: ListTile(

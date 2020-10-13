@@ -59,7 +59,7 @@ class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (_noRequest) return Center(child: NoRequestInstanceWidget(true));
-            return RequestInstanceListWidget(requestList: snapshot.data);
+            return RequestInstanceListWidget(requestInstanceList: snapshot.data);
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
           }

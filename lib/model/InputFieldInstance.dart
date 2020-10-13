@@ -6,7 +6,6 @@ class InputFieldInstance {
   String fileContent;
   String textAnswer;
   final int inputFieldTypeID;
-  String content;
   String title;
 
   InputFieldInstance({
@@ -17,7 +16,6 @@ class InputFieldInstance {
     this.fileContent,
     this.textAnswer,
     this.inputFieldTypeID,
-    this.content,
     this.title,
   });
 
@@ -30,7 +28,6 @@ class InputFieldInstance {
       fileContent: json['FileContent'],
       textAnswer: json['TextAnswer'],
       inputFieldTypeID: json['InputFieldTypeID'],
-      content: json['Content'],
       title: json['Title'],
     );
   }

@@ -255,7 +255,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                 ),
                 Column(
                   children: List<Widget>.generate(listInputField.length,
-                          (index) => createStepInputFieldWidget(index)),
+                          (index) => createInputFieldWidget(index)),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
@@ -386,7 +386,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     );
   }
 
-  Widget createStepInputFieldWidget(int index) {
+  Widget createInputFieldWidget(int index) {
     TextEditingController _textController = new TextEditingController();
     _textController.text = listInputField[index].title;
     _textController.addListener(() {
