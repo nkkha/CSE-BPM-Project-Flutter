@@ -66,7 +66,9 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
       future: futureListIFI,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          listInputFieldInstance = snapshot.data;
+          if (listInputFieldInstance.length == 0) {
+            listInputFieldInstance = snapshot.data;
+          }
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(18.0),

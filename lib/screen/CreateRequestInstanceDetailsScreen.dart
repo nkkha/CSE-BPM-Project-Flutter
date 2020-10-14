@@ -39,6 +39,7 @@ class _CreateRequestInstanceDetailsScreenState
   int count = 0;
 
   List<InputField> listInputField = new List();
+  Future<List<InputField>> futureListIF;
   List<InputFieldInstance> listInputFieldInstance = new List();
 
   TextEditingController _nameController = new TextEditingController();
@@ -69,22 +70,7 @@ class _CreateRequestInstanceDetailsScreenState
     _myFocusNode4.addListener(_onOnFocusNodeEvent);
     _myFocusNode5.addListener(_onOnFocusNodeEvent);
 
-    getListInputField();
-  }
-
-  void getListInputField() async {
-    listInputField.clear();
-    listInputField = await webService.getListInputField(widget.request.id);
-
-    if (listInputField != null) {
-      for (InputField inputField in listInputField) {
-        listInputFieldInstance.add(new InputFieldInstance(
-            inputFieldID: inputField.id,
-            inputFieldTypeID: inputField.inputFieldTypeID,
-            title: inputField.title));
-      }
-      setState(() {});
-    }
+    futureListIF = webService.getListInputField(widget.request.id);
   }
 
   void _showPicker(BuildContext context, Function updateImage) {
@@ -142,7 +128,7 @@ class _CreateRequestInstanceDetailsScreenState
   void _showFilePicker(Function updateFile) async {
     FilePickerResult result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc'],
+      allowedExtensions: ['pdf', 'doc', 'docx'],
     );
 
     if (result != null) {
@@ -182,229 +168,253 @@ class _CreateRequestInstanceDetailsScreenState
         title: Text('Thông tin yêu cầu'),
         titleSpacing: 0,
       ),
-      body: SingleChildScrollView(
-        child: GestureDetector(
-          onTap: () {},
-          child: Container(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-            color: Colors.white,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 32, 0, 32),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Tên yêu cầu: ',
-                        style: TextStyle(
-                          fontSize: 16,
+      body: FutureBuilder(
+          future: futureListIF,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if (listInputField.length == 0) {
+                listInputField = snapshot.data;
+                for (InputField inputField in listInputField) {
+                  listInputFieldInstance.add(new InputFieldInstance(
+                      inputFieldID: inputField.id,
+                      inputFieldTypeID: inputField.inputFieldTypeID,
+                      title: inputField.title));
+                }
+              }
+              return SingleChildScrollView(
+                child: GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    color: Colors.white,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 32, 0, 32),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Tên yêu cầu: ',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              Text(
+                                ' ${widget.request.description}',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    fontStyle: FontStyle.italic),
+                              )
+                            ],
+                          ),
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      Text(
-                        ' ${widget.request.description}',
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.italic),
-                      )
-                    ],
-                  ),
-                ),
-                // Padding(
-                //   padding: const EdgeInsets.fromLTRB(0, 0, 0, 40),
-                //   child: Text(
-                //     'Thời gian: $startDate đến $dueDate',
-                //     style: TextStyle(
-                //       fontSize: 16,
-                //     ),
-                //     textAlign: TextAlign.center,
-                //   ),
-                // ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 32),
-                  child: Text(
-                    'Sinh viên vui lòng điền đầy đủ các thông tin sau:',
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                // Padding(
-                //   padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                //   child: StreamBuilder(
-                //     // stream: authBloc.nameStream,
-                //     builder: (context, snapshot) => TextField(
-                //       focusNode: _myFocusNode1,
-                //       controller: _nameController,
-                //       style: TextStyle(fontSize: 18, color: Colors.black),
-                //       decoration: InputDecoration(
-                //         errorText: snapshot.hasError ? snapshot.error : null,
-                //         labelText: 'Họ và tên',
-                //         labelStyle: TextStyle(
-                //             color: _myFocusNode1.hasFocus
-                //                 ? MyColors.lightBrand
-                //                 : MyColors.mediumGray),
-                //         border: OutlineInputBorder(
-                //           borderSide:
-                //               BorderSide(color: MyColors.lightGray, width: 1),
-                //           borderRadius: BorderRadius.all(Radius.circular(6)),
-                //         ),
-                //         focusedBorder: OutlineInputBorder(
-                //           borderSide: BorderSide(
-                //               color: MyColors.lightBrand, width: 2.0),
-                //           borderRadius: BorderRadius.circular(6.0),
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                // StreamBuilder(
-                //   // stream: authBloc.phoneStream,
-                //   builder: (context, snapshot) => TextField(
-                //     focusNode: _myFocusNode2,
-                //     controller: _idController,
-                //     style: TextStyle(fontSize: 18, color: Colors.black),
-                //     decoration: InputDecoration(
-                //       errorText: snapshot.hasError ? snapshot.error : null,
-                //       labelText: 'Mssv',
-                //       labelStyle: TextStyle(
-                //           color: _myFocusNode2.hasFocus
-                //               ? MyColors.lightBrand
-                //               : MyColors.mediumGray),
-                //       border: OutlineInputBorder(
-                //         borderSide:
-                //             BorderSide(color: MyColors.lightGray, width: 1),
-                //         borderRadius: BorderRadius.all(Radius.circular(6)),
-                //       ),
-                //       focusedBorder: OutlineInputBorder(
-                //         borderSide:
-                //             BorderSide(color: MyColors.lightBrand, width: 2.0),
-                //         borderRadius: BorderRadius.circular(6.0),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                // Padding(
-                //   padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                //   child: StreamBuilder(
-                //     // stream: authBloc.emailStream,
-                //     builder: (context, snapshot) => TextField(
-                //       focusNode: _myFocusNode3,
-                //       controller: _emailController,
-                //       style: TextStyle(fontSize: 18, color: Colors.black),
-                //       decoration: InputDecoration(
-                //         errorText: snapshot.hasError ? snapshot.error : null,
-                //         labelText: 'Email',
-                //         labelStyle: TextStyle(
-                //             color: _myFocusNode3.hasFocus
-                //                 ? MyColors.lightBrand
-                //                 : MyColors.mediumGray),
-                //         border: OutlineInputBorder(
-                //           borderSide:
-                //               BorderSide(color: MyColors.lightGray, width: 1),
-                //           borderRadius: BorderRadius.all(Radius.circular(6)),
-                //         ),
-                //         focusedBorder: OutlineInputBorder(
-                //           borderSide: BorderSide(
-                //               color: MyColors.lightBrand, width: 2.0),
-                //           borderRadius: BorderRadius.circular(6.0),
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                // StreamBuilder(
-                //   // stream: authBloc.passStream,
-                //   builder: (context, snapshot) => TextField(
-                //     focusNode: _myFocusNode4,
-                //     controller: _phoneController,
-                //     style: TextStyle(fontSize: 18, color: Colors.black),
-                //     decoration: InputDecoration(
-                //       errorText: snapshot.hasError ? snapshot.error : null,
-                //       labelText: 'Số điện thoại',
-                //       labelStyle: TextStyle(
-                //           color: _myFocusNode4.hasFocus
-                //               ? MyColors.lightBrand
-                //               : MyColors.mediumGray),
-                //       border: OutlineInputBorder(
-                //         borderSide:
-                //             BorderSide(color: MyColors.lightGray, width: 1),
-                //         borderRadius: BorderRadius.all(Radius.circular(6)),
-                //       ),
-                //       focusedBorder: OutlineInputBorder(
-                //         borderSide:
-                //             BorderSide(color: MyColors.lightBrand, width: 2.0),
-                //         borderRadius: BorderRadius.circular(6.0),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 32),
-                  child: StreamBuilder(
-                    // stream: authBloc.passStream,
-                    builder: (context, snapshot) => TextField(
-                      focusNode: _myFocusNode5,
-                      controller: _contentController,
-                      maxLines: 3,
-                      keyboardType: TextInputType.multiline,
-                      textInputAction: TextInputAction.done,
-                      style: TextStyle(fontSize: 16, color: Colors.black),
-                      decoration: InputDecoration(
-                        errorText: snapshot.hasError ? snapshot.error : null,
-                        labelText: 'Nội dung',
-                        labelStyle: TextStyle(
-                            color: _myFocusNode5.hasFocus
-                                ? MyColors.lightBrand
-                                : MyColors.mediumGray),
-                        border: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: MyColors.lightGray, width: 1),
-                          borderRadius: BorderRadius.all(Radius.circular(6)),
+                        // Padding(
+                        //   padding: const EdgeInsets.fromLTRB(0, 0, 0, 40),
+                        //   child: Text(
+                        //     'Thời gian: $startDate đến $dueDate',
+                        //     style: TextStyle(
+                        //       fontSize: 16,
+                        //     ),
+                        //     textAlign: TextAlign.center,
+                        //   ),
+                        // ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 32),
+                          child: Text(
+                            'Sinh viên vui lòng điền đầy đủ các thông tin sau:',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: MyColors.lightBrand, width: 2.0),
-                          borderRadius: BorderRadius.circular(6.0),
+                        // Padding(
+                        //   padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        //   child: StreamBuilder(
+                        //     // stream: authBloc.nameStream,
+                        //     builder: (context, snapshot) => TextField(
+                        //       focusNode: _myFocusNode1,
+                        //       controller: _nameController,
+                        //       style: TextStyle(fontSize: 18, color: Colors.black),
+                        //       decoration: InputDecoration(
+                        //         errorText: snapshot.hasError ? snapshot.error : null,
+                        //         labelText: 'Họ và tên',
+                        //         labelStyle: TextStyle(
+                        //             color: _myFocusNode1.hasFocus
+                        //                 ? MyColors.lightBrand
+                        //                 : MyColors.mediumGray),
+                        //         border: OutlineInputBorder(
+                        //           borderSide:
+                        //               BorderSide(color: MyColors.lightGray, width: 1),
+                        //           borderRadius: BorderRadius.all(Radius.circular(6)),
+                        //         ),
+                        //         focusedBorder: OutlineInputBorder(
+                        //           borderSide: BorderSide(
+                        //               color: MyColors.lightBrand, width: 2.0),
+                        //           borderRadius: BorderRadius.circular(6.0),
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        // StreamBuilder(
+                        //   // stream: authBloc.phoneStream,
+                        //   builder: (context, snapshot) => TextField(
+                        //     focusNode: _myFocusNode2,
+                        //     controller: _idController,
+                        //     style: TextStyle(fontSize: 18, color: Colors.black),
+                        //     decoration: InputDecoration(
+                        //       errorText: snapshot.hasError ? snapshot.error : null,
+                        //       labelText: 'Mssv',
+                        //       labelStyle: TextStyle(
+                        //           color: _myFocusNode2.hasFocus
+                        //               ? MyColors.lightBrand
+                        //               : MyColors.mediumGray),
+                        //       border: OutlineInputBorder(
+                        //         borderSide:
+                        //             BorderSide(color: MyColors.lightGray, width: 1),
+                        //         borderRadius: BorderRadius.all(Radius.circular(6)),
+                        //       ),
+                        //       focusedBorder: OutlineInputBorder(
+                        //         borderSide:
+                        //             BorderSide(color: MyColors.lightBrand, width: 2.0),
+                        //         borderRadius: BorderRadius.circular(6.0),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        // Padding(
+                        //   padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        //   child: StreamBuilder(
+                        //     // stream: authBloc.emailStream,
+                        //     builder: (context, snapshot) => TextField(
+                        //       focusNode: _myFocusNode3,
+                        //       controller: _emailController,
+                        //       style: TextStyle(fontSize: 18, color: Colors.black),
+                        //       decoration: InputDecoration(
+                        //         errorText: snapshot.hasError ? snapshot.error : null,
+                        //         labelText: 'Email',
+                        //         labelStyle: TextStyle(
+                        //             color: _myFocusNode3.hasFocus
+                        //                 ? MyColors.lightBrand
+                        //                 : MyColors.mediumGray),
+                        //         border: OutlineInputBorder(
+                        //           borderSide:
+                        //               BorderSide(color: MyColors.lightGray, width: 1),
+                        //           borderRadius: BorderRadius.all(Radius.circular(6)),
+                        //         ),
+                        //         focusedBorder: OutlineInputBorder(
+                        //           borderSide: BorderSide(
+                        //               color: MyColors.lightBrand, width: 2.0),
+                        //           borderRadius: BorderRadius.circular(6.0),
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        // StreamBuilder(
+                        //   // stream: authBloc.passStream,
+                        //   builder: (context, snapshot) => TextField(
+                        //     focusNode: _myFocusNode4,
+                        //     controller: _phoneController,
+                        //     style: TextStyle(fontSize: 18, color: Colors.black),
+                        //     decoration: InputDecoration(
+                        //       errorText: snapshot.hasError ? snapshot.error : null,
+                        //       labelText: 'Số điện thoại',
+                        //       labelStyle: TextStyle(
+                        //           color: _myFocusNode4.hasFocus
+                        //               ? MyColors.lightBrand
+                        //               : MyColors.mediumGray),
+                        //       border: OutlineInputBorder(
+                        //         borderSide:
+                        //             BorderSide(color: MyColors.lightGray, width: 1),
+                        //         borderRadius: BorderRadius.all(Radius.circular(6)),
+                        //       ),
+                        //       focusedBorder: OutlineInputBorder(
+                        //         borderSide:
+                        //             BorderSide(color: MyColors.lightBrand, width: 2.0),
+                        //         borderRadius: BorderRadius.circular(6.0),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 32),
+                          child: StreamBuilder(
+                            // stream: authBloc.passStream,
+                            builder: (context, snapshot) => TextField(
+                              focusNode: _myFocusNode5,
+                              controller: _contentController,
+                              maxLines: 3,
+                              keyboardType: TextInputType.multiline,
+                              textInputAction: TextInputAction.done,
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.black),
+                              decoration: InputDecoration(
+                                errorText:
+                                    snapshot.hasError ? snapshot.error : null,
+                                labelText: 'Nội dung',
+                                labelStyle: TextStyle(
+                                    color: _myFocusNode5.hasFocus
+                                        ? MyColors.lightBrand
+                                        : MyColors.mediumGray),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: MyColors.lightGray, width: 1),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(6)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: MyColors.lightBrand, width: 2.0),
+                                  borderRadius: BorderRadius.circular(6.0),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        listInputFieldInstance.length > 0
+                            ? Column(
+                                children: List<Widget>.generate(
+                                    listInputFieldInstance.length,
+                                    (index) =>
+                                        createInputFieldInstanceWidget(index)),
+                              )
+                            : Container(),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 32),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 52,
+                            child: RaisedButton(
+                              onPressed: _onSubmitRequest,
+                              child: Text(
+                                'Xác nhận',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                              color: Color(0xff3277D8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(6)),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                listInputFieldInstance.length > 0
-                    ? Column(
-                        children: List<Widget>.generate(
-                            listInputFieldInstance.length,
-                            (index) => createInputFieldInstanceWidget(index)),
-                      )
-                    : Container(),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 32),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: RaisedButton(
-                      onPressed: _onSubmitRequest,
-                      child: Text(
-                        'Xác nhận',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                      color: Color(0xff3277D8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(6)),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+              );
+            } else if (snapshot.hasError) {
+              return Text("${snapshot.error}");
+            }
+            return Center(child: CircularProgressIndicator());
+          }),
     );
   }
 
