@@ -1,3 +1,4 @@
+import 'package:cse_bpm_project/secretary/SecretaryScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:cse_bpm_project/widget/CreateStepWidget.dart';
 import 'package:flutter/material.dart';
@@ -48,12 +49,12 @@ class _CreateStepScreenState extends State<CreateStepScreen> with SingleTickerPr
             if (data < _numOfSteps) {
               tabController.animateTo(data);
             } else if (data == _numOfSteps) {
-              // Navigator.pushAndRemoveUntil(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => StudentScreen(isCreatedNew: true)),
-              //       (Route<dynamic> route) => false,
-              // );
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => SecretaryScreen(isCreatedNew: true)),
+                    (Route<dynamic> route) => false,
+              );
             }
           })
         ),

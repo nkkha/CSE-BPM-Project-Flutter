@@ -138,8 +138,8 @@ class _SecretaryRequestInstanceListWidgetState
                           ),
                           Text(
                               requestInstance.status.contains('done')
-                                  ? '3/3'
-                                  : '${requestInstance.currentStepIndex}/3',
+                                  ? '${requestInstance.numOfSteps}/${requestInstance.numOfSteps}'
+                                  : '${requestInstance.currentStepIndex}/${requestInstance.numOfSteps}',
                               style: TextStyle(
                                   fontSize: 16,
                                   color: MyColors.white,

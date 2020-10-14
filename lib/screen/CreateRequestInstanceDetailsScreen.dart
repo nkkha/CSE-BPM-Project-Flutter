@@ -638,6 +638,14 @@ class _CreateRequestInstanceDetailsScreenState
               break;
           }
         }
+      } else {
+        await pr.hide();
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => StudentScreen(isCreatedNew: true)),
+              (Route<dynamic> route) => false,
+        );
       }
     } else {
       await pr.hide();

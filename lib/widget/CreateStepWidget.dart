@@ -15,7 +15,8 @@ class CreateStepWidget extends StatefulWidget {
   final int requestID;
   Function update;
 
-  CreateStepWidget({Key key, this.index,this.requestID, this.update}) : super(key: key);
+  CreateStepWidget({Key key, this.index, this.requestID, this.update})
+      : super(key: key);
 
   @override
   _CreateStepWidgetState createState() => _CreateStepWidgetState();
@@ -96,6 +97,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
   }
 
   @override
+  // ignore: must_call_super
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
@@ -121,12 +123,12 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                             : MyColors.mediumGray),
                     border: OutlineInputBorder(
                       borderSide:
-                      BorderSide(color: MyColors.lightGray, width: 1),
+                          BorderSide(color: MyColors.lightGray, width: 1),
                       borderRadius: BorderRadius.all(Radius.circular(6)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide:
-                      BorderSide(color: MyColors.lightBrand, width: 2.0),
+                          BorderSide(color: MyColors.lightBrand, width: 2.0),
                       borderRadius: BorderRadius.circular(6.0),
                     ),
                   ),
@@ -166,7 +168,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 32),
               child: Row(
                 children: [
                   Text(
@@ -196,7 +198,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 32),
               child: StreamBuilder(
                 // stream: authBloc.passStream,
                 builder: (context, snapshot) => TextField(
@@ -241,7 +243,8 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                     width: 110,
                     child: RaisedButton(
                       onPressed: () {
-                        InputField inputField = new InputField(inputFieldTypeID: 1);
+                        InputField inputField =
+                            new InputField(inputFieldTypeID: 1);
                         setState(() {
                           listInputField.add(inputField);
                         });
@@ -251,7 +254,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                           borderRadius: BorderRadius.circular(18.0),
                           side: BorderSide(color: MyColors.mediumGray)),
                       padding:
-                      EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -269,7 +272,8 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                     width: 120,
                     child: RaisedButton(
                       onPressed: () {
-                        InputField inputField = new InputField(inputFieldTypeID: 2);
+                        InputField inputField =
+                            new InputField(inputFieldTypeID: 2);
                         setState(() {
                           listInputField.add(inputField);
                         });
@@ -279,7 +283,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                           borderRadius: BorderRadius.circular(18.0),
                           side: BorderSide(color: MyColors.mediumGray)),
                       padding:
-                      EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -300,9 +304,10 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                     width: 110,
                     child: RaisedButton(
                       onPressed: () {
-                        InputField inputField = new InputField(inputFieldTypeID: 3);
+                        InputField inputField =
+                            new InputField(inputFieldTypeID: 3);
                         setState(() {
-                          listInputField.add(inputField );
+                          listInputField.add(inputField);
                         });
                       },
                       color: Colors.white,
@@ -310,7 +315,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                           borderRadius: BorderRadius.circular(18.0),
                           side: BorderSide(color: MyColors.mediumGray)),
                       padding:
-                      EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -365,8 +370,21 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
       listInputField[index].title = _textController.text;
     });
 
+    String title = "";
+    switch (listInputField[index].inputFieldTypeID) {
+      case 2:
+        title = "Tiêu đề hình ảnh";
+        break;
+      case 3:
+        title = "Tiêu đề tài liệu";
+        break;
+      default:
+        title = "Tiêu đề câu hỏi";
+        break;
+    }
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 16, 0, 16),
+      padding: const EdgeInsets.only(bottom: 32, left: 8),
       child: Row(
         children: [
           Expanded(
@@ -378,9 +396,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                 style: TextStyle(fontSize: 16, color: Colors.black),
                 decoration: InputDecoration(
                   errorText: snapshot.hasError ? snapshot.error : null,
-                  labelText: listInputField[index].inputFieldTypeID == 1
-                      ? 'Tiêu đề câu hỏi'
-                      : 'Tiêu đề tải tệp lên',
+                  labelText: title,
 //              labelStyle: TextStyle(
 //                  color: _myFocusNode.hasFocus
 //                      ? MyColors.lightBrand
@@ -428,14 +444,21 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
   void update(int stepID) async {
     if (stepID != null) {
       if (listInputField.length > 0) {
-        createInputField(stepID);
+        for (InputField inputField in listInputField) {
+          webService.postCreateInputField(
+              stepID,
+              null,
+              inputField.inputFieldTypeID,
+              inputField.title,
+              (data) => updateIF(data));
+        }
       } else {
         await pr.hide();
         setState(() {
           isCreated = true;
           Flushbar(
-            icon:
-            Image.asset('images/ic-check-circle.png', width: 24, height: 24),
+            icon: Image.asset('images/ic-check-circle.png',
+                width: 24, height: 24),
             message: 'Thành công!',
             duration: Duration(seconds: 3),
             margin: EdgeInsets.all(8),
@@ -459,12 +482,6 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
     }
   }
 
-  void createInputField(stepID) {
-    for (InputField inputField in listInputField) {
-      webService.postCreateInputField(stepID, null, inputField.inputFieldTypeID, inputField.title, (data) => updateIF(data));
-    }
-  }
-
   void updateIF(bool isSuccessful) async {
     if (isSuccessful) {
       count++;
@@ -473,8 +490,8 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
         setState(() {
           isCreated = true;
           Flushbar(
-            icon:
-            Image.asset('images/ic-check-circle.png', width: 24, height: 24),
+            icon: Image.asset('images/ic-check-circle.png',
+                width: 24, height: 24),
             message: 'Thành công!',
             duration: Duration(seconds: 3),
             margin: EdgeInsets.all(8),

@@ -2,16 +2,21 @@ import 'package:cse_bpm_project/fragment/ChatFragment.dart';
 import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
 import 'package:cse_bpm_project/secretary/SecretaryHomeFragment.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
+import 'package:after_layout/after_layout.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class SecretaryScreen extends StatefulWidget {
-  const SecretaryScreen({Key key}) : super(key: key);
+  bool isCreatedNew = false;
+
+  SecretaryScreen({Key key, this.isCreatedNew}) : super(key: key);
 
   @override
   _SecretaryScreenState createState() => _SecretaryScreenState();
 }
 
-class _SecretaryScreenState extends State<SecretaryScreen> {
+class _SecretaryScreenState extends State<SecretaryScreen> with AfterLayoutMixin<SecretaryScreen> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
@@ -61,5 +66,22 @@ class _SecretaryScreenState extends State<SecretaryScreen> {
         onTap: _onItemTapped,
       ),
     );
+  }
+
+  @override
+  void afterFirstLayout(BuildContext context) {
+    if (widget.isCreatedNew != null) {
+      if (widget.isCreatedNew) {
+        Flushbar(
+          icon:
+              Image.asset('images/ic-check-circle.png', width: 24, height: 24),
+          message: 'Tạo yêu cầu thành công!',
+          duration: Duration(seconds: 3),
+          margin: EdgeInsets.all(8),
+          borderRadius: 8,
+        )..show(context);
+        widget.isCreatedNew = false;
+      }
+    }
   }
 }
