@@ -297,7 +297,7 @@ class WebService {
     }
   }
 
-  Future<void> postCreateInputImageFieldInstance(int stepInstanceID, int requestInstanceID, int inputFieldID, String base64, Function update) async {
+  Future<void> postCreateInputFileFieldInstance(int stepInstanceID, int requestInstanceID, int inputFieldID, String base64, String fileName, Function update) async {
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbInputFieldInstance',
       headers: <String, String>{
@@ -307,7 +307,8 @@ class WebService {
         "StepInstanceID": stepInstanceID == null ? null : "$stepInstanceID",
         "RequestInstanceID": requestInstanceID == null ? null : "$requestInstanceID",
         "InputFieldID": "$inputFieldID",
-        "FileContent": base64
+        "FileContent": base64,
+        "FileName": fileName
       }),
     );
 

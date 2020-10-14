@@ -6,6 +6,7 @@ class InputFieldInstance {
   final int stepInstanceID;
   final int requestInstanceID;
   String fileContent;
+  String fileName;
   String textAnswer;
   final int inputFieldTypeID;
   String title;
@@ -16,6 +17,7 @@ class InputFieldInstance {
     this.stepInstanceID,
     this.requestInstanceID,
     this.fileContent,
+    this.fileName,
     this.textAnswer,
     this.inputFieldTypeID,
     this.title,
@@ -28,6 +30,7 @@ class InputFieldInstance {
       stepInstanceID: json['StepInstanceID'],
       requestInstanceID: json['RequestInstanceID'],
       fileContent: json['FileContent'],
+      fileName: json['FileName'],
       textAnswer: json['TextAnswer'],
       inputFieldTypeID: json['InputFieldTypeID'],
       title: json['Title'],

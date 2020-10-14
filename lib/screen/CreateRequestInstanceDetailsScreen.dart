@@ -145,12 +145,12 @@ class _CreateRequestInstanceDetailsScreenState
       allowedExtensions: ['pdf', 'doc'],
     );
 
-    if(result != null) {
+    if (result != null) {
       PlatformFile platformFile = result.files.first;
       File file = File('${platformFile.path}');
       var bytes = file.readAsBytesSync();
       String fileB64 = base64Encode(bytes);
-      updateFile(fileB64);
+      updateFile(fileB64, platformFile.name);
     }
   }
 
@@ -541,15 +541,17 @@ class _CreateRequestInstanceDetailsScreenState
           listFileBytes[key] == null
               ? IconButton(
                   onPressed: () {
-                    _showFilePicker((data) {
+                    _showFilePicker((fileB64, fileName) {
                       setState(() {
-                        Uint8List decodedBytes = base64Decode(data);
+                        Uint8List decodedBytes = base64Decode(fileB64);
                         if (listFileBytes.containsKey(key)) {
                           listFileBytes.update(key, (value) => decodedBytes);
-                          listInputFieldInstance[index].fileContent = data;
+                          listInputFieldInstance[index].fileContent = fileB64;
+                          listInputFieldInstance[index].fileName = fileName;
                         } else {
                           listFileBytes.putIfAbsent(key, () => decodedBytes);
-                          listInputFieldInstance[index].fileContent = data;
+                          listInputFieldInstance[index].fileContent = fileB64;
+                          listInputFieldInstance[index].fileName = fileName;
                         }
                       });
                     });
@@ -557,7 +559,13 @@ class _CreateRequestInstanceDetailsScreenState
                   icon: Icon(Icons.file_upload, size: 36))
               : Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Text('Success'),
+                  child: Text(
+                    '${listInputFieldInstance[index].fileName}',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
         ],
       ),
@@ -610,11 +618,12 @@ class _CreateRequestInstanceDetailsScreenState
               break;
             case 2:
             case 3:
-              webService.postCreateInputImageFieldInstance(
+              webService.postCreateInputFileFieldInstance(
                   null,
                   requestInstance.id,
                   inputFieldInstance.inputFieldID,
                   inputFieldInstance.fileContent,
+                  inputFieldInstance.fileName,
                   (data) => update(data));
               break;
           }

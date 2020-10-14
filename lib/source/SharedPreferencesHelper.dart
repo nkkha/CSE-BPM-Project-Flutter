@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart' as p;
 
 class SharedPreferencesHelper {
 
@@ -13,4 +14,6 @@ class SharedPreferencesHelper {
 
     return prefs.getInt('userId') ?? null;
   }
+
+  // String extension = p.extension(filePath).split('.').last;
 }
