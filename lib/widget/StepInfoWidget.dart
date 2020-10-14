@@ -19,9 +19,10 @@ class StepInfoWidget extends StatefulWidget {
   RequestInstance requestInstance;
   final int numOfSteps;
   final bool isStudent;
+  Function update;
 
   StepInfoWidget(
-      {Key key, this.requestInstance, this.isStudent, this.numOfSteps})
+      {Key key, this.requestInstance, this.isStudent, this.numOfSteps, this.update})
       : super(key: key);
 
   @override
@@ -415,7 +416,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
         webService.patchRequestInstanceFinished(
             _requestInstance.id, () => _hidePr(false));
       } else {
-        webService.getNextStep(_requestInstance, 2, (data) => _hidePr(data));
+        webService.getNextStep(_requestInstance, 1, (data) => _hidePr(data));
       }
     } else {
       throw Exception('Failed to update');
@@ -425,7 +426,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
   void _hidePr(boolData) async {
     await pr.hide();
     setState(() {
-      // Re-render
+      widget.update(widget.requestInstance);
     });
   }
 }

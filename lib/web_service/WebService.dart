@@ -28,6 +28,32 @@ class WebService {
 
   /// Web API
 
+  /// Request
+
+  Future<void> patchRequestNumOfSteps(
+      int requestID, int numOfSteps, Function updateData) async {
+    var resBody = {};
+    resBody["NumOfSteps"] = "$numOfSteps";
+    String str = json.encode(resBody);
+
+    final http.Response response = await http.patch(
+      'http://nkkha.somee.com/odata/tbRequest($requestID)',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: str,
+    );
+
+    if (response.statusCode == 200) {
+      updateData(true);
+    } else {
+      updateData(false);
+      throw Exception('Failed to update request instance');
+    }
+  }
+
+  ///
+
   // StepInstance
   Future<List<StepInstance>> getStepInstances(
       int tabIndex, int requestInstanceID) async {
@@ -85,7 +111,7 @@ class WebService {
 
     if (response.statusCode == 200) {
       getNextStep(
-          requestInstance, requestInstance.currentStepIndex + 1, update);
+          requestInstance, requestInstance.currentStepIndex, update);
     } else {
       update(false);
       throw Exception('Failed to update request instance');
@@ -135,7 +161,7 @@ class WebService {
     }
   }
 
-  Future<void> getOtherCurrentStepInstances(RequestInstance requestInstance, int currentStepInstanceID, int currentStepIndex,
+  Future<void> getOtherCurrentStepInstances(RequestInstance requestInstance, int currentStepInstanceID, int currentStepIndex, bool isLastStep,
       Function update) async {
     final response = await http.get(
         'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails?\$filter=RequestInstanceID eq ${requestInstance.id} and StepIndex eq $currentStepIndex and id ne $currentStepInstanceID');
@@ -155,8 +181,10 @@ class WebService {
           break;
         }
       }
-      if (isCompleted) {
+      if (isCompleted && !isLastStep) {
         patchRequestInstanceStepIndex(requestInstance, update);
+      } else if (isCompleted && isLastStep) {
+        update(200);
       }
     } else {
       throw Exception('Failed to load');

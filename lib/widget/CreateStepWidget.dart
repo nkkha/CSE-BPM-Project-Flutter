@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cse_bpm_project/model/Role.dart';
 import 'package:cse_bpm_project/model/InputField.dart';
+import 'package:cse_bpm_project/source/SharedPreferencesHelper.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:flutter/services.dart';
 
@@ -8,14 +9,15 @@ import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // ignore: must_be_immutable
 class CreateStepWidget extends StatefulWidget {
-  final int index;
+  final int tabIndex;
   final int requestID;
   Function update;
 
-  CreateStepWidget({Key key, this.index, this.requestID, this.update})
+  CreateStepWidget({Key key, this.tabIndex, this.requestID, this.update})
       : super(key: key);
 
   @override
@@ -31,10 +33,8 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
 
   TextEditingController _nameController = new TextEditingController();
   TextEditingController _descriptionController = new TextEditingController();
-  TextEditingController _stepIndexController = new TextEditingController();
   FocusNode _myFocusNode1 = new FocusNode();
   FocusNode _myFocusNode2 = new FocusNode();
-  FocusNode _myFocusNode3 = new FocusNode();
 
   ProgressDialog pr;
   List<InputField> listInputField = new List();
@@ -43,13 +43,13 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
   Role _selectedItem;
   bool isCreated = false;
   int count = 0;
+  bool isParallelStep = false;
 
   @override
   void initState() {
     super.initState();
     _myFocusNode1.addListener(_onOnFocusNodeEvent);
     _myFocusNode2.addListener(_onOnFocusNodeEvent);
-    _myFocusNode3.addListener(_onOnFocusNodeEvent);
 
     getListRole();
   }
@@ -84,10 +84,8 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
     super.dispose();
     _myFocusNode1.dispose();
     _myFocusNode2.dispose();
-    _myFocusNode3.dispose();
     _nameController.dispose();
     _descriptionController.dispose();
-    _stepIndexController.dispose();
   }
 
   _onOnFocusNodeEvent() {
@@ -168,7 +166,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 32),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 20),
               child: Row(
                 children: [
                   Text(
@@ -197,45 +195,30 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 32),
-              child: StreamBuilder(
-                // stream: authBloc.passStream,
-                builder: (context, snapshot) => TextField(
-                  focusNode: _myFocusNode3,
-                  controller: _stepIndexController,
-                  keyboardType: TextInputType.numberWithOptions(
-                      signed: true, decimal: true),
-                  textInputAction: TextInputAction.done,
-                  // On
-                  style: TextStyle(fontSize: 16, color: Colors.black),
-                  decoration: InputDecoration(
-                    errorText: snapshot.hasError ? snapshot.error : null,
-                    labelText: 'Chỉ số bước',
-                    labelStyle: TextStyle(
-                        color: _myFocusNode3.hasFocus
-                            ? MyColors.lightBrand
-                            : MyColors.mediumGray),
-                    border: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: MyColors.lightGray, width: 1),
-                      borderRadius: BorderRadius.all(Radius.circular(6)),
+            widget.tabIndex != 0
+                ? Padding(
+                  padding: const EdgeInsets.only(bottom: 32),
+                  child: Row(
+                      children: <Widget>[
+                        Checkbox(
+                          value: isParallelStep,
+                          onChanged: (bool value) {
+                            setState(() {
+                              isParallelStep = value;
+                            });
+                          },
+                        ),
+                        Text("Song song với bước trước?", style: TextStyle(fontSize: 16),),
+                      ],
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: MyColors.lightBrand, width: 2.0),
-                      borderRadius: BorderRadius.circular(6.0),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+                )
+                : Container(),
             Column(
               children: List<Widget>.generate(listInputField.length,
                   (index) => createInputFieldWidget(index)),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+              padding: const EdgeInsets.only(bottom: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -432,16 +415,33 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
         type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
     pr.update(message: "Đang xử lý...");
     await pr.show();
+    int stepIndex;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (widget.tabIndex == 0) {
+      stepIndex = 1;
+      prefs.setInt('currentStepIndex', stepIndex);
+    } else {
+      int currentStepIndex = await SharedPreferencesHelper.getCurrentStepIndex();
+      if (currentStepIndex != null) {
+        if (!isParallelStep) {
+          stepIndex = currentStepIndex + 1;
+          prefs.setInt('currentStepIndex', stepIndex);
+        } else {
+          stepIndex = currentStepIndex;
+        }
+      }
+    }
+
     webService.postCreateStep(
         widget.requestID,
         _nameController.text,
         _descriptionController.text,
         _selectedItem.id,
-        int.parse(_stepIndexController.text),
-        (data) => update(data));
+        stepIndex,
+        (data) => update(data, stepIndex));
   }
 
-  void update(int stepID) async {
+  void update(int stepID, int stepIndex) async {
     if (stepID != null) {
       if (listInputField.length > 0) {
         for (InputField inputField in listInputField) {
@@ -450,7 +450,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
               null,
               inputField.inputFieldTypeID,
               inputField.title,
-              (data) => updateIF(data));
+              (data) => updateIF(data, stepIndex));
         }
       } else {
         await pr.hide();
@@ -465,7 +465,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
             borderRadius: 8,
           )..show(context);
           Future.delayed(const Duration(milliseconds: 1000), () {
-            widget.update(widget.index + 1);
+            widget.update(widget.tabIndex + 1, stepIndex);
           });
         });
       }
@@ -482,7 +482,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
     }
   }
 
-  void updateIF(bool isSuccessful) async {
+  void updateIF(bool isSuccessful, int stepIndex) async {
     if (isSuccessful) {
       count++;
       if (count == listInputField.length) {
@@ -498,7 +498,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
             borderRadius: 8,
           )..show(context);
           Future.delayed(const Duration(milliseconds: 1000), () {
-            widget.update(widget.index + 1);
+            widget.update(widget.tabIndex + 1, stepIndex);
           });
         });
       }

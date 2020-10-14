@@ -77,7 +77,7 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              return _buildRequestInstanceRow(requests[index], color);
+              return _buildRequestInstanceRow(requests[index], color, index);
             },
           ),
         ),
@@ -86,7 +86,7 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
   }
 
   Widget _buildRequestInstanceRow(
-      RequestInstance requestInstance, Color color) {
+      RequestInstance requestInstance, Color color, int index) {
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -95,6 +95,9 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
             builder: (context) => RequestInstanceDetailsScreen(
               requestInstance: requestInstance,
               isStudent: true,
+              update: (data) {
+                setState(() {});
+              },
             ),
           ),
         );

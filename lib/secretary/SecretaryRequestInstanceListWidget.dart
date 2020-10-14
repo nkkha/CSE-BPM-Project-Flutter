@@ -17,9 +17,9 @@ class SecretaryRequestInstanceListWidget extends StatefulWidget {
 
 class _SecretaryRequestInstanceListWidgetState
     extends State<SecretaryRequestInstanceListWidget> {
-  final List<RequestInstance> requestList;
+  final List<RequestInstance> requestInstanceList;
 
-  _SecretaryRequestInstanceListWidgetState(this.requestList);
+  _SecretaryRequestInstanceListWidgetState(this.requestInstanceList);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class _SecretaryRequestInstanceListWidgetState
     List<RequestInstance> doneRequests = new List();
     List<RequestInstance> failedRequests = new List();
 
-    for (RequestInstance request in requestList) {
+    for (RequestInstance request in requestInstanceList) {
       if (request.status.contains("new")) {
         newRequests.add(request);
       } else if (request.status.contains("done")) {
@@ -85,7 +85,7 @@ class _SecretaryRequestInstanceListWidgetState
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              return _buildRequestInstanceRow(requests[index], color);
+              return _buildRequestInstanceRow(requests[index], color, index);
             },
           ),
         ),
@@ -94,7 +94,7 @@ class _SecretaryRequestInstanceListWidgetState
   }
 
   Widget _buildRequestInstanceRow(
-      RequestInstance requestInstance, Color color) {
+      RequestInstance requestInstance, Color color, int index) {
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -103,13 +103,11 @@ class _SecretaryRequestInstanceListWidgetState
               builder: (context) => RequestInstanceDetailsScreen(
                     requestInstance: requestInstance,
                     isStudent: false,
+                    update: (data) {
+                      setState(() {});
+                    },
                   )),
-        ).then((value) {
-          setState(() {
-            // Re-render
-            print("Re-render");
-          });
-        });
+        );
       },
       child: Column(
         children: <Widget>[

@@ -15,5 +15,11 @@ class SharedPreferencesHelper {
     return prefs.getInt('userId') ?? null;
   }
 
+  static Future<int> getCurrentStepIndex() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    return prefs.getInt('currentStepIndex') ?? null;
+  }
+
   // String extension = p.extension(filePath).split('.').last;
 }

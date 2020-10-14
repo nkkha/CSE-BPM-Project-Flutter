@@ -17,9 +17,9 @@ class OfficesStudentRequestInstanceListWidget extends StatefulWidget {
 
 class _OfficesStudentRequestInstanceListWidgetState
     extends State<OfficesStudentRequestInstanceListWidget> {
-  final List<RequestInstance> requestList;
+  final List<RequestInstance> requestInstanceList;
 
-  _OfficesStudentRequestInstanceListWidgetState(this.requestList);
+  _OfficesStudentRequestInstanceListWidgetState(this.requestInstanceList);
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class _OfficesStudentRequestInstanceListWidgetState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            _buildListRequestInstance(requestList),
+            _buildListRequestInstance(requestInstanceList),
           ],
         ),
       ),
@@ -52,7 +52,7 @@ class _OfficesStudentRequestInstanceListWidgetState
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              return _buildRequestInstanceRow(requests[index], color);
+              return _buildRequestInstanceRow(requests[index], color, index);
             },
           ),
         ),
@@ -61,7 +61,7 @@ class _OfficesStudentRequestInstanceListWidgetState
   }
 
   Widget _buildRequestInstanceRow(
-      RequestInstance requestInstance, Color color) {
+      RequestInstance requestInstance, Color color, int index) {
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -70,13 +70,11 @@ class _OfficesStudentRequestInstanceListWidgetState
               builder: (context) => RequestInstanceDetailsScreen(
                     requestInstance: requestInstance,
                     isStudent: false,
+                    update: (data) {
+                      setState(() {});
+                    },
                   )),
-        ).then((value) {
-          setState(() {
-            // Re-render
-            print("Re-render");
-          });
-        });
+        );
       },
       child: Column(
         children: <Widget>[

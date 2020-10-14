@@ -8,9 +8,10 @@ import 'package:flutter/material.dart';
 class RequestInstanceDetailsScreen extends StatefulWidget {
   final RequestInstance requestInstance;
   final bool isStudent;
+  Function update;
 
   RequestInstanceDetailsScreen(
-      {Key key, @required this.requestInstance, this.isStudent})
+      {Key key, @required this.requestInstance, this.isStudent, this.update})
       : super(key: key);
 
   @override
@@ -19,7 +20,8 @@ class RequestInstanceDetailsScreen extends StatefulWidget {
 }
 
 class _RequestInstanceDetailsScreenState
-    extends State<RequestInstanceDetailsScreen> with SingleTickerProviderStateMixin {
+    extends State<RequestInstanceDetailsScreen>
+    with SingleTickerProviderStateMixin {
   RequestInstance _requestInstance;
 
   _RequestInstanceDetailsScreenState(this._requestInstance);
@@ -30,7 +32,10 @@ class _RequestInstanceDetailsScreenState
   void initState() {
     super.initState();
 
-    tabController = new TabController(vsync: this, length: _requestInstance.numOfSteps, initialIndex: 0);
+    tabController = new TabController(
+        vsync: this,
+        length: _requestInstance.numOfSteps,
+        initialIndex: _requestInstance.currentStepIndex - 1);
   }
 
   @override
@@ -60,11 +65,17 @@ class _RequestInstanceDetailsScreenState
                   requestInstance: _requestInstance,
                   isStudent: widget.isStudent,
                   numOfSteps: _requestInstance.numOfSteps,
+                  update: (data) {
+                    widget.update(data);
+                  },
                 )
               : StepDetailsWidget(
                   requestInstance: _requestInstance,
                   tabIndex: index,
                   numOfSteps: _numOfStep,
+                  update: (data) {
+                    widget.update(data);
+                  },
                 ),
         ),
       ),

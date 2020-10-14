@@ -17,9 +17,10 @@ class StepDetailsWidget extends StatefulWidget {
   RequestInstance requestInstance;
   final int tabIndex;
   final int numOfSteps;
+  Function update;
 
   StepDetailsWidget(
-      {Key key, this.requestInstance, this.tabIndex, this.numOfSteps})
+      {Key key, this.requestInstance, this.tabIndex, this.numOfSteps, this.update})
       : super(key: key);
 
   @override
@@ -35,8 +36,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   @override
   void initState() {
     super.initState();
-    futureListStep = webService.getStepInstances(
-        widget.tabIndex + 1, widget.requestInstance.id);
+    futureListStep =
+        webService.getStepInstances(widget.tabIndex, widget.requestInstance.id);
   }
 
   Widget build(BuildContext context) {
@@ -133,7 +134,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
           return snapshot.hasData
               ? Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   child: Card(
                     elevation: 5,
                     shape: RoundedRectangleBorder(
@@ -327,25 +329,35 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       if (response.statusCode == 200) {
         if (indexType == 1) {
           stepInstance.status = 'failed';
-          webService.patchRequestInstanceFailed(
-              stepInstance.requestInstanceID, () => _hidePr(0, false));
+          webService.patchRequestInstanceFailed(stepInstance.requestInstanceID,
+              () => _hidePr(0, false, stepInstance));
         } else {
           stepInstance.status = 'done';
           if (stepInstanceList.length == 1) {
             if (widget.tabIndex + 1 == widget.numOfSteps) {
               webService.patchRequestInstanceFinished(
-                  stepInstance.requestInstanceID, () => _hidePr(1, false));
+                  stepInstance.requestInstanceID,
+                  () => _hidePr(1, false, stepInstance));
             } else {
-              widget.requestInstance.currentStepIndex++;
-              webService.patchRequestInstanceStepIndex(
-                  widget.requestInstance, (data) => _hidePr(2, data));
+              webService.patchRequestInstanceStepIndex(widget.requestInstance,
+                  (data) => _hidePr(2, data, stepInstance));
             }
           } else if (stepInstanceList.length > 1) {
-            webService.getOtherCurrentStepInstances(
-                widget.requestInstance,
-                stepInstance.id,
-                widget.tabIndex + 1,
-                (data) => _hidePr(2, data));
+            if (widget.tabIndex + 1 == widget.numOfSteps) {
+              webService.getOtherCurrentStepInstances(
+                  widget.requestInstance,
+                  stepInstance.id,
+                  widget.tabIndex,
+                  true,
+                  (data) => _hidePr(2, data, stepInstance));
+            } else {
+              webService.getOtherCurrentStepInstances(
+                  widget.requestInstance,
+                  stepInstance.id,
+                  widget.tabIndex,
+                  false,
+                      (data) => _hidePr(2, data, stepInstance));
+            }
           }
         }
       } else {
@@ -354,7 +366,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     }
   }
 
-  void _hidePr(int index, bool isUpdatedStep) async {
+  void _hidePr(int index, var isUpdatedStep, StepInstance stepInstance) async {
     await pr.hide();
     if (index == 0) {
       // Update request instance status failed
@@ -363,14 +375,23 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       // Update request instance status done
       widget.requestInstance.status = 'done';
     }
-    if (isUpdatedStep) {
-      if (index == 2) {
-        // Update request instance step index
-        widget.requestInstance.currentStepIndex++;
+    if (isUpdatedStep.runtimeType == bool) {
+      if (isUpdatedStep) {
+        if (index == 2) {
+          // Update request instance step index
+          widget.requestInstance.currentStepIndex++;
+        }
       }
     }
+    if (isUpdatedStep.runtimeType == int) {
+      if (isUpdatedStep == 200) {
+        webService.patchRequestInstanceFinished(stepInstance.requestInstanceID,
+                () => _hidePr(1, false, stepInstance));
+      }
+    }
+
     setState(() {
-      // Re-render
+      widget.update(widget.requestInstance);
     });
   }
 }

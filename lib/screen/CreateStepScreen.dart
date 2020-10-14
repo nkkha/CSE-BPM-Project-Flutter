@@ -1,5 +1,6 @@
 import 'package:cse_bpm_project/secretary/SecretaryScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
+import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:cse_bpm_project/widget/CreateStepWidget.dart';
 import 'package:flutter/material.dart';
 
@@ -16,6 +17,9 @@ class CreateStepScreen extends StatefulWidget {
 
 class _CreateStepScreenState extends State<CreateStepScreen> with SingleTickerProviderStateMixin {
   TabController tabController;
+  int currentStepIndex = 0;
+
+  var webService = WebService();
 
   @override
   void initState() {
@@ -45,16 +49,20 @@ class _CreateStepScreenState extends State<CreateStepScreen> with SingleTickerPr
         controller: tabController,
         children: List<Widget>.generate(
           _numOfSteps,
-          (index) => CreateStepWidget(index: index, requestID: widget.requestID, update: (data) {
+          (index) => CreateStepWidget(tabIndex: index, requestID: widget.requestID, update: (data, stepIndex) {
             if (data < _numOfSteps) {
               tabController.animateTo(data);
             } else if (data == _numOfSteps) {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => SecretaryScreen(isCreatedNew: true)),
-                    (Route<dynamic> route) => false,
-              );
+              webService.patchRequestNumOfSteps(widget.requestID, stepIndex + 1, (isSuccessful) {
+                if (isSuccessful) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SecretaryScreen(isCreatedNew: true)),
+                        (Route<dynamic> route) => false,
+                  );
+                }
+              });
             }
           })
         ),
