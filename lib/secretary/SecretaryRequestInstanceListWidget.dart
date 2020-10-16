@@ -5,21 +5,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SecretaryRequestInstanceListWidget extends StatefulWidget {
-  final List<RequestInstance> requestList;
+  final List<RequestInstance> requestInstanceList;
 
-  const SecretaryRequestInstanceListWidget({Key key, this.requestList})
+  const SecretaryRequestInstanceListWidget({Key key, this.requestInstanceList})
       : super(key: key);
 
   @override
   _SecretaryRequestInstanceListWidgetState createState() =>
-      _SecretaryRequestInstanceListWidgetState(requestList);
+      _SecretaryRequestInstanceListWidgetState();
 }
 
 class _SecretaryRequestInstanceListWidgetState
     extends State<SecretaryRequestInstanceListWidget> {
-  final List<RequestInstance> requestInstanceList;
-
-  _SecretaryRequestInstanceListWidgetState(this.requestInstanceList);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +25,7 @@ class _SecretaryRequestInstanceListWidgetState
     List<RequestInstance> doneRequests = new List();
     List<RequestInstance> failedRequests = new List();
 
-    for (RequestInstance request in requestInstanceList) {
+    for (RequestInstance request in widget.requestInstanceList) {
       if (request.status.contains("new")) {
         newRequests.add(request);
       } else if (request.status.contains("done")) {
@@ -40,12 +37,12 @@ class _SecretaryRequestInstanceListWidgetState
       }
     }
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 20),
+    return Expanded(
+      child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            SizedBox(height: 20),
             _buildListRequestInstance(newRequests, 1),
             _buildListRequestInstance(inProgressRequests, 2),
             _buildListRequestInstance(doneRequests, 3),

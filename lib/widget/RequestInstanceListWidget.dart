@@ -33,13 +33,18 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
       }
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        _buildListRequestInstance(inProgressRequests, 1),
-        _buildListRequestInstance(doneRequests, 2),
-        _buildListRequestInstance(failedRequests, 3),
-      ],
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: 20),
+            _buildListRequestInstance(inProgressRequests, 1),
+            _buildListRequestInstance(doneRequests, 2),
+            _buildListRequestInstance(failedRequests, 3),
+          ],
+        ),
+      ),
     );
   }
 

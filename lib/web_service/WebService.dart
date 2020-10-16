@@ -9,6 +9,7 @@ import 'package:cse_bpm_project/model/Step.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/StepInstance.dart';
+import 'package:intl/intl.dart';
 
 class WebService {
 //  /// Singleton
@@ -25,6 +26,8 @@ class WebService {
 
   int nextStepSize = 0;
   int count = 0;
+  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss-07:00');
+
 
   /// Web API
 
@@ -123,6 +126,7 @@ class WebService {
     var resBody = {};
     // indexType = 1: Reject, indexType = 2: Approve
     resBody["Status"] = "done";
+    resBody["FinishedDate"] = formatterDateTime.format(DateTime.now());
     String str = json.encode(resBody);
 
     final http.Response response = await http.patch(

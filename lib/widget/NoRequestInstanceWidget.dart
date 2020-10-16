@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class NoRequestInstanceWidget extends StatelessWidget {
   final bool isStudent;
 
-  NoRequestInstanceWidget(this.isStudent);
+  NoRequestInstanceWidget({this.isStudent});
 
   @override
   Widget build(BuildContext context) {

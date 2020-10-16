@@ -81,19 +81,19 @@ class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
         future: futureListRequestInstance,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            if (_noRequest) return Center(child: NoRequestInstanceWidget(true));
+            if (_noRequest)
+              return Center(child: NoRequestInstanceWidget(isStudent: false));
             listRequestInstance = new List();
             listRequestInstance = snapshot.data;
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  _searchBox(),
-                  _isSearch
-                      ? RequestInstanceListWidget(
-                          requestInstanceList: listRequestInstance)
-                      : _searchListView()
-                ],
-              ),
+            return Column(
+              children: [
+                _searchBox(),
+                Divider(height: 1),
+                _isSearch
+                    ? RequestInstanceListWidget(
+                        requestInstanceList: listRequestInstance)
+                    : _searchListView(),
+              ],
             );
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
@@ -146,7 +146,7 @@ class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('userId') ?? 0;
     final response = await http.get(
-        'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?\$filter=userid eq $userId');
+        'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?\$filter=userID eq $userId');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];

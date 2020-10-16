@@ -266,7 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
           break;
         case 3:
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => SecretaryScreen()));
+              MaterialPageRoute(builder: (context) => DeanScreen()));
           break;
         default:
           Navigator.pushReplacement(context,

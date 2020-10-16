@@ -40,9 +40,9 @@ class _OfficesStudentRequestInstanceScreenState
       ),
       body: _requestInstanceList.length > 0
           ? SecretaryRequestInstanceListWidget(
-              requestList: _requestInstanceList,
+              requestInstanceList: _requestInstanceList,
             )
-          : NoRequestInstanceWidget(false),
+          : NoRequestInstanceWidget(isStudent: false),
     );
   }
 }

@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:cse_bpm_project/model/InputFieldInstance.dart';
+import 'package:cse_bpm_project/source/SharedPreferencesHelper.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -35,6 +37,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
   _StepInfoWidgetState(this._requestInstance);
 
   var webService = WebService();
+  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss-07:00');
 
   List<InputFieldInstance> listInputFieldInstance = new List();
   Future<List<InputFieldInstance>> futureListIFI;
@@ -391,35 +394,43 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
     pr.update(message: "Đang xử lý...");
     await pr.show();
 
-    var resBody = {};
-    // indexType = 1: Reject, indexType = 2: Approve
-    resBody["Status"] = indexType == 1 ? "failed" : "active";
-    resBody["CurrentStepIndex"] = indexType == 1 ? 1 : 2;
-    String str = json.encode(resBody);
+    final userID = await SharedPreferencesHelper.getUserId();
 
-    final http.Response response = await http.patch(
-      'http://nkkha.somee.com/odata/tbRequestInstance(${_requestInstance.id})',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: str,
-    );
-
-    if (response.statusCode == 200) {
+    if (userID != null) {
+      var resBody = {};
+      // indexType = 1: Reject, indexType = 2: Approve
+      resBody["Status"] = indexType == 1 ? "failed" : "active";
+      resBody["CurrentStepIndex"] = indexType == 1 ? 1 : 2;
       if (indexType == 1) {
-        _requestInstance.status = 'failed';
-      } else {
-        _requestInstance.status = 'active';
-        _requestInstance.currentStepIndex = 2;
+        resBody["FinishedDate"] = formatterDateTime.format(DateTime.now());
       }
-      if (widget.numOfSteps == 1) {
-        webService.patchRequestInstanceFinished(
-            _requestInstance.id, () => _hidePr(false));
+      resBody["ApproverID"] = userID;
+      String str = json.encode(resBody);
+
+      final http.Response response = await http.patch(
+        'http://nkkha.somee.com/odata/tbRequestInstance(${_requestInstance.id})',
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: str,
+      );
+
+      if (response.statusCode == 200) {
+        if (indexType == 1) {
+          _requestInstance.status = 'failed';
+        } else {
+          _requestInstance.status = 'active';
+          _requestInstance.currentStepIndex = 2;
+        }
+        if (widget.numOfSteps == 1) {
+          webService.patchRequestInstanceFinished(
+              _requestInstance.id, () => _hidePr(false));
+        } else {
+          webService.getNextStep(_requestInstance, 1, (data) => _hidePr(data));
+        }
       } else {
-        webService.getNextStep(_requestInstance, 1, (data) => _hidePr(data));
+        throw Exception('Failed to update');
       }
-    } else {
-      throw Exception('Failed to update');
     }
   }
 

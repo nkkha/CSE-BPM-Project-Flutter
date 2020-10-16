@@ -30,7 +30,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
 
   DateTime startDate, dueDate;
   TimeOfDay startTime, dueTime;
-  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss');
+  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss-07:00');
   final DateFormat formatterDate = DateFormat('yyyy-MM-dd');
 
   var webService = WebService();
@@ -459,7 +459,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     String name = _nameController.text;
     String description = _descriptionController.text;
     DateTime currentDateTime = DateTime.now();
-    String createdTime = formatterDateTime.format(currentDateTime) + '\-07:00';
+    String createdTime = formatterDateTime.format(currentDateTime);
     String startDateStr = formatterDate.format(startDate) +
         'T' +
         formatTime(startTime.hour) +

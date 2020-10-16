@@ -5,34 +5,26 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class OfficesStudentRequestInstanceListWidget extends StatefulWidget {
-  final List<RequestInstance> requestList;
+  final List<RequestInstance> requestInstanceList;
 
-  const OfficesStudentRequestInstanceListWidget({Key key, this.requestList})
+  const OfficesStudentRequestInstanceListWidget({Key key, this.requestInstanceList})
       : super(key: key);
 
   @override
   _OfficesStudentRequestInstanceListWidgetState createState() =>
-      _OfficesStudentRequestInstanceListWidgetState(requestList);
+      _OfficesStudentRequestInstanceListWidgetState();
 }
 
 class _OfficesStudentRequestInstanceListWidgetState
     extends State<OfficesStudentRequestInstanceListWidget> {
-  final List<RequestInstance> requestInstanceList;
-
-  _OfficesStudentRequestInstanceListWidgetState(this.requestInstanceList);
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            _buildListRequestInstance(requestInstanceList),
-          ],
-        ),
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        _buildListRequestInstance(widget.requestInstanceList),
+      ],
     );
   }
 

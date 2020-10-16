@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/RequestInstance.dart';
@@ -15,21 +16,40 @@ class SecretaryRequestInstanceScreen extends StatefulWidget {
 
   @override
   _SecretaryRequestInstanceScreenState createState() =>
-      _SecretaryRequestInstanceScreenState(requestID);
+      _SecretaryRequestInstanceScreenState();
 }
 
 class _SecretaryRequestInstanceScreenState
     extends State<SecretaryRequestInstanceScreen> {
-  Future<List<RequestInstance>> futureListRequest;
+  Future<List<RequestInstance>> futureListRequestInstance;
   bool _noRequest = false;
-  final int _requestID;
 
-  _SecretaryRequestInstanceScreenState(this._requestID);
+  var _searchEdit = new TextEditingController();
+  bool _isSearch = true;
+  String _searchText = "";
+  List<RequestInstance> _searchListItems;
+  List<RequestInstance> listRequestInstance;
 
   @override
   void initState() {
     super.initState();
-    futureListRequest = fetchListRequest();
+    futureListRequestInstance = fetchListRequestInstance();
+  }
+
+  _SecretaryRequestInstanceScreenState() {
+    _searchEdit.addListener(() {
+      if (_searchEdit.text.isEmpty) {
+        setState(() {
+          _isSearch = true;
+          _searchText = "";
+        });
+      } else {
+        setState(() {
+          _isSearch = false;
+          _searchText = _searchEdit.text;
+        });
+      }
+    });
   }
 
   @override
@@ -45,13 +65,23 @@ class _SecretaryRequestInstanceScreenState
         ),
       ),
       body: FutureBuilder<List<RequestInstance>>(
-        future: futureListRequest,
+        future: futureListRequestInstance,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (_noRequest)
-              return Center(child: NoRequestInstanceWidget(false));
-            return SecretaryRequestInstanceListWidget(
-              requestList: snapshot.data,
+              return Center(child: NoRequestInstanceWidget(isStudent: false));
+            listRequestInstance = new List();
+            listRequestInstance = snapshot.data;
+            return Column(
+              children: [
+                _searchBox(),
+                Divider(height: 1),
+                _isSearch
+                    ? SecretaryRequestInstanceListWidget(
+                        requestInstanceList: snapshot.data,
+                      )
+                    : _searchListView(),
+              ],
             );
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
@@ -62,9 +92,48 @@ class _SecretaryRequestInstanceScreenState
     );
   }
 
-  Future<List<RequestInstance>> fetchListRequest() async {
+  Widget _searchBox() {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+          border: Border.all(width: 1.0, color: MyColors.lightGray),
+          borderRadius: BorderRadius.circular(12)),
+      child: TextField(
+        controller: _searchEdit,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          hintText: "Tìm kiếm",
+          hintStyle: TextStyle(color: MyColors.mediumGray),
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+          suffixIcon: Icon(Icons.search),
+        ),
+      ),
+    );
+  }
+
+  Widget _searchListView() {
+    _searchListItems = new List();
+    for (int i = 0; i < listRequestInstance.length; i++) {
+      var item = listRequestInstance[i];
+
+      if (item.id
+          .toString()
+          .toLowerCase()
+          .contains(_searchText.toLowerCase())) {
+        _searchListItems.add(item);
+      }
+    }
+    return SecretaryRequestInstanceListWidget(
+        requestInstanceList: _searchListItems);
+  }
+
+  Future<List<RequestInstance>> fetchListRequestInstance() async {
     final response = await http.get(
-        'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?\$filter=requestid eq $_requestID');
+        'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?\$filter=requestID eq ${widget.requestID}');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
