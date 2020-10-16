@@ -155,7 +155,7 @@ class _SecretaryRequestInstanceListWidgetState
                     Padding(
                       padding: const EdgeInsets.only(bottom: 5),
                       child: Text(
-                        'Mã yêu cầu: 000${requestInstance.id}',
+                        'Mã yêu cầu: ${requestInstance.id}',
                         style: TextStyle(
                           fontSize: 16,
                           color: MyColors.black,

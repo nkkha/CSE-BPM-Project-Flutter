@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/RequestInstance.dart';
@@ -18,13 +19,35 @@ class RequestInstanceFragment extends StatefulWidget {
 }
 
 class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
-  Future<List<RequestInstance>> futureListRequest;
+  Future<List<RequestInstance>> futureListRequestInstance;
   bool _noRequest = false;
+
+  var _searchEdit = new TextEditingController();
+  bool _isSearch = true;
+  String _searchText = "";
+  List<RequestInstance> _searchListItems;
+  List<RequestInstance> listRequestInstance;
 
   @override
   void initState() {
     super.initState();
-    futureListRequest = fetchListRequest();
+    futureListRequestInstance = fetchListRequestInstance();
+  }
+
+  _RequestInstanceFragmentState() {
+    _searchEdit.addListener(() {
+      if (_searchEdit.text.isEmpty) {
+        setState(() {
+          _isSearch = true;
+          _searchText = "";
+        });
+      } else {
+        setState(() {
+          _isSearch = false;
+          _searchText = _searchEdit.text;
+        });
+      }
+    });
   }
 
   @override
@@ -55,11 +78,23 @@ class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
         ],
       ),
       body: FutureBuilder<List<RequestInstance>>(
-        future: futureListRequest,
+        future: futureListRequestInstance,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (_noRequest) return Center(child: NoRequestInstanceWidget(true));
-            return RequestInstanceListWidget(requestInstanceList: snapshot.data);
+            listRequestInstance = new List();
+            listRequestInstance = snapshot.data;
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  _searchBox(),
+                  _isSearch
+                      ? RequestInstanceListWidget(
+                          requestInstanceList: listRequestInstance)
+                      : _searchListView()
+                ],
+              ),
+            );
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
           }
@@ -69,7 +104,45 @@ class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
     );
   }
 
-  Future<List<RequestInstance>> fetchListRequest() async {
+  Widget _searchBox() {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+          border: Border.all(width: 1.0, color: MyColors.lightGray),
+          borderRadius: BorderRadius.circular(12)),
+      child: TextField(
+        controller: _searchEdit,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          hintText: "Tìm kiếm",
+          hintStyle: TextStyle(color: MyColors.mediumGray),
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+          suffixIcon: Icon(Icons.search),
+        ),
+      ),
+    );
+  }
+
+  Widget _searchListView() {
+    _searchListItems = new List();
+    for (int i = 0; i < listRequestInstance.length; i++) {
+      var item = listRequestInstance[i];
+
+      if (item.id
+          .toString()
+          .toLowerCase()
+          .contains(_searchText.toLowerCase())) {
+        _searchListItems.add(item);
+      }
+    }
+    return RequestInstanceListWidget(requestInstanceList: _searchListItems);
+  }
+
+  Future<List<RequestInstance>> fetchListRequestInstance() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('userId') ?? 0;
     final response = await http.get(

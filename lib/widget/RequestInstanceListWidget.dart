@@ -12,13 +12,10 @@ class RequestInstanceListWidget extends StatefulWidget {
 
   @override
   _RequestInstanceListWidgetState createState() =>
-      _RequestInstanceListWidgetState(requestInstanceList);
+      _RequestInstanceListWidgetState();
 }
 
 class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
-  final List<RequestInstance> requestInstanceList;
-
-  _RequestInstanceListWidgetState(this.requestInstanceList);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +23,7 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
     List<RequestInstance> doneRequests = new List();
     List<RequestInstance> failedRequests = new List();
 
-    for (RequestInstance request in requestInstanceList) {
+    for (RequestInstance request in widget.requestInstanceList) {
       if (request.status.contains("done")) {
         doneRequests.add(request);
       } else if (request.status.contains("failed")) {
@@ -36,18 +33,13 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
       }
     }
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            _buildListRequestInstance(inProgressRequests, 1),
-            _buildListRequestInstance(doneRequests, 2),
-            _buildListRequestInstance(failedRequests, 3),
-          ],
-        ),
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        _buildListRequestInstance(inProgressRequests, 1),
+        _buildListRequestInstance(doneRequests, 2),
+        _buildListRequestInstance(failedRequests, 3),
+      ],
     );
   }
 
@@ -148,7 +140,7 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 5),
                       child: Text(
-                        'Mã yêu cầu: 000${requestInstance.id}',
+                        'Mã yêu cầu: ${requestInstance.id}',
                         style: TextStyle(
                           fontSize: 16,
                           color: MyColors.black,
