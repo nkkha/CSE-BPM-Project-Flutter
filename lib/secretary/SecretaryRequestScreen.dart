@@ -58,7 +58,7 @@ class _SecretaryRequestScreenState extends State<SecretaryRequestScreen> {
               return Column(
                 children: [
                   _searchBox(),
-                  Divider(height: 1),
+                  Divider(thickness: 1, height: 1),
                   _isSearch
                       ? RequestList(requestList: listRequest)
                       : _searchListView(),

@@ -17,7 +17,6 @@ class SecretaryRequestInstanceListWidget extends StatefulWidget {
 
 class _SecretaryRequestInstanceListWidgetState
     extends State<SecretaryRequestInstanceListWidget> {
-
   @override
   Widget build(BuildContext context) {
     List<RequestInstance> newRequests = new List();
@@ -185,9 +184,7 @@ class _SecretaryRequestInstanceListWidgetState
           ),
           Padding(
             padding: const EdgeInsets.only(left: 96),
-            child: Divider(
-              height: 0.0,
-            ),
+            child: Divider(thickness: 1, height: 1),
           ),
         ],
       ),

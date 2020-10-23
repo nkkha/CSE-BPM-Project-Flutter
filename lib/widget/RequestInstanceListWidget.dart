@@ -16,7 +16,6 @@ class RequestInstanceListWidget extends StatefulWidget {
 }
 
 class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
-
   @override
   Widget build(BuildContext context) {
     List<RequestInstance> inProgressRequests = new List();
@@ -178,9 +177,7 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 96),
-            child: Divider(
-              height: 0.0,
-            ),
+            child: Divider(thickness: 1, height: 1),
           ),
         ],
       ),

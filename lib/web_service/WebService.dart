@@ -288,9 +288,15 @@ class WebService {
     }
   }
 
-  Future<List<InputField>> getListInputField(int requestID) async {
+  Future<List<InputField>> getListInputField(int requestID, int stepID) async {
+    String query = "";
+    if (requestID != null) {
+      query = "RequestID eq $requestID";
+    } else if (stepID != null) {
+      query = "StepID eq $stepID";
+    }
     final response = await http.get(
-        'http://nkkha.somee.com/odata/tbInputField?\$filter=RequestID eq $requestID');
+        'http://nkkha.somee.com/odata/tbInputField?\$filter=$query');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];

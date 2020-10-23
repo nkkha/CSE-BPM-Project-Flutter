@@ -75,7 +75,7 @@ class _SecretaryRequestInstanceScreenState
             return Column(
               children: [
                 _searchBox(),
-                Divider(height: 1),
+                Divider(thickness: 1, height: 1),
                 _isSearch
                     ? SecretaryRequestInstanceListWidget(
                         requestInstanceList: snapshot.data,

@@ -44,9 +44,7 @@ class _SettingsFragmentState extends State<SettingsFragment> {
         ),
         Padding(
           padding: const EdgeInsets.only(left: 72),
-          child: Divider(
-            height: 1,
-          ),
+          child: Divider(thickness: 1, height: 1),
         ),
       ],
     );

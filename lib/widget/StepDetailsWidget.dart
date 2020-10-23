@@ -1,6 +1,12 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
-import 'package:cse_bpm_project/widget/StepInputFieldInstanceWidget.dart';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:cse_bpm_project/model/InputField.dart';
+import 'package:cse_bpm_project/model/InputFieldInstance.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/RequestInstance.dart';
@@ -9,6 +15,9 @@ import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:cse_bpm_project/source/SharedPreferencesHelper.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -20,7 +29,11 @@ class StepDetailsWidget extends StatefulWidget {
   Function update;
 
   StepDetailsWidget(
-      {Key key, this.requestInstance, this.tabIndex, this.numOfSteps, this.update})
+      {Key key,
+      this.requestInstance,
+      this.tabIndex,
+      this.numOfSteps,
+      this.update})
       : super(key: key);
 
   @override
@@ -28,16 +41,91 @@ class StepDetailsWidget extends StatefulWidget {
 }
 
 class _StepDetailsWidgetState extends State<StepDetailsWidget> {
-  Future<List<StepInstance>> futureListStep;
-  List<StepInstance> stepInstanceList = new List();
-  ProgressDialog pr;
   var webService = WebService();
+  ProgressDialog pr;
+  int roleID;
+
+  Future<List<StepInstance>> futureListStepInstance;
+  List<StepInstance> stepInstanceList = new List();
+
+  HashMap listInputFields = new HashMap<int, List<InputField>>();
+  HashMap listInputFieldInstances =
+      new HashMap<int, List<InputFieldInstance>>();
+  HashMap listImageBytes = new HashMap<int, Uint8List>();
+  HashMap listFileBytes = new HashMap<int, Uint8List>();
 
   @override
   void initState() {
     super.initState();
-    futureListStep =
+    futureListStepInstance =
         webService.getStepInstances(widget.tabIndex, widget.requestInstance.id);
+  }
+
+  void _showPicker(BuildContext context, Function updateImage) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Photo Library'),
+                      onTap: () {
+                        _imgFromGallery((data) {
+                          updateImage(data);
+                        });
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camera'),
+                    onTap: () {
+                      _imgFromCamera((data) {
+                        updateImage(data);
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  void _imgFromCamera(Function updateImage) async {
+    // ignore: deprecated_member_use
+    File image = await ImagePicker.pickImage(
+        source: ImageSource.camera, imageQuality: 50);
+    var bytes = image.readAsBytesSync();
+    String imageB64 = base64Encode(bytes);
+    updateImage(imageB64);
+  }
+
+  void _imgFromGallery(Function updateImage) async {
+    // ignore: deprecated_member_use
+    File image = await ImagePicker.pickImage(
+        source: ImageSource.gallery, imageQuality: 50);
+    var bytes = image.readAsBytesSync();
+    String imageB64 = base64Encode(bytes);
+    updateImage(imageB64);
+  }
+
+  void _showFilePicker(Function updateFile) async {
+    FilePickerResult result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc', 'docx'],
+    );
+
+    if (result != null) {
+      PlatformFile platformFile = result.files.first;
+      File file = File('${platformFile.path}');
+      var bytes = file.readAsBytesSync();
+      String fileB64 = base64Encode(bytes);
+      updateFile(fileB64, platformFile.name);
+    }
   }
 
   Widget build(BuildContext context) {
@@ -45,7 +133,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     return widget.tabIndex > currentStepIndex - 1
         ? Center(child: Text('Bước $currentStepIndex chưa hoàn thành'))
         : FutureBuilder<List<StepInstance>>(
-            future: futureListStep,
+            future: futureListStepInstance,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 stepInstanceList = snapshot.data;
@@ -84,14 +172,16 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     return Column(
       children: [
         SizedBox(height: 16),
-        ListView.builder(
-          itemCount: stepInstanceList.length,
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            return _buildStepRow(stepInstanceList[index], index);
-          },
-        ),
+        stepInstanceList.length == 1
+            ? _buildStepRow(stepInstanceList[0], 0)
+            : ListView.builder(
+                itemCount: stepInstanceList.length,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return _buildStepRow(stepInstanceList[index], index);
+                },
+              ),
         Center(
           child: Padding(
               padding: const EdgeInsets.all(20),
@@ -113,7 +203,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     );
   }
 
-  Widget _buildStepRow(StepInstance stepInstance, int index) {
+  Widget _buildStepRow(StepInstance stepInstance, int stepIndex) {
     Color statusColor;
 
     switch (stepInstance.status) {
@@ -132,7 +222,10 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         future: SharedPreferencesHelper.getRoleId(),
         initialData: null,
         builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-          return snapshot.hasData
+          if (snapshot.hasData && roleID == null) {
+            roleID = snapshot.data;
+          }
+          return roleID != null
               ? Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -142,70 +235,52 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       side: BorderSide(width: 2, color: Colors.green),
                     ),
-                    child: InkWell(
-                      onTap: () {
-//                        Navigator.push(
-//                          context,
-//                          MaterialPageRoute(
-//                            builder: (context) => StepInstanceDetailsScreen(
-//                              roleId: snapshot.data,
-//                              stepInstance: stepInstance,
-//                              passData: (data) {
-//                                setState(() {
-//                                  // Re-render
-//                                  stepInstanceList[index] = data;
-//                                });
-//                              },
-//                            ),
-//                          ),
-//                        );
-                      },
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Text(
-                                      stepInstance.description,
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: statusColor,
-                                    borderRadius: BorderRadius.circular(16.0),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 16),
-                                    child: Text(
-                                      stepInstance.status,
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          color: MyColors.white,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Row(
                             children: [
-                              _buildCheckBox(
-                                stepInstance,
-                                snapshot.data,
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: Text(
+                                    stepInstance.description,
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: statusColor,
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 16),
+                                  child: Text(
+                                    stepInstance.status,
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: MyColors.white,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                        stepInstance.status.contains('active') &&
+                                stepInstance.approverRoleID == roleID
+                            ? _buildInputFieldColumn(stepInstance, stepIndex)
+                            : _buildInputFieldInstanceColumn(stepInstance.id, stepIndex, roleID),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            _buildCheckBox(stepInstance, roleID, stepIndex),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 )
@@ -213,7 +288,424 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         });
   }
 
-  _buildCheckBox(StepInstance stepInstance, int roleId) {
+  _buildInputFieldColumn(StepInstance stepInstance, int stepIndex) {
+    return FutureBuilder(
+        future: webService.getListInputField(null, stepInstance.stepID),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data.length > 0) {
+              if (!listInputFields.containsKey(stepIndex)) {
+                List<InputField> listIF = new List();
+                listIF = snapshot.data;
+                listInputFields.putIfAbsent(stepIndex, () => listIF);
+                if (!listInputFieldInstances.containsKey(stepIndex)) {
+                  List<InputFieldInstance> listIFI = new List();
+                  for (InputField inputField in listInputFields[0]) {
+                    listIFI.add(new InputFieldInstance(
+                        inputFieldID: inputField.id,
+                        stepInstanceID: stepInstance.id,
+                        inputFieldTypeID: inputField.inputFieldTypeID,
+                        title: inputField.title));
+                  }
+                  listInputFieldInstances.putIfAbsent(stepIndex, () => listIFI);
+                }
+              }
+            }
+            return Container(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+              color: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  listInputFieldInstances.length > 0
+                      ? Column(
+                          children: List<Widget>.generate(
+                              listInputFieldInstances[stepIndex].length,
+                              (index) => createInputFieldInstanceWidget(
+                                  stepIndex, index)),
+                        )
+                      : Container(),
+                ],
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Text("${snapshot.error}");
+          }
+          return Center(child: Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: CircularProgressIndicator(),
+          ));
+        });
+  }
+
+  Widget createInputFieldInstanceWidget(int stepIndex, int index) {
+    switch (listInputFieldInstances[stepIndex][index].inputFieldTypeID) {
+      case 1:
+        return createTextFieldWidget(stepIndex, index);
+        break;
+      case 2:
+        return createImageFieldWidget(stepIndex, index);
+        break;
+      case 3:
+        return createUploadFileFieldWidget(stepIndex, index);
+        break;
+    }
+    return Container();
+  }
+
+  Widget createTextFieldWidget(int stepIndex, int index) {
+    TextEditingController _textController = new TextEditingController();
+    _textController.text = listInputFieldInstances[stepIndex][index].textAnswer;
+    _textController.addListener(() {
+      listInputFieldInstances[stepIndex][index].textAnswer =
+          _textController.text;
+    });
+
+    String label = "Trả lời";
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 32),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 32),
+            child: Text(
+              listInputFieldInstances[stepIndex][index].title,
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+          StreamBuilder(
+            // stream: authBloc.passStream,
+            builder: (context, snapshot) => TextField(
+              controller: _textController,
+              textInputAction: TextInputAction.done,
+              style: TextStyle(fontSize: 16, color: Colors.black),
+              decoration: InputDecoration(
+                errorText: snapshot.hasError ? snapshot.error : null,
+                labelText: label,
+//              labelStyle: TextStyle(
+//                  color: _myFocusNode.hasFocus
+//                      ? MyColors.lightBrand
+//                      : MyColors.mediumGray),
+                labelStyle: TextStyle(color: MyColors.mediumGray),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: MyColors.lightGray, width: 1),
+                  borderRadius: BorderRadius.all(Radius.circular(6)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: MyColors.lightBrand, width: 2.0),
+                  borderRadius: BorderRadius.circular(6.0),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget createImageFieldWidget(int stepIndex, int index) {
+    final int key = listInputFieldInstances[stepIndex][index].id;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      child: Column(
+        children: [
+          Text(
+            '${listInputFieldInstances[stepIndex][index].title}',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(width: 10, height: 10),
+          listImageBytes[key] == null
+              ? IconButton(
+                  onPressed: () {
+                    _showPicker(context, (data) {
+                      setState(() {
+                        Uint8List decodedBytes = base64Decode(data);
+                        if (listImageBytes.containsKey(key)) {
+                          listImageBytes.update(key, (value) => decodedBytes);
+                          listInputFieldInstances[stepIndex][index]
+                              .fileContent = data;
+                        } else {
+                          listImageBytes.putIfAbsent(key, () => decodedBytes);
+                          listInputFieldInstances[stepIndex][index]
+                              .fileContent = data;
+                        }
+                      });
+                    });
+                  },
+                  icon: Icon(Icons.add_a_photo, size: 36))
+              : GestureDetector(
+                  onTap: () {
+                    _showPicker(context, (data) {
+                      setState(() {
+                        Uint8List decodedBytes = base64Decode(data);
+                        if (listImageBytes.containsKey(key)) {
+                          listImageBytes.update(key, (value) => decodedBytes);
+                          listInputFieldInstances[stepIndex][index]
+                              .fileContent = data;
+                        } else {
+                          listImageBytes.putIfAbsent(key, () => decodedBytes);
+                          listInputFieldInstances[stepIndex][index]
+                              .fileContent = data;
+                        }
+                      });
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Image.memory(listImageBytes[key]),
+                  ),
+                ),
+        ],
+      ),
+    );
+  }
+
+  Widget createUploadFileFieldWidget(int stepIndex, int index) {
+    final int key = listInputFieldInstances[stepIndex][index].id;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      child: Column(
+        children: [
+          Text(
+            '${listInputFieldInstances[stepIndex][index].title}',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(width: 10, height: 10),
+          listFileBytes[key] == null
+              ? IconButton(
+                  onPressed: () {
+                    _showFilePicker((fileB64, fileName) {
+                      setState(() {
+                        Uint8List decodedBytes = base64Decode(fileB64);
+                        if (listFileBytes.containsKey(key)) {
+                          listFileBytes.update(key, (value) => decodedBytes);
+                          listInputFieldInstances[stepIndex][index]
+                              .fileContent = fileB64;
+                          listInputFieldInstances[stepIndex][index].fileName =
+                              fileName;
+                        } else {
+                          listFileBytes.putIfAbsent(key, () => decodedBytes);
+                          listInputFieldInstances[stepIndex][index]
+                              .fileContent = fileB64;
+                          listInputFieldInstances[stepIndex][index].fileName =
+                              fileName;
+                        }
+                      });
+                    });
+                  },
+                  icon: Icon(Icons.file_upload, size: 36))
+              : Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    '${listInputFieldInstances[stepIndex][index].fileName}',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+        ],
+      ),
+    );
+  }
+
+  _buildInputFieldInstanceColumn(int stepInstanceID, int stepIndex, int roleID) {
+    return FutureBuilder(
+      future: webService.getListInputFieldInstance(null, stepInstanceID),
+      builder: (context, snapshot) {
+        if (listInputFieldInstances.containsKey(stepIndex)) {
+          return Padding(
+            padding: const EdgeInsets.all(18.0),
+            child: Column(
+              children: List<Widget>.generate(
+                  listInputFieldInstances[stepIndex].length,
+                      (index) =>
+                      _buildInputFieldInstanceField(stepIndex, index)),
+            ),
+          );
+        } else if (snapshot.hasData) {
+          if (!listInputFieldInstances.containsKey(stepIndex)) {
+            if (snapshot.data.length > 0) {
+              List<InputFieldInstance> listIFI = new List();
+              listIFI = snapshot.data;
+              listInputFieldInstances.putIfAbsent(
+                  stepIndex, () => listIFI);
+              return Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: Column(
+                  children: List<Widget>.generate(
+                      listInputFieldInstances[stepIndex].length,
+                      (index) =>
+                          _buildInputFieldInstanceField(stepIndex, index)),
+                ),
+              );
+            } else {
+              return SizedBox();
+            }
+          } else {
+            return SizedBox();
+          }
+        } else if (snapshot.hasError) {
+          return Text("${snapshot.error}");
+        }
+        return Center(child: Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: CircularProgressIndicator(),
+        ));
+      },
+    );
+  }
+
+  _buildInputFieldInstanceField(int stepIndex, int index) {
+    switch (listInputFieldInstances[stepIndex][index].inputFieldTypeID) {
+      case 1:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Text(
+                    '${listInputFieldInstances[stepIndex][index].title}',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 32),
+                  child: Text(
+                    '${listInputFieldInstances[stepIndex][index].textAnswer}',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+        break;
+      case 2:
+        Uint8List decodedBytes;
+        if (listInputFieldInstances[stepIndex][index].fileContent != null) {
+          decodedBytes = base64Decode(
+              listInputFieldInstances[stepIndex][index].fileContent);
+        }
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Text(
+                '${listInputFieldInstances[stepIndex][index].title}',
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 32),
+              child: decodedBytes != null
+                  ? Image.memory(
+                      decodedBytes,
+                      fit: BoxFit.fitWidth,
+                    )
+                  : Text(
+                      'null',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic),
+                    ),
+            ),
+          ],
+        );
+        break;
+      case 3:
+        if (listInputFieldInstances[stepIndex][index].fileContent != null) {
+          Uint8List decodedBytes = base64Decode(
+              listInputFieldInstances[stepIndex][index].fileContent);
+          return FutureBuilder(
+            future: getApplicationDocumentsDirectory(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                File file = new File(
+                    '${snapshot.data.path}/${listInputFieldInstances[stepIndex][index].fileName}');
+                file.writeAsBytesSync(decodedBytes);
+                return FutureBuilder(
+                  future: file.readAsBytes(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: Text(
+                              '${listInputFieldInstances[stepIndex][index].title}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 32),
+                            child: RaisedButton(
+                              color: MyColors.lightBrand,
+                              child: Text(
+                                "Mở file",
+                                style: TextStyle(
+                                    fontSize: 16, color: MyColors.white),
+                              ),
+                              onPressed: () => openFile(file.path),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  },
+                );
+              }
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            },
+          );
+        } else {
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Text(
+                  '${listInputFieldInstances[stepIndex][index].title}',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 32),
+                child: Text(
+                  "null",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ],
+          );
+        }
+        break;
+    }
+  }
+
+  Future<void> openFile(String filePath) async {
+    await OpenFile.open(filePath);
+  }
+
+  _buildCheckBox(StepInstance stepInstance, int roleId, int stepIndex) {
     if (stepInstance.approverRoleID == roleId &&
         !stepInstance.status.contains('failed') &&
         !stepInstance.status.contains('done')) {
@@ -226,7 +718,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                   const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 8),
               width: 75,
               child: RaisedButton(
-                onPressed: () => _showAlertDialog(context, 1, stepInstance),
+                onPressed: () =>
+                    _showAlertDialog(context, 1, stepInstance, stepIndex),
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
@@ -243,7 +736,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                   const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 8),
               width: 75,
               child: RaisedButton(
-                onPressed: () => _showAlertDialog(context, 2, stepInstance),
+                onPressed: () =>
+                    _showAlertDialog(context, 2, stepInstance, stepIndex),
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
@@ -263,7 +757,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     }
   }
 
-  _showAlertDialog(BuildContext context, index, StepInstance stepInstance) {
+  _showAlertDialog(
+      BuildContext context, index, StepInstance stepInstance, int stepIndex) {
     TextEditingController messageController = new TextEditingController();
     Alert(
         context: context,
@@ -289,8 +784,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
             ),
           ),
           DialogButton(
-            onPressed: () =>
-                _didTapButton(index, messageController.text, stepInstance),
+            onPressed: () => _didTapButton(
+                index, messageController.text, stepInstance, stepIndex),
             child: Text(
               "Đồng ý",
               style: TextStyle(color: Colors.white, fontSize: 20),
@@ -299,8 +794,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         ]).show();
   }
 
-  Future<void> _didTapButton(
-      int indexType, String message, StepInstance stepInstance) async {
+  Future<void> _didTapButton(int indexType, String message,
+      StepInstance stepInstance, int stepIndex) async {
     Navigator.pop(context);
 
     pr = ProgressDialog(context,
@@ -327,36 +822,105 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       );
 
       if (response.statusCode == 200) {
+        int count = 0;
         if (indexType == 1) {
           stepInstance.status = 'failed';
           webService.patchRequestInstanceFailed(stepInstance.requestInstanceID,
               () => _hidePr(0, false, stepInstance));
         } else {
           stepInstance.status = 'done';
-          if (stepInstanceList.length == 1) {
-            if (widget.tabIndex + 1 == widget.numOfSteps) {
-              webService.patchRequestInstanceFinished(
-                  stepInstance.requestInstanceID,
-                  () => _hidePr(1, false, stepInstance));
-            } else {
-              webService.patchRequestInstanceStepIndex(widget.requestInstance,
-                  (data) => _hidePr(2, data, stepInstance));
-            }
-          } else if (stepInstanceList.length > 1) {
-            if (widget.tabIndex + 1 == widget.numOfSteps) {
-              webService.getOtherCurrentStepInstances(
-                  widget.requestInstance,
-                  stepInstance.id,
-                  widget.tabIndex,
-                  true,
-                  (data) => _hidePr(2, data, stepInstance));
-            } else {
-              webService.getOtherCurrentStepInstances(
-                  widget.requestInstance,
-                  stepInstance.id,
-                  widget.tabIndex,
-                  false,
-                      (data) => _hidePr(2, data, stepInstance));
+          if (roleID == stepInstance.approverRoleID &&
+              listInputFieldInstances.containsKey(stepIndex)) {
+            for (InputFieldInstance inputFieldInstance
+                in listInputFieldInstances[stepIndex]) {
+              switch (inputFieldInstance.inputFieldTypeID) {
+                case 1:
+                  webService.postCreateInputTextFieldInstance(
+                      inputFieldInstance.stepInstanceID,
+                      null,
+                      inputFieldInstance.inputFieldID,
+                      inputFieldInstance.textAnswer, (isSuccessful) {
+                    if (isSuccessful) {
+                      count++;
+                      if (count == listInputFieldInstances[stepIndex].length) {
+                        if (stepInstanceList.length == 1) {
+                          if (widget.tabIndex + 1 == widget.numOfSteps) {
+                            webService.patchRequestInstanceFinished(
+                                stepInstance.requestInstanceID,
+                                    () => _hidePr(1, false, stepInstance));
+                          } else {
+                            webService.patchRequestInstanceStepIndex(
+                                widget.requestInstance,
+                                    (data) => _hidePr(2, data, stepInstance));
+                          }
+                        } else if (stepInstanceList.length > 1) {
+                          if (widget.tabIndex + 1 == widget.numOfSteps) {
+                            webService.getOtherCurrentStepInstances(
+                                widget.requestInstance,
+                                stepInstance.id,
+                                widget.tabIndex,
+                                true,
+                                    (data) => _hidePr(2, data, stepInstance));
+                          } else {
+                            webService.getOtherCurrentStepInstances(
+                                widget.requestInstance,
+                                stepInstance.id,
+                                widget.tabIndex,
+                                false,
+                                    (data) => _hidePr(2, data, stepInstance));
+                          }
+                        }
+                      }
+                    } else {
+                      _hideByError();
+                    }
+                  });
+                  break;
+                case 2:
+                case 3:
+                  webService.postCreateInputFileFieldInstance(
+                      inputFieldInstance.stepInstanceID,
+                      null,
+                      inputFieldInstance.inputFieldID,
+                      inputFieldInstance.fileContent,
+                      inputFieldInstance.fileName, (isSuccessful) {
+                    if (isSuccessful) {
+                      count++;
+                      if (count == listInputFieldInstances[stepIndex].length) {
+                        if (stepInstanceList.length == 1) {
+                          if (widget.tabIndex + 1 == widget.numOfSteps) {
+                            webService.patchRequestInstanceFinished(
+                                stepInstance.requestInstanceID,
+                                    () => _hidePr(1, false, stepInstance));
+                          } else {
+                            webService.patchRequestInstanceStepIndex(
+                                widget.requestInstance,
+                                    (data) => _hidePr(2, data, stepInstance));
+                          }
+                        } else if (stepInstanceList.length > 1) {
+                          if (widget.tabIndex + 1 == widget.numOfSteps) {
+                            webService.getOtherCurrentStepInstances(
+                                widget.requestInstance,
+                                stepInstance.id,
+                                widget.tabIndex,
+                                true,
+                                    (data) => _hidePr(2, data, stepInstance));
+                          } else {
+                            webService.getOtherCurrentStepInstances(
+                                widget.requestInstance,
+                                stepInstance.id,
+                                widget.tabIndex,
+                                false,
+                                    (data) => _hidePr(2, data, stepInstance));
+                          }
+                        }
+                      }
+                    } else {
+                      _hideByError();
+                    }
+                  });
+                  break;
+              }
             }
           }
         }
@@ -364,6 +928,17 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         throw Exception('Failed to update');
       }
     }
+  }
+
+  void _hideByError() async {
+    await pr.hide();
+    Flushbar(
+      icon: Image.asset('images/ic-failed.png', width: 24, height: 24),
+      message: 'Thất bại!',
+      duration: Duration(seconds: 3),
+      margin: EdgeInsets.all(8),
+      borderRadius: 8,
+    )..show(context);
   }
 
   void _hidePr(int index, var isUpdatedStep, StepInstance stepInstance) async {
@@ -386,7 +961,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     if (isUpdatedStep.runtimeType == int) {
       if (isUpdatedStep == 200) {
         webService.patchRequestInstanceFinished(stepInstance.requestInstanceID,
-                () => _hidePr(1, false, stepInstance));
+            () => _hidePr(1, false, stepInstance));
       }
     }
 

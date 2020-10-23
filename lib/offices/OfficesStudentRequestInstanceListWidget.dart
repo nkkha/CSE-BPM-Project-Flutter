@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 class OfficesStudentRequestInstanceListWidget extends StatefulWidget {
   final List<RequestInstance> requestInstanceList;
 
-  const OfficesStudentRequestInstanceListWidget({Key key, this.requestInstanceList})
+  const OfficesStudentRequestInstanceListWidget(
+      {Key key, this.requestInstanceList})
       : super(key: key);
 
   @override
@@ -17,7 +18,6 @@ class OfficesStudentRequestInstanceListWidget extends StatefulWidget {
 
 class _OfficesStudentRequestInstanceListWidgetState
     extends State<OfficesStudentRequestInstanceListWidget> {
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -147,9 +147,7 @@ class _OfficesStudentRequestInstanceListWidgetState
           ),
           Padding(
             padding: const EdgeInsets.only(left: 96),
-            child: Divider(
-              height: 0.0,
-            ),
+            child: Divider(thickness: 1, height: 1),
           ),
         ],
       ),

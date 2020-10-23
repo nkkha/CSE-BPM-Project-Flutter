@@ -42,16 +42,8 @@ class _CreateRequestInstanceDetailsScreenState
   Future<List<InputField>> futureListIF;
   List<InputFieldInstance> listInputFieldInstance = new List();
 
-  TextEditingController _nameController = new TextEditingController();
-  TextEditingController _idController = new TextEditingController();
-  TextEditingController _emailController = new TextEditingController();
-  TextEditingController _phoneController = new TextEditingController();
   TextEditingController _contentController = new TextEditingController();
-  FocusNode _myFocusNode1 = new FocusNode();
-  FocusNode _myFocusNode2 = new FocusNode();
-  FocusNode _myFocusNode3 = new FocusNode();
-  FocusNode _myFocusNode4 = new FocusNode();
-  FocusNode _myFocusNode5 = new FocusNode();
+  FocusNode _myFocusNode = new FocusNode();
 
   HashMap listImageBytes = new HashMap<int, Uint8List>();
   HashMap listFileBytes = new HashMap<int, Uint8List>();
@@ -59,18 +51,10 @@ class _CreateRequestInstanceDetailsScreenState
   @override
   void initState() {
     super.initState();
-    _myFocusNode1 = new FocusNode();
-    _myFocusNode2 = new FocusNode();
-    _myFocusNode3 = new FocusNode();
-    _myFocusNode4 = new FocusNode();
-    _myFocusNode5 = new FocusNode();
-    _myFocusNode1.addListener(_onOnFocusNodeEvent);
-    _myFocusNode2.addListener(_onOnFocusNodeEvent);
-    _myFocusNode3.addListener(_onOnFocusNodeEvent);
-    _myFocusNode4.addListener(_onOnFocusNodeEvent);
-    _myFocusNode5.addListener(_onOnFocusNodeEvent);
+    _myFocusNode = new FocusNode();
+    _myFocusNode.addListener(_onOnFocusNodeEvent);
 
-    futureListIF = webService.getListInputField(widget.request.id);
+    futureListIF = webService.getListInputField(widget.request.id, null);
   }
 
   void _showPicker(BuildContext context, Function updateImage) {
@@ -143,11 +127,7 @@ class _CreateRequestInstanceDetailsScreenState
   @override
   void dispose() {
     super.dispose();
-    _myFocusNode1.dispose();
-    _myFocusNode2.dispose();
-    _myFocusNode3.dispose();
-    _myFocusNode4.dispose();
-    _myFocusNode5.dispose();
+    _myFocusNode.dispose();
   }
 
   _onOnFocusNodeEvent() {
@@ -232,122 +212,12 @@ class _CreateRequestInstanceDetailsScreenState
                             textAlign: TextAlign.center,
                           ),
                         ),
-                        // Padding(
-                        //   padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        //   child: StreamBuilder(
-                        //     // stream: authBloc.nameStream,
-                        //     builder: (context, snapshot) => TextField(
-                        //       focusNode: _myFocusNode1,
-                        //       controller: _nameController,
-                        //       style: TextStyle(fontSize: 18, color: Colors.black),
-                        //       decoration: InputDecoration(
-                        //         errorText: snapshot.hasError ? snapshot.error : null,
-                        //         labelText: 'Họ và tên',
-                        //         labelStyle: TextStyle(
-                        //             color: _myFocusNode1.hasFocus
-                        //                 ? MyColors.lightBrand
-                        //                 : MyColors.mediumGray),
-                        //         border: OutlineInputBorder(
-                        //           borderSide:
-                        //               BorderSide(color: MyColors.lightGray, width: 1),
-                        //           borderRadius: BorderRadius.all(Radius.circular(6)),
-                        //         ),
-                        //         focusedBorder: OutlineInputBorder(
-                        //           borderSide: BorderSide(
-                        //               color: MyColors.lightBrand, width: 2.0),
-                        //           borderRadius: BorderRadius.circular(6.0),
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                        // StreamBuilder(
-                        //   // stream: authBloc.phoneStream,
-                        //   builder: (context, snapshot) => TextField(
-                        //     focusNode: _myFocusNode2,
-                        //     controller: _idController,
-                        //     style: TextStyle(fontSize: 18, color: Colors.black),
-                        //     decoration: InputDecoration(
-                        //       errorText: snapshot.hasError ? snapshot.error : null,
-                        //       labelText: 'Mssv',
-                        //       labelStyle: TextStyle(
-                        //           color: _myFocusNode2.hasFocus
-                        //               ? MyColors.lightBrand
-                        //               : MyColors.mediumGray),
-                        //       border: OutlineInputBorder(
-                        //         borderSide:
-                        //             BorderSide(color: MyColors.lightGray, width: 1),
-                        //         borderRadius: BorderRadius.all(Radius.circular(6)),
-                        //       ),
-                        //       focusedBorder: OutlineInputBorder(
-                        //         borderSide:
-                        //             BorderSide(color: MyColors.lightBrand, width: 2.0),
-                        //         borderRadius: BorderRadius.circular(6.0),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                        // Padding(
-                        //   padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        //   child: StreamBuilder(
-                        //     // stream: authBloc.emailStream,
-                        //     builder: (context, snapshot) => TextField(
-                        //       focusNode: _myFocusNode3,
-                        //       controller: _emailController,
-                        //       style: TextStyle(fontSize: 18, color: Colors.black),
-                        //       decoration: InputDecoration(
-                        //         errorText: snapshot.hasError ? snapshot.error : null,
-                        //         labelText: 'Email',
-                        //         labelStyle: TextStyle(
-                        //             color: _myFocusNode3.hasFocus
-                        //                 ? MyColors.lightBrand
-                        //                 : MyColors.mediumGray),
-                        //         border: OutlineInputBorder(
-                        //           borderSide:
-                        //               BorderSide(color: MyColors.lightGray, width: 1),
-                        //           borderRadius: BorderRadius.all(Radius.circular(6)),
-                        //         ),
-                        //         focusedBorder: OutlineInputBorder(
-                        //           borderSide: BorderSide(
-                        //               color: MyColors.lightBrand, width: 2.0),
-                        //           borderRadius: BorderRadius.circular(6.0),
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                        // StreamBuilder(
-                        //   // stream: authBloc.passStream,
-                        //   builder: (context, snapshot) => TextField(
-                        //     focusNode: _myFocusNode4,
-                        //     controller: _phoneController,
-                        //     style: TextStyle(fontSize: 18, color: Colors.black),
-                        //     decoration: InputDecoration(
-                        //       errorText: snapshot.hasError ? snapshot.error : null,
-                        //       labelText: 'Số điện thoại',
-                        //       labelStyle: TextStyle(
-                        //           color: _myFocusNode4.hasFocus
-                        //               ? MyColors.lightBrand
-                        //               : MyColors.mediumGray),
-                        //       border: OutlineInputBorder(
-                        //         borderSide:
-                        //             BorderSide(color: MyColors.lightGray, width: 1),
-                        //         borderRadius: BorderRadius.all(Radius.circular(6)),
-                        //       ),
-                        //       focusedBorder: OutlineInputBorder(
-                        //         borderSide:
-                        //             BorderSide(color: MyColors.lightBrand, width: 2.0),
-                        //         borderRadius: BorderRadius.circular(6.0),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 0, 0, 32),
                           child: StreamBuilder(
                             // stream: authBloc.passStream,
                             builder: (context, snapshot) => TextField(
-                              focusNode: _myFocusNode5,
+                              focusNode: _myFocusNode,
                               controller: _contentController,
                               maxLines: 3,
                               keyboardType: TextInputType.multiline,
@@ -359,7 +229,7 @@ class _CreateRequestInstanceDetailsScreenState
                                     snapshot.hasError ? snapshot.error : null,
                                 labelText: 'Nội dung',
                                 labelStyle: TextStyle(
-                                    color: _myFocusNode5.hasFocus
+                                    color: _myFocusNode.hasFocus
                                         ? MyColors.lightBrand
                                         : MyColors.mediumGray),
                                 border: OutlineInputBorder(

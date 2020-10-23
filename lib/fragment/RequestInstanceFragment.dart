@@ -88,7 +88,7 @@ class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
             return Column(
               children: [
                 _searchBox(),
-                Divider(height: 1),
+                Divider(thickness: 1, height: 1),
                 _isSearch
                     ? RequestInstanceListWidget(
                         requestInstanceList: listRequestInstance)

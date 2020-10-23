@@ -1,6 +1,7 @@
 class StepInstance {
   final int id;
   final int requestInstanceID;
+  final int stepID;
   int approverID;
   String defaultContent;
   String status;
@@ -14,6 +15,7 @@ class StepInstance {
   StepInstance({
     this.id,
     this.requestInstanceID,
+    this.stepID,
     this.approverID,
     this.defaultContent,
     this.status,
@@ -29,6 +31,7 @@ class StepInstance {
     return StepInstance(
       id: json['ID'],
       requestInstanceID: json['RequestInstanceID'],
+      stepID: json['StepID'],
       approverID: json['ApproverID'],
       defaultContent: json['DefaultContent'],
       status: json['Status'],

@@ -39,8 +39,8 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
   var webService = WebService();
   final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss-07:00');
 
-  List<InputFieldInstance> listInputFieldInstance = new List();
   Future<List<InputFieldInstance>> futureListIFI;
+  List<InputFieldInstance> listInputFieldInstance = new List();
   int count = 0;
   int nextStepSize = 0;
   ProgressDialog pr;
@@ -261,7 +261,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
             },
           );
         } else {
-          Column(
+          return Column(
             children: [
               Padding(
                 padding: const EdgeInsets.only(bottom: 20),
