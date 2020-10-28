@@ -17,7 +17,7 @@ class _SecretaryHomeFragmentState extends State<SecretaryHomeFragment> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          'Trang chủ',
+          'Yêu cầu',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w500,

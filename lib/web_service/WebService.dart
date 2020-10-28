@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:cse_bpm_project/model/CountRIToday.dart';
 import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/InputFieldInstance.dart';
+import 'package:cse_bpm_project/model/NumOfRequestInstance.dart';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/model/Role.dart';
 import 'package:cse_bpm_project/model/Step.dart';
@@ -377,6 +379,38 @@ class WebService {
       return listInputFieldInstance;
     } else {
       throw Exception('Failed to get list input field!');
+    }
+  }
+
+  Future<List<NumOfRequestInstance>> getListNumOfRequestInstance() async {
+    final response = await http.get(
+        'http://nkkha.somee.com/odata/tbRequestInstance/GetNumOfRequestInstance');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['value'];
+      List<NumOfRequestInstance> listNumOfRequestInstance = new List();
+      for (Map i in data) {
+        listNumOfRequestInstance.add(NumOfRequestInstance.fromJson(i));
+      }
+      return listNumOfRequestInstance;
+    } else {
+      throw Exception('Failed to get list number of request instance!');
+    }
+  }
+
+  Future<List<CountRIToday>> getListNumOfRequestInstanceToday() async {
+    final response = await http.get(
+        'http://nkkha.somee.com/odata/tbRequestInstance/GetNumOfRequestInstanceToday');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['value'];
+      List<CountRIToday> listRIToday = new List();
+      for (Map i in data) {
+        listRIToday.add(CountRIToday.fromJson(i));
+      }
+      return listRIToday;
+    } else {
+      throw Exception('Failed to get list number of request instance today!');
     }
   }
 }

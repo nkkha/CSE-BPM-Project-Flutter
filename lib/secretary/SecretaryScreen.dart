@@ -1,3 +1,5 @@
+import 'package:cse_bpm_project/chart/GalleryScaffold.dart';
+import 'package:cse_bpm_project/chart/DashboardScreen.dart';
 import 'package:cse_bpm_project/fragment/ChatFragment.dart';
 import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
 import 'package:cse_bpm_project/secretary/SecretaryHomeFragment.dart';
@@ -19,9 +21,9 @@ class SecretaryScreen extends StatefulWidget {
 class _SecretaryScreenState extends State<SecretaryScreen> with AfterLayoutMixin<SecretaryScreen> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
+  static List<Widget> _widgetOptions = <Widget>[
+    DashboardScreen(),
     SecretaryHomeFragment(),
-    ChatFragment(),
     SettingsFragment(),
   ];
 
@@ -44,21 +46,21 @@ class _SecretaryScreenState extends State<SecretaryScreen> with AfterLayoutMixin
               Icons.home,
               color: _selectedIndex == 0 ? MyColors.brand : MyColors.mediumGray,
             ),
-            title: Text('Trang chủ'),
+            label: 'Trang chủ',
           ),
           BottomNavigationBarItem(
             icon: Image.asset(
               'images/ic-chat-24.png',
               color: _selectedIndex == 1 ? MyColors.brand : MyColors.mediumGray,
             ),
-            title: Text('Chat'),
+            label: 'Yêu cầu',
           ),
           BottomNavigationBarItem(
             icon: Image.asset(
               'images/ic-settings-24.png',
               color: _selectedIndex == 2 ? MyColors.brand : MyColors.mediumGray,
             ),
-            title: Text('Cài đặt'),
+            label: 'Cài đặt',
           ),
         ],
         currentIndex: _selectedIndex,
