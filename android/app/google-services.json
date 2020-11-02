@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "709018749229",
+    "firebase_url": "https://cse-bpm-project.firebaseio.com",
+    "project_id": "cse-bpm-project",
+    "storage_bucket": "cse-bpm-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:709018749229:android:405b6029f33e6ad8af2ba4",
+        "android_client_info": {
+          "package_name": "com.example.cse_bpm_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "709018749229-53rqbe639fgadoq6lk6mc40js41ng2sv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRkEI0RI7lHYHegzZgD4nyt-kP2QKDFWQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "709018749229-53rqbe639fgadoq6lk6mc40js41ng2sv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
