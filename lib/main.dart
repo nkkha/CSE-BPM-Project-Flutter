@@ -7,14 +7,22 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey(debugLabel: "MainNavigator");
+
   @override
   Widget build(BuildContext context) {
     FlutterStatusbarcolor.setStatusBarColor(Colors.white);
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'CSE BPM Project',
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      home: LoginScreen(navigatorKey: navigatorKey),
       theme: ThemeData(
         primaryColor: MyColors.white,
         primaryColorDark: MyColors.lightGray,

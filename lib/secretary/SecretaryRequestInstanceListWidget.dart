@@ -3,6 +3,7 @@ import 'package:cse_bpm_project/screen/RequestInstanceDetailsScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class SecretaryRequestInstanceListWidget extends StatefulWidget {
   final List<RequestInstance> requestInstanceList;
@@ -42,25 +43,26 @@ class _SecretaryRequestInstanceListWidgetState
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: 20),
-            _buildListRequestInstance(newRequests, 1),
-            _buildListRequestInstance(inProgressRequests, 2),
-            _buildListRequestInstance(doneRequests, 3),
-            _buildListRequestInstance(failedRequests, 4),
+            newRequests.length != 0 ? _buildListRequestInstance(newRequests, 1) : Container(),
+            inProgressRequests.length != 0 ? _buildListRequestInstance(inProgressRequests, 2) : Container(),
+            doneRequests.length != 0 ? _buildListRequestInstance(doneRequests, 3) : Container(),
+            failedRequests.length != 0 ? _buildListRequestInstance(failedRequests, 4) : Container(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildListRequestInstance(List<RequestInstance> requests, int index) {
+  Widget _buildListRequestInstance(
+      List<RequestInstance> listRequestInstance, int index) {
     String title = "";
     Color color;
     if (index == 1) {
       title = "Yêu cầu mới";
-      color = MyColors.indigo;
+      color = MyColors.amber;
     } else if (index == 2) {
       title = "Đang thực hiện";
-      color = MyColors.amber;
+      color = MyColors.blue;
     } else if (index == 3) {
       title = "Đã hoàn thành";
       color = MyColors.green;
@@ -77,11 +79,12 @@ class _SecretaryRequestInstanceListWidgetState
         Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: ListView.builder(
-            itemCount: requests.length,
+            itemCount: listRequestInstance.length,
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              return _buildRequestInstanceRow(requests[index], color, index);
+              return _buildRequestInstanceRow(
+                  listRequestInstance[index], color, index);
             },
           ),
         ),
@@ -91,6 +94,9 @@ class _SecretaryRequestInstanceListWidgetState
 
   Widget _buildRequestInstanceRow(
       RequestInstance requestInstance, Color color, int index) {
+    var date = DateTime.parse(requestInstance.createdDate);
+    String formattedDate = DateFormat('HH:mm:ss - dd/MM/yyyy').format(date);
+
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -171,7 +177,7 @@ class _SecretaryRequestInstanceListWidgetState
                       ),
                     ),
                     Text(
-                      'Thời gian tạo: 18:00 - 20/07',
+                      'Thời gian tạo: $formattedDate',
                       style: TextStyle(
                         fontSize: 14,
                         color: MyColors.mediumGray,

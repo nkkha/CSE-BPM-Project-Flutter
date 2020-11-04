@@ -5,6 +5,7 @@ class RequestInstance {
   final String defaultContent;
   int currentStepIndex;
   String status;
+  int approverID;
   String createdDate;
   String finishedDate;
   final int numOfSteps;
@@ -20,6 +21,7 @@ class RequestInstance {
       this.defaultContent,
       this.currentStepIndex,
       this.status,
+      this.approverID,
       this.createdDate,
       this.finishedDate,
       this.numOfSteps,
@@ -36,6 +38,7 @@ class RequestInstance {
       defaultContent: json['DefaultContent'],
       currentStepIndex: json['CurrentStepIndex'],
       status: json['Status'],
+      approverID: json['ApproverID'],
       createdDate: json['CreatedDate'],
       finishedDate: json['FinishedDate'],
       numOfSteps: json['NumOfSteps'],

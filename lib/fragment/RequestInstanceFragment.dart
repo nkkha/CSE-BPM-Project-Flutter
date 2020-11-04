@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cse_bpm_project/secretary/SecretaryRequestInstanceListWidget.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:http/http.dart' as http;
 
@@ -90,7 +91,7 @@ class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
                 _searchBox(),
                 Divider(thickness: 1, height: 1),
                 _isSearch
-                    ? RequestInstanceListWidget(
+                    ? SecretaryRequestInstanceListWidget(
                         requestInstanceList: listRequestInstance)
                     : _searchListView(),
               ],

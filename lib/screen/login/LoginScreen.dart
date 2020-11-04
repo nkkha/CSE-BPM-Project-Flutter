@@ -2,20 +2,28 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cse_bpm_project/dean/DeanScreen.dart';
+import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/offices/OfficesScreen.dart';
 import 'package:cse_bpm_project/model/User.dart';
+import 'package:cse_bpm_project/screen/RequestInstanceDetailsScreen.dart';
 import 'package:cse_bpm_project/screen/StudentScreen.dart';
+import 'package:cse_bpm_project/secretary/SecretaryRequestScreen.dart';
 import 'package:cse_bpm_project/secretary/SecretaryScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'RegisterScreen.dart';
 
 class LoginScreen extends StatefulWidget {
+  final GlobalKey<NavigatorState> navigatorKey;
+
+  const LoginScreen({Key key, this.navigatorKey}) : super(key: key);
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -40,15 +48,20 @@ class _LoginScreenState extends State<LoginScreen> {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
-        // _showItemDialog(message);
+        if (message.containsKey('data')) {
+          final RequestInstance data = RequestInstance.fromJson(jsonDecode(message['data']['requestInstance']));
+          _showAlertDialog();
+        }
       },
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
-        // _navigateToItemDetail(message);
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
-        // _navigateToItemDetail(message);
+        if (message.containsKey('data')) {
+          final RequestInstance data = RequestInstance.fromJson(jsonDecode(message['data']['requestInstance']));
+          widget.navigatorKey.currentState.push(MaterialPageRoute(builder: (context) => RequestInstanceDetailsScreen(requestInstance: data, isStudent: false,)));
+        }
       },
     );
     _firebaseMessaging.requestNotificationPermissions(
@@ -69,7 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       progressDialog = ProgressDialog(context,
-          type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+          type: ProgressDialogType.Normal,
+          isDismissible: false,
+          showLogs: true);
       progressDialog.update(message: "Vui lòng đợi...");
       await progressDialog.show();
       getSharedPrefs();
@@ -79,6 +94,30 @@ class _LoginScreenState extends State<LoginScreen> {
     _myFocusNode2 = new FocusNode();
     _myFocusNode1.addListener(_onOnFocusNodeEvent);
     _myFocusNode2.addListener(_onOnFocusNodeEvent);
+  }
+
+  _showAlertDialog() {
+    TextEditingController messageController = new TextEditingController();
+    BuildContext context = widget.navigatorKey.currentContext;
+    Alert(
+        context: context,
+        title: "Xác nhận",
+        buttons: [
+          DialogButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              "Huỷ bỏ",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          ),
+          DialogButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              "Đồng ý",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          )
+        ]).show();
   }
 
   Future<Null> getSharedPrefs() async {
@@ -287,20 +326,22 @@ class _LoginScreenState extends State<LoginScreen> {
       await pr.hide();
       switch (user.roleId) {
         case 1:
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => StudentScreen()));
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => StudentScreen()));
           break;
         case 2:
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => SecretaryScreen()));
           break;
         case 3:
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => DeanScreen()));
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => DeanScreen()));
           break;
         default:
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => OfficesScreen(roleID: user.roleId)));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => OfficesScreen(roleID: user.roleId)));
           break;
       }
     } else {
@@ -335,12 +376,16 @@ class _LoginScreenState extends State<LoginScreen> {
             MaterialPageRoute(builder: (context) => SecretaryScreen()));
         break;
       case 3:
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => DeanScreen()));
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => DeanScreen()));
         break;
       default:
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => OfficesScreen(roleID: _roleId,)));
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => OfficesScreen(
+                      roleID: _roleId,
+                    )));
         break;
     }
   }

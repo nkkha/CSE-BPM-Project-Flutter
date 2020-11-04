@@ -3,6 +3,7 @@ import 'package:cse_bpm_project/screen/RequestInstanceDetailsScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class OfficesStudentRequestInstanceListWidget extends StatefulWidget {
   final List<RequestInstance> requestInstanceList;
@@ -54,6 +55,9 @@ class _OfficesStudentRequestInstanceListWidgetState
 
   Widget _buildRequestInstanceRow(
       RequestInstance requestInstance, Color color, int index) {
+    var date = DateTime.parse(requestInstance.createdDate);
+    String formattedDate = DateFormat('HH:mm:ss - dd/MM/yyyy').format(date);
+
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -134,7 +138,7 @@ class _OfficesStudentRequestInstanceListWidgetState
                       ),
                     ),
                     Text(
-                      'Thời gian tạo: 18:00 - 20/07',
+                      'Thời gian tạo: $formattedDate',
                       style: TextStyle(
                         fontSize: 14,
                         color: MyColors.mediumGray,

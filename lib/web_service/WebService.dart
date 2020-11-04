@@ -30,7 +30,6 @@ class WebService {
   int count = 0;
   final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss-07:00');
 
-
   /// Web API
 
   /// Request
@@ -115,8 +114,7 @@ class WebService {
     );
 
     if (response.statusCode == 200) {
-      getNextStep(
-          requestInstance, requestInstance.currentStepIndex, update);
+      getNextStep(requestInstance, requestInstance.currentStepIndex, update);
     } else {
       update(false);
       throw Exception('Failed to update request instance');
@@ -167,7 +165,11 @@ class WebService {
     }
   }
 
-  Future<void> getOtherCurrentStepInstances(RequestInstance requestInstance, int currentStepInstanceID, int currentStepIndex, bool isLastStep,
+  Future<void> getOtherCurrentStepInstances(
+      RequestInstance requestInstance,
+      int currentStepInstanceID,
+      int currentStepIndex,
+      bool isLastStep,
       Function update) async {
     final response = await http.get(
         'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails?\$filter=RequestInstanceID eq ${requestInstance.id} and StepIndex eq $currentStepIndex and id ne $currentStepInstanceID');
@@ -181,7 +183,8 @@ class WebService {
         listStepInstance.add(StepInstance.fromJson(i));
       }
       for (int i = 0; i < listStepInstance.length; i++) {
-        if (listStepInstance[i].status.contains('active') || listStepInstance[i].status.contains('failed')) {
+        if (listStepInstance[i].status.contains('active') ||
+            listStepInstance[i].status.contains('failed')) {
           isCompleted = false;
           update(false);
           break;
@@ -224,8 +227,8 @@ class WebService {
     }
   }
 
-  Future<void> postCreateStep(
-      int requestID, String name, String description, int approverRoleID, int stepIndex, Function update) async {
+  Future<void> postCreateStep(int requestID, String name, String description,
+      int approverRoleID, int stepIndex, Function update) async {
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbStep',
       headers: <String, String>{
@@ -251,8 +254,7 @@ class WebService {
   /// Role
 
   Future<List<Role>> getListRole() async {
-    final response = await http.get(
-        'http://nkkha.somee.com/odata/tbRole');
+    final response = await http.get('http://nkkha.somee.com/odata/tbRole');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
@@ -268,8 +270,8 @@ class WebService {
 
   /// InputField
 
-  Future<void> postCreateInputField(
-      int stepID, int requestID, int inputFieldTypeID, String title, Function update) async {
+  Future<void> postCreateInputField(int stepID, int requestID,
+      int inputFieldTypeID, String title, Function update) async {
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbInputField',
       headers: <String, String>{
@@ -297,8 +299,8 @@ class WebService {
     } else if (stepID != null) {
       query = "StepID eq $stepID";
     }
-    final response = await http.get(
-        'http://nkkha.somee.com/odata/tbInputField?\$filter=$query');
+    final response = await http
+        .get('http://nkkha.somee.com/odata/tbInputField?\$filter=$query');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
@@ -315,7 +317,11 @@ class WebService {
   /// InputFieldInstance
 
   Future<void> postCreateInputTextFieldInstance(
-      int stepInstanceID, int requestInstanceID, int inputFieldID, String textAnswer, Function update) async {
+      int stepInstanceID,
+      int requestInstanceID,
+      int inputFieldID,
+      String textAnswer,
+      Function update) async {
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbInputFieldInstance',
       headers: <String, String>{
@@ -323,7 +329,8 @@ class WebService {
       },
       body: jsonEncode(<String, String>{
         "StepInstanceID": stepInstanceID == null ? null : "$stepInstanceID",
-        "RequestInstanceID": requestInstanceID == null ? null : "$requestInstanceID",
+        "RequestInstanceID":
+            requestInstanceID == null ? null : "$requestInstanceID",
         "InputFieldID": "$inputFieldID",
         "TextAnswer": textAnswer
       }),
@@ -337,7 +344,13 @@ class WebService {
     }
   }
 
-  Future<void> postCreateInputFileFieldInstance(int stepInstanceID, int requestInstanceID, int inputFieldID, String base64, String fileName, Function update) async {
+  Future<void> postCreateInputFileFieldInstance(
+      int stepInstanceID,
+      int requestInstanceID,
+      int inputFieldID,
+      String base64,
+      String fileName,
+      Function update) async {
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbInputFieldInstance',
       headers: <String, String>{
@@ -345,7 +358,8 @@ class WebService {
       },
       body: jsonEncode(<String, String>{
         "StepInstanceID": stepInstanceID == null ? null : "$stepInstanceID",
-        "RequestInstanceID": requestInstanceID == null ? null : "$requestInstanceID",
+        "RequestInstanceID":
+            requestInstanceID == null ? null : "$requestInstanceID",
         "InputFieldID": "$inputFieldID",
         "FileContent": base64,
         "FileName": fileName
@@ -360,7 +374,8 @@ class WebService {
     }
   }
 
-  Future<List<InputFieldInstance>> getListInputFieldInstance(int requestInstanceID, stepInstanceID) async {
+  Future<List<InputFieldInstance>> getListInputFieldInstance(
+      int requestInstanceID, stepInstanceID) async {
     String query = "";
     if (requestInstanceID != null) {
       query = "RequestInstanceID eq $requestInstanceID";
@@ -411,6 +426,23 @@ class WebService {
       return listRIToday;
     } else {
       throw Exception('Failed to get list number of request instance today!');
+    }
+  }
+
+  Future<List<RequestInstance>> getListRequestInstance(String query) async {
+    List<RequestInstance> listRequestInstance = new List();
+    final response = await http.get(
+        'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?$query');
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['value'];
+      for (Map i in data) {
+        if (!RequestInstance.fromJson(i).status.contains('failed')) {
+          listRequestInstance.add(RequestInstance.fromJson(i));
+        }
+      }
+      return listRequestInstance;
+    } else {
+      throw Exception('Failed to load');
     }
   }
 }
