@@ -164,7 +164,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                       ),
                       InkWell(
                         child: Text(
-                          "${startDate.year}/${formatTime(startDate.month)}/${formatTime(startDate.day)}",
+                          "${startDate.day}/${formatTime(startDate.month)}/${formatTime(startDate.year)}",
                           style: TextStyle(fontSize: 18, color: MyColors.blue),
                         ),
                         onTap: () => _pickDate(true),
@@ -200,7 +200,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                       ),
                       InkWell(
                         child: Text(
-                          "${dueDate.year}/${formatTime(dueDate.month)}/${formatTime(dueDate.day)}",
+                          "${dueDate.day}/${formatTime(dueDate.month)}/${formatTime(dueDate.year)}",
                           style: TextStyle(fontSize: 18, color: MyColors.blue),
                         ),
                         onTap: () => _pickDate(false),

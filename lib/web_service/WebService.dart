@@ -28,7 +28,7 @@ class WebService {
 
   int nextStepSize = 0;
   int count = 0;
-  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss-07:00');
+  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss');
 
   /// Web API
 
@@ -63,6 +63,23 @@ class WebService {
       int tabIndex, int requestInstanceID) async {
     final response = await http.get(
         'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails?\$filter=StepIndex eq $tabIndex and RequestInstanceID eq $requestInstanceID');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['value'];
+      List<StepInstance> listStepInstance = new List();
+      for (Map i in data) {
+        listStepInstance.add(StepInstance.fromJson(i));
+      }
+      return listStepInstance;
+    } else {
+      throw Exception('Failed to load');
+    }
+  }
+
+  Future<List<StepInstance>> getAllStepInstances(int requestInstanceID) async {
+    final response = await http.get(
+        // 'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails?\$filter=RequestInstanceID eq $requestInstanceID');
+        'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
@@ -126,7 +143,7 @@ class WebService {
     var resBody = {};
     // indexType = 1: Reject, indexType = 2: Approve
     resBody["Status"] = "done";
-    resBody["FinishedDate"] = formatterDateTime.format(DateTime.now());
+    resBody["FinishedDate"] = formatterDateTime.format(DateTime.now()) + '\-07:00';
     String str = json.encode(resBody);
 
     final http.Response response = await http.patch(
@@ -159,6 +176,9 @@ class WebService {
       nextStepSize = listStep.length;
       for (int i = 0; i < nextStepSize; i++) {
         postCreateNextStepInstances(requestInstance.id, listStep[i].id, update);
+      }
+      if (nextStepSize == 0) {
+        update(false);
       }
     } else {
       throw Exception('Failed to load');
@@ -202,6 +222,8 @@ class WebService {
 
   Future<void> postCreateNextStepInstances(
       int requestInstanceID, int stepID, Function update) async {
+    String createdDate = formatterDateTime.format(DateTime.now()) + '\-07:00';
+
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbStepInstance',
       headers: <String, String>{
@@ -213,7 +235,8 @@ class WebService {
         "DefaultContent": "",
         "Status": "active",
         "StepID": "$stepID",
-        "ResponseMessage": ""
+        "ResponseMessage": "",
+        "CreatedDate": createdDate
       }),
     );
 
@@ -445,4 +468,6 @@ class WebService {
       throw Exception('Failed to load');
     }
   }
+
+
 }

@@ -16,6 +16,7 @@ import 'package:cse_bpm_project/source/SharedPreferencesHelper.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -48,11 +49,13 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   Future<List<StepInstance>> futureListStepInstance;
   List<StepInstance> stepInstanceList = new List();
 
-  HashMap listInputFields = new HashMap<int, List<InputField>>();
-  HashMap listInputFieldInstances =
+  HashMap hashMapInputFields = new HashMap<int, List<InputField>>();
+  HashMap hashMapInputFieldInstances =
       new HashMap<int, List<InputFieldInstance>>();
   HashMap listImageBytes = new HashMap<int, Uint8List>();
   HashMap listFileBytes = new HashMap<int, Uint8List>();
+
+  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss-07:00');
 
   @override
   void initState() {
@@ -294,20 +297,20 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data.length > 0) {
-              if (!listInputFields.containsKey(stepIndex)) {
+              if (!hashMapInputFields.containsKey(stepIndex)) {
                 List<InputField> listIF = new List();
                 listIF = snapshot.data;
-                listInputFields.putIfAbsent(stepIndex, () => listIF);
-                if (!listInputFieldInstances.containsKey(stepIndex)) {
+                hashMapInputFields.putIfAbsent(stepIndex, () => listIF);
+                if (!hashMapInputFieldInstances.containsKey(stepIndex)) {
                   List<InputFieldInstance> listIFI = new List();
-                  for (InputField inputField in listInputFields[0]) {
+                  for (InputField inputField in hashMapInputFields[0]) {
                     listIFI.add(new InputFieldInstance(
                         inputFieldID: inputField.id,
                         stepInstanceID: stepInstance.id,
                         inputFieldTypeID: inputField.inputFieldTypeID,
                         title: inputField.title));
                   }
-                  listInputFieldInstances.putIfAbsent(stepIndex, () => listIFI);
+                  hashMapInputFieldInstances.putIfAbsent(stepIndex, () => listIFI);
                 }
               }
             }
@@ -317,10 +320,10 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  listInputFieldInstances.length > 0
+                  hashMapInputFieldInstances.length > 0
                       ? Column(
                           children: List<Widget>.generate(
-                              listInputFieldInstances[stepIndex].length,
+                              hashMapInputFieldInstances[stepIndex].length,
                               (index) => createInputFieldInstanceWidget(
                                   stepIndex, index)),
                         )
@@ -339,7 +342,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   }
 
   Widget createInputFieldInstanceWidget(int stepIndex, int index) {
-    switch (listInputFieldInstances[stepIndex][index].inputFieldTypeID) {
+    switch (hashMapInputFieldInstances[stepIndex][index].inputFieldTypeID) {
       case 1:
         return createTextFieldWidget(stepIndex, index);
         break;
@@ -355,9 +358,9 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
 
   Widget createTextFieldWidget(int stepIndex, int index) {
     TextEditingController _textController = new TextEditingController();
-    _textController.text = listInputFieldInstances[stepIndex][index].textAnswer;
+    _textController.text = hashMapInputFieldInstances[stepIndex][index].textAnswer;
     _textController.addListener(() {
-      listInputFieldInstances[stepIndex][index].textAnswer =
+      hashMapInputFieldInstances[stepIndex][index].textAnswer =
           _textController.text;
     });
 
@@ -370,7 +373,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
           Padding(
             padding: const EdgeInsets.only(bottom: 32),
             child: Text(
-              listInputFieldInstances[stepIndex][index].title,
+              hashMapInputFieldInstances[stepIndex][index].title,
               style: TextStyle(fontSize: 16),
             ),
           ),
@@ -406,13 +409,13 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   }
 
   Widget createImageFieldWidget(int stepIndex, int index) {
-    final int key = listInputFieldInstances[stepIndex][index].id;
+    final int key = hashMapInputFieldInstances[stepIndex][index].id;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       child: Column(
         children: [
           Text(
-            '${listInputFieldInstances[stepIndex][index].title}',
+            '${hashMapInputFieldInstances[stepIndex][index].title}',
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(width: 10, height: 10),
@@ -424,11 +427,11 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                         Uint8List decodedBytes = base64Decode(data);
                         if (listImageBytes.containsKey(key)) {
                           listImageBytes.update(key, (value) => decodedBytes);
-                          listInputFieldInstances[stepIndex][index]
+                          hashMapInputFieldInstances[stepIndex][index]
                               .fileContent = data;
                         } else {
                           listImageBytes.putIfAbsent(key, () => decodedBytes);
-                          listInputFieldInstances[stepIndex][index]
+                          hashMapInputFieldInstances[stepIndex][index]
                               .fileContent = data;
                         }
                       });
@@ -442,11 +445,11 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                         Uint8List decodedBytes = base64Decode(data);
                         if (listImageBytes.containsKey(key)) {
                           listImageBytes.update(key, (value) => decodedBytes);
-                          listInputFieldInstances[stepIndex][index]
+                          hashMapInputFieldInstances[stepIndex][index]
                               .fileContent = data;
                         } else {
                           listImageBytes.putIfAbsent(key, () => decodedBytes);
-                          listInputFieldInstances[stepIndex][index]
+                          hashMapInputFieldInstances[stepIndex][index]
                               .fileContent = data;
                         }
                       });
@@ -463,13 +466,13 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   }
 
   Widget createUploadFileFieldWidget(int stepIndex, int index) {
-    final int key = listInputFieldInstances[stepIndex][index].id;
+    final int key = hashMapInputFieldInstances[stepIndex][index].id;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       child: Column(
         children: [
           Text(
-            '${listInputFieldInstances[stepIndex][index].title}',
+            '${hashMapInputFieldInstances[stepIndex][index].title}',
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(width: 10, height: 10),
@@ -481,15 +484,15 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                         Uint8List decodedBytes = base64Decode(fileB64);
                         if (listFileBytes.containsKey(key)) {
                           listFileBytes.update(key, (value) => decodedBytes);
-                          listInputFieldInstances[stepIndex][index]
+                          hashMapInputFieldInstances[stepIndex][index]
                               .fileContent = fileB64;
-                          listInputFieldInstances[stepIndex][index].fileName =
+                          hashMapInputFieldInstances[stepIndex][index].fileName =
                               fileName;
                         } else {
                           listFileBytes.putIfAbsent(key, () => decodedBytes);
-                          listInputFieldInstances[stepIndex][index]
+                          hashMapInputFieldInstances[stepIndex][index]
                               .fileContent = fileB64;
-                          listInputFieldInstances[stepIndex][index].fileName =
+                          hashMapInputFieldInstances[stepIndex][index].fileName =
                               fileName;
                         }
                       });
@@ -499,7 +502,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
               : Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    '${listInputFieldInstances[stepIndex][index].fileName}',
+                    '${hashMapInputFieldInstances[stepIndex][index].fileName}',
                     style: TextStyle(
                         fontSize: 16,
                         fontStyle: FontStyle.italic,
@@ -515,28 +518,28 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     return FutureBuilder(
       future: webService.getListInputFieldInstance(null, stepInstanceID),
       builder: (context, snapshot) {
-        if (listInputFieldInstances.containsKey(stepIndex)) {
+        if (hashMapInputFieldInstances.containsKey(stepIndex)) {
           return Padding(
             padding: const EdgeInsets.all(18.0),
             child: Column(
               children: List<Widget>.generate(
-                  listInputFieldInstances[stepIndex].length,
+                  hashMapInputFieldInstances[stepIndex].length,
                       (index) =>
                       _buildInputFieldInstanceField(stepIndex, index)),
             ),
           );
         } else if (snapshot.hasData) {
-          if (!listInputFieldInstances.containsKey(stepIndex)) {
+          if (!hashMapInputFieldInstances.containsKey(stepIndex)) {
             if (snapshot.data.length > 0) {
               List<InputFieldInstance> listIFI = new List();
               listIFI = snapshot.data;
-              listInputFieldInstances.putIfAbsent(
+              hashMapInputFieldInstances.putIfAbsent(
                   stepIndex, () => listIFI);
               return Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: Column(
                   children: List<Widget>.generate(
-                      listInputFieldInstances[stepIndex].length,
+                      hashMapInputFieldInstances[stepIndex].length,
                       (index) =>
                           _buildInputFieldInstanceField(stepIndex, index)),
                 ),
@@ -559,7 +562,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   }
 
   _buildInputFieldInstanceField(int stepIndex, int index) {
-    switch (listInputFieldInstances[stepIndex][index].inputFieldTypeID) {
+    switch (hashMapInputFieldInstances[stepIndex][index].inputFieldTypeID) {
       case 1:
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -569,14 +572,14 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 20),
                   child: Text(
-                    '${listInputFieldInstances[stepIndex][index].title}',
+                    '${hashMapInputFieldInstances[stepIndex][index].title}',
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 32),
                   child: Text(
-                    '${listInputFieldInstances[stepIndex][index].textAnswer}',
+                    '${hashMapInputFieldInstances[stepIndex][index].textAnswer}',
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -590,16 +593,16 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         break;
       case 2:
         Uint8List decodedBytes;
-        if (listInputFieldInstances[stepIndex][index].fileContent != null) {
+        if (hashMapInputFieldInstances[stepIndex][index].fileContent != null) {
           decodedBytes = base64Decode(
-              listInputFieldInstances[stepIndex][index].fileContent);
+              hashMapInputFieldInstances[stepIndex][index].fileContent);
         }
         return Column(
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: Text(
-                '${listInputFieldInstances[stepIndex][index].title}',
+                '${hashMapInputFieldInstances[stepIndex][index].title}',
                 style: TextStyle(fontSize: 16),
               ),
             ),
@@ -622,15 +625,15 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         );
         break;
       case 3:
-        if (listInputFieldInstances[stepIndex][index].fileContent != null) {
+        if (hashMapInputFieldInstances[stepIndex][index].fileContent != null) {
           Uint8List decodedBytes = base64Decode(
-              listInputFieldInstances[stepIndex][index].fileContent);
+              hashMapInputFieldInstances[stepIndex][index].fileContent);
           return FutureBuilder(
             future: getApplicationDocumentsDirectory(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 File file = new File(
-                    '${snapshot.data.path}/${listInputFieldInstances[stepIndex][index].fileName}');
+                    '${snapshot.data.path}/${hashMapInputFieldInstances[stepIndex][index].fileName}');
                 file.writeAsBytesSync(decodedBytes);
                 return FutureBuilder(
                   future: file.readAsBytes(),
@@ -641,7 +644,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 20),
                             child: Text(
-                              '${listInputFieldInstances[stepIndex][index].title}',
+                              '${hashMapInputFieldInstances[stepIndex][index].title}',
                               style: TextStyle(fontSize: 16),
                             ),
                           ),
@@ -683,7 +686,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: Text(
-                  '${listInputFieldInstances[stepIndex][index].title}',
+                  '${hashMapInputFieldInstances[stepIndex][index].title}',
                   style: TextStyle(fontSize: 16),
                 ),
               ),
@@ -811,6 +814,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       resBody["Status"] = indexType == 1 ? "failed" : "done";
       resBody["ResponseMessage"] = message;
       resBody["ApproverID"] = userID;
+      resBody["FinishedDate"] = formatterDateTime.format(DateTime.now());
       String str = json.encode(resBody);
 
       final http.Response response = await http.patch(
@@ -830,9 +834,9 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         } else {
           stepInstance.status = 'done';
           if (roleID == stepInstance.approverRoleID &&
-              listInputFieldInstances.containsKey(stepIndex)) {
+              hashMapInputFieldInstances.containsKey(stepIndex)) {
             for (InputFieldInstance inputFieldInstance
-                in listInputFieldInstances[stepIndex]) {
+                in hashMapInputFieldInstances[stepIndex]) {
               switch (inputFieldInstance.inputFieldTypeID) {
                 case 1:
                   webService.postCreateInputTextFieldInstance(
@@ -842,7 +846,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                       inputFieldInstance.textAnswer, (isSuccessful) {
                     if (isSuccessful) {
                       count++;
-                      if (count == listInputFieldInstances[stepIndex].length) {
+                      if (count == hashMapInputFieldInstances[stepIndex].length) {
                         if (stepInstanceList.length == 1) {
                           if (widget.tabIndex + 1 == widget.numOfSteps) {
                             webService.patchRequestInstanceFinished(
@@ -886,7 +890,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                       inputFieldInstance.fileName, (isSuccessful) {
                     if (isSuccessful) {
                       count++;
-                      if (count == listInputFieldInstances[stepIndex].length) {
+                      if (count == hashMapInputFieldInstances[stepIndex].length) {
                         if (stepInstanceList.length == 1) {
                           if (widget.tabIndex + 1 == widget.numOfSteps) {
                             webService.patchRequestInstanceFinished(

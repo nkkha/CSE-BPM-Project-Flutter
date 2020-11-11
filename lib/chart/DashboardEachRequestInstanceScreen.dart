@@ -1,11 +1,11 @@
 import 'dart:collection';
 
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:cse_bpm_project/chart/DashboardEachRequestInstanceScreen.dart';
 import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
 import 'package:cse_bpm_project/model/ListItem.dart';
 import 'package:cse_bpm_project/model/NumOfRequestInstance.dart';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
+import 'package:cse_bpm_project/model/StepInstance.dart';
 import 'package:cse_bpm_project/screen/CreateRequestInstanceDetailsScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
@@ -15,117 +15,54 @@ import 'package:intl/intl.dart';
 
 import 'DashboardRequestInstanceScreen.dart';
 
-class DashboardScreen extends StatefulWidget {
+class DashboardEachRequestInstanceScreen extends StatefulWidget {
+  final List<RequestInstance> requestInstanceList;
+
+  const DashboardEachRequestInstanceScreen({Key key, this.requestInstanceList}) : super(key: key);
+
   @override
-  _DashboardScreenState createState() => _DashboardScreenState();
+  _DashboardEachRequestInstanceScreenState createState() => _DashboardEachRequestInstanceScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardEachRequestInstanceScreenState extends State<DashboardEachRequestInstanceScreen> {
   var webService = new WebService();
-  String query = "\$filter=CreatedDate eq $formatted";
   List<RequestInstance> listAll = new List();
   List<RequestInstance> listNew = new List();
   List<RequestInstance> listInProgress = new List();
   List<RequestInstance> listDone = new List();
   List<RequestInstance> listFailed = new List();
 
-  HashMap hashMapRequestInstances = new HashMap<int, List<RequestInstance>>();
   List<List<RequestInstance>> listRequestInstances = new List();
-  List<NumOfRequestInstance> listNumOfRI = new List();
 
-  DateTime startDate, dueDate;
-  String startDateStr, dueDateStr;
   static final DateTime now = DateTime.now();
   static final DateFormat formatter = DateFormat('yyyy-MM-dd');
   static final String formatted = formatter.format(now);
 
-  List<ListItem> _dropdownItems = [
-    ListItem(1, "Tất cả", ""),
-    ListItem(2, "Hôm nay", "\$filter=CreatedDate eq $formatted"),
-    ListItem(3, "Tháng này", "\$filter=month(CreatedDate) eq ${now.month}"),
-    ListItem(4, "Chọn ngày", ""),
-  ];
-  List<DropdownMenuItem<ListItem>> _dropdownMenuItems;
-  ListItem _selectedItem;
-
   void initState() {
     super.initState();
-    _dropdownMenuItems = buildDropDownMenuItems(_dropdownItems);
-    _selectedItem = _dropdownMenuItems[1].value;
 
-    startDate = DateTime.now();
-    dueDate = startDate;
-    startDateStr = "Từ";
-    dueDateStr = "Đến";
-  }
-
-  List<DropdownMenuItem<ListItem>> buildDropDownMenuItems(List listItems) {
-    List<DropdownMenuItem<ListItem>> items = List();
-    for (ListItem listItem in listItems) {
-      items.add(
-        DropdownMenuItem(
-          child: Container(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 4.0),
-              child: Text(listItem.name,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 14)),
-            ),
-          ),
-          value: listItem,
-        ),
-      );
-    }
-    return items;
+    listAll = widget.requestInstanceList;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
+        titleSpacing: 0,
         title: Text(
-          'Trang chủ',
+          'Thống kê',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w500,
           ),
         ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(top: 8, right: 10),
-            padding: const EdgeInsets.only(left: 8, right: 8),
-            decoration: BoxDecoration(
-                // borderRadius: BorderRadius.circular(10.0),
-                // border: Border.all()
-                ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton(
-                  value: _selectedItem,
-                  items: _dropdownMenuItems,
-                  icon: Image.asset('images/ic_filter.png',
-                      width: 24, height: 24),
-                  onChanged: (value) {
-                    if (_selectedItem != value) {
-                      setState(() {
-                        _selectedItem = value;
-                        if (_selectedItem.value != 4) {
-                          query = _selectedItem.query;
-                        }
-                      });
-                    }
-                  }),
-            ),
-          ),
-        ],
       ),
-      body: FutureBuilder<List<RequestInstance>>(
-        future: webService.getListRequestInstance(query),
+      body: FutureBuilder<List<StepInstance>>(
+        future: webService.getAllStepInstances(0),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            clearCache();
-            listAll = snapshot.data;
-            for (RequestInstance requestInstance in snapshot.data) {
+            for (RequestInstance requestInstance in widget.requestInstanceList) {
               int id = requestInstance.requestID;
               if (requestInstance.status.contains('new')) {
                 listNew.add(requestInstance);
@@ -136,21 +73,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               } else if (requestInstance.status.contains('failed')) {
                 listFailed.add(requestInstance);
               }
-              if (!hashMapRequestInstances.containsKey(id)) {
-                List<RequestInstance> listRI = new List();
-                listRI.add(requestInstance);
-                hashMapRequestInstances.putIfAbsent(id, () => listRI);
-              } else {
-                List<RequestInstance> listRI = hashMapRequestInstances[id];
-                listRI.add(requestInstance);
-                hashMapRequestInstances.update(id, (v) => listRI);
-              }
             }
-            hashMapRequestInstances.forEach((k, v) {
-              listRequestInstances.add(v);
-              listNumOfRI.add(new NumOfRequestInstance(
-                  requestID: k, numOfRequestInstance: v.length));
-            });
 
             return SingleChildScrollView(
               child: Padding(
@@ -164,94 +87,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: Row(
                         children: [
                           Text(
-                            'Yêu cầu ',
+                            'Yêu cầu: ${widget.requestInstanceList[0].requestName}',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                               color: MyColors.darkGray,
                             ),
                           ),
-                          _selectedItem.value == 4
-                              ? Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 16),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          flex: 1,
-                                          child: InkWell(
-                                            onTap: () => _pickDate(true),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                border: Border(
-                                                  bottom:
-                                                      BorderSide(width: 1.0),
-                                                ),
-                                              ),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            right: 8.0),
-                                                    child: Text(startDateStr),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            bottom: 4.0),
-                                                    child:
-                                                        Icon(Icons.date_range),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(width: 20),
-                                        Expanded(
-                                          flex: 1,
-                                          child: InkWell(
-                                            onTap: () => _pickDate(false),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                border: Border(
-                                                  bottom:
-                                                      BorderSide(width: 1.0),
-                                                ),
-                                              ),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            right: 8.0),
-                                                    child: Text(dueDateStr),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            bottom: 4.0),
-                                                    child: InkWell(
-                                                        child: Icon(
-                                                            Icons.date_range)),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              : Container(),
                         ],
                       ),
                     ),
@@ -277,17 +119,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Container(
                           height: 250,
                           padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: new charts.BarChart(
-                            _getListNumOfRequestInstance(listNumOfRI),
-                          ),
+                          // child: new charts.BarChart(
+                          //   _getListNumOfRequestInstance(listNumOfRI),
+                          // ),
                         ),
-                        // Center(
-                        //   child: Text(
-                        //     'Biểu đồ thống kê số lượng theo từng loại yêu cầu',
-                        //     style: TextStyle(
-                        //         fontSize: 14, fontStyle: FontStyle.italic),
-                        //   ),
-                        // ),
                       ],
                     ),
                     listRequestInstances.length != 0
@@ -325,11 +160,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
       rows.add(DataRow(
         onSelectChanged: (bool selected) {
           if (selected) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => DashboardEachRequestInstanceScreen(requestInstanceList: list)),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //       builder: (context) => SettingsFragment()),
+            // );
           }
         },
         cells: <DataCell>[
@@ -384,33 +219,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   _buildText(String text) {
     return Text(text, style: TextStyle(fontSize: 14));
-  }
-
-  _pickDate(bool isStart) async {
-    DateTime date = await showDatePicker(
-      context: context,
-      firstDate: DateTime(DateTime.now().year - 5),
-      lastDate: DateTime(DateTime.now().year + 5),
-      initialDate: startDate,
-    );
-
-    if (date != null) {
-      setState(() {
-        if (isStart) {
-          startDate = date;
-          startDateStr =
-              "${startDate.day}/${formatTime(startDate.month)}/${formatTime(startDate.year)}";
-          query += "CreatedDate ge ${formatter.format(startDate)}";
-        } else {
-          dueDate = date;
-          dueDateStr =
-              "${dueDate.day}/${formatTime(dueDate.month)}/${formatTime(dueDate.year)}";
-        }
-        query =
-            "\$filter=CreatedDate ge ${formatter.format(startDate)} and CreatedDate le ${formatter.format(dueDate)}";
-        print(query);
-      });
-    }
   }
 
   Widget countCard(
@@ -531,8 +339,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     listInProgress.clear();
     listDone.clear();
     listFailed.clear();
-    listNumOfRI.clear();
-    hashMapRequestInstances.clear();
     listRequestInstances.clear();
   }
 

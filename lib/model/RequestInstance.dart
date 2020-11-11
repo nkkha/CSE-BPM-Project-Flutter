@@ -8,6 +8,8 @@ class RequestInstance {
   int approverID;
   String createdDate;
   String finishedDate;
+  String requestName;
+  String requestDescription;
   final int numOfSteps;
   final String userName;
   final String email;
@@ -24,6 +26,8 @@ class RequestInstance {
       this.approverID,
       this.createdDate,
       this.finishedDate,
+      this.requestName,
+      this.requestDescription,
       this.numOfSteps,
       this.userName,
       this.email,
@@ -41,6 +45,8 @@ class RequestInstance {
       approverID: json['ApproverID'],
       createdDate: json['CreatedDate'],
       finishedDate: json['FinishedDate'],
+      requestName: json['RequestName'],
+      requestDescription: json['RequestDescription'],
       numOfSteps: json['NumOfSteps'],
       userName: json['UserName'],
       email: json['Mail'],
