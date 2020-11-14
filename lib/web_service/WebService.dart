@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:cse_bpm_project/model/CountRIToday.dart';
 import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/InputFieldInstance.dart';
@@ -76,10 +75,9 @@ class WebService {
     }
   }
 
-  Future<List<StepInstance>> getAllStepInstances(int requestInstanceID) async {
+  Future<List<StepInstance>> getStepInstancesByQuery(String query) async {
     final response = await http.get(
-        // 'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails?\$filter=RequestInstanceID eq $requestInstanceID');
-        'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails');
+        'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails?$query');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
@@ -169,9 +167,9 @@ class WebService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<Step> listStep = new List();
+      List<MyStep> listStep = new List();
       for (Map i in data) {
-        listStep.add(Step.fromJson(i));
+        listStep.add(MyStep.fromJson(i));
       }
       nextStepSize = listStep.length;
       for (int i = 0; i < nextStepSize; i++) {
@@ -180,6 +178,23 @@ class WebService {
       if (nextStepSize == 0) {
         update(false);
       }
+    } else {
+      throw Exception('Failed to load');
+    }
+  }
+
+  Future<List<MyStep>> getStepByID(int id) async {
+    final response = await http.get(
+        'http://nkkha.somee.com/odata/tbStep?\$filter=RequestID eq $id');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['value'];
+      List<MyStep> listStep = new List();
+      for (Map i in data) {
+        listStep.add(MyStep.fromJson(i));
+      }
+
+      return listStep;
     } else {
       throw Exception('Failed to load');
     }
@@ -267,7 +282,7 @@ class WebService {
     );
 
     if (response.statusCode == 200) {
-      Step step = Step.fromJson(jsonDecode(response.body));
+      MyStep step = MyStep.fromJson(jsonDecode(response.body));
       update(step.id);
     } else {
       throw Exception('Failed to create next step instances.');

@@ -1,15 +1,15 @@
 class NumOfRequestInstance {
-  final int requestID;
+  final String keyword;
   final int numOfRequestInstance;
 
   NumOfRequestInstance({
-    this.requestID,
+    this.keyword,
     this.numOfRequestInstance,
   });
 
   factory NumOfRequestInstance.fromJson(Map<String, dynamic> json) {
     return NumOfRequestInstance(
-      requestID: json['RequestID'],
+      keyword: json['Keyword'],
       numOfRequestInstance: json['NumOfRequestInstance'],
     );
   }

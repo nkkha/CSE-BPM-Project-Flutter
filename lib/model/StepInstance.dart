@@ -39,7 +39,7 @@ class StepInstance {
       stepIndex: json['StepIndex'],
       description: json['Description'],
       approverRoleID: json['ApproverRoleID'],
-      createdDate: json['StartedDate'],
+      createdDate: json['CreatedDate'],
       finishedDate: json['FinishedDate'],
     );
   }

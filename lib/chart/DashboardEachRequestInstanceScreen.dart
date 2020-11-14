@@ -1,38 +1,41 @@
-import 'dart:collection';
-
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
-import 'package:cse_bpm_project/model/ListItem.dart';
+import 'package:cse_bpm_project/model/NumOfDayHandleStep.dart';
 import 'package:cse_bpm_project/model/NumOfRequestInstance.dart';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/model/StepInstance.dart';
-import 'package:cse_bpm_project/screen/CreateRequestInstanceDetailsScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
+import 'package:cse_bpm_project/model/Step.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import 'DashboardRequestInstanceScreen.dart';
 
 class DashboardEachRequestInstanceScreen extends StatefulWidget {
   final List<RequestInstance> requestInstanceList;
+  final int requestID;
 
-  const DashboardEachRequestInstanceScreen({Key key, this.requestInstanceList}) : super(key: key);
+  const DashboardEachRequestInstanceScreen(
+      {Key key, this.requestInstanceList, this.requestID})
+      : super(key: key);
 
   @override
-  _DashboardEachRequestInstanceScreenState createState() => _DashboardEachRequestInstanceScreenState();
+  _DashboardEachRequestInstanceScreenState createState() =>
+      _DashboardEachRequestInstanceScreenState();
 }
 
-class _DashboardEachRequestInstanceScreenState extends State<DashboardEachRequestInstanceScreen> {
+class _DashboardEachRequestInstanceScreenState
+    extends State<DashboardEachRequestInstanceScreen> {
   var webService = new WebService();
   List<RequestInstance> listAll = new List();
   List<RequestInstance> listNew = new List();
   List<RequestInstance> listInProgress = new List();
   List<RequestInstance> listDone = new List();
   List<RequestInstance> listFailed = new List();
-
   List<List<RequestInstance>> listRequestInstances = new List();
+  List<MyStep> listStep = new List();
+  List<NumOfDayHandleStep> listNumOfDayHandleStep = new List();
+  Future<List<StepInstance>> futureListStepInstance;
+  Future<List<MyStep>> futureListStep;
 
   static final DateTime now = DateTime.now();
   static final DateFormat formatter = DateFormat('yyyy-MM-dd');
@@ -41,7 +44,31 @@ class _DashboardEachRequestInstanceScreenState extends State<DashboardEachReques
   void initState() {
     super.initState();
 
+    String query = "\$filter=";
+    bool isFirst = true;
+    for (RequestInstance requestInstance in widget.requestInstanceList) {
+      if (isFirst) {
+        query += "(RequestInstanceID eq ${requestInstance.id}";
+        isFirst = false;
+      } else {
+        query += " or RequestInstanceID eq ${requestInstance.id}";
+      }
+      if (requestInstance.status.contains('new')) {
+        listNew.add(requestInstance);
+      } else if (requestInstance.status.contains('active')) {
+        listInProgress.add(requestInstance);
+      } else if (requestInstance.status.contains('done')) {
+        listDone.add(requestInstance);
+      } else if (requestInstance.status.contains('failed')) {
+        listFailed.add(requestInstance);
+      }
+    }
+
+    query += ")";
+
     listAll = widget.requestInstanceList;
+    futureListStepInstance = webService.getStepInstancesByQuery(query);
+    futureListStep = webService.getStepByID(widget.requestID);
   }
 
   @override
@@ -58,80 +85,125 @@ class _DashboardEachRequestInstanceScreenState extends State<DashboardEachReques
           ),
         ),
       ),
-      body: FutureBuilder<List<StepInstance>>(
-        future: webService.getAllStepInstances(0),
+      body: FutureBuilder<List<MyStep>>(
+        future: futureListStep,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            for (RequestInstance requestInstance in widget.requestInstanceList) {
-              int id = requestInstance.requestID;
-              if (requestInstance.status.contains('new')) {
-                listNew.add(requestInstance);
-              } else if (requestInstance.status.contains('active')) {
-                listInProgress.add(requestInstance);
-              } else if (requestInstance.status.contains('done')) {
-                listDone.add(requestInstance);
-              } else if (requestInstance.status.contains('failed')) {
-                listFailed.add(requestInstance);
-              }
-            }
+            clearCache();
+            listStep = snapshot.data;
+            return FutureBuilder(
+                future: futureListStepInstance,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    int index = 0;
+                    int parallelIndex = 2;
+                    for (MyStep step in listStep) {
+                      int dateRange = 0;
+                      int count = 0;
+                      int totalDayRange = 0;
+                      for (StepInstance stepInstance in snapshot.data) {
+                        if (stepInstance.stepID == step.id) {
+                          if (stepInstance.finishedDate != null) {
+                            count++;
+                            DateTime created = DateTime.parse(stepInstance.createdDate);
+                            DateTime finished = DateTime.parse(stepInstance.finishedDate);
+                            totalDayRange += finished.difference(created).inDays + 1;
+                          }
+                        }
+                      }
+                      if (totalDayRange != 0 && count != 0) {
+                        dateRange = totalDayRange ~/ count;
+                      }
 
-            return SingleChildScrollView(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 0.0),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Yêu cầu: ${widget.requestInstanceList[0].requestName}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: MyColors.darkGray,
+                      String stepIndex = "";
+                      if (step.stepIndex == index) {
+                        if (listNumOfDayHandleStep.last.stepIndex == index.toString()) {
+                          listNumOfDayHandleStep.last.stepIndex = "$index.1";
+                        }
+                        stepIndex = "$index.$parallelIndex";
+                        parallelIndex++;
+                      } else {
+                        index++;
+                        stepIndex = index.toString();
+                        parallelIndex = 2;
+                      }
+
+                      listNumOfDayHandleStep.add(new NumOfDayHandleStep(
+                          stepIndex: stepIndex,
+                          dayElapsed: dateRange));
+                    }
+
+                    return SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 20, horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 0.0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Yêu cầu: ${widget.requestInstanceList[0].requestName}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: MyColors.darkGray,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      height: 190,
-                      padding: const EdgeInsets.only(top: 20, bottom: 20),
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: <Widget>[
-                          countCard(1, MyColors.mediumGray, 'Tất cả', listAll),
-                          countCard(2, MyColors.amber, 'Mới', listNew),
-                          countCard(3, MyColors.blue, 'Đang thực hiện',
-                              listInProgress),
-                          countCard(4, MyColors.green, 'Hoàn thành', listDone),
-                          countCard(5, MyColors.red, ' Thất bại', listFailed),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // _buildDetails(snapshot.data),
-                        Container(
-                          height: 250,
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          // child: new charts.BarChart(
-                          //   _getListNumOfRequestInstance(listNumOfRI),
-                          // ),
+                            Container(
+                              height: 190,
+                              padding:
+                                  const EdgeInsets.only(top: 20, bottom: 20),
+                              child: ListView(
+                                scrollDirection: Axis.horizontal,
+                                children: <Widget>[
+                                  countCard(1, MyColors.mediumGray, 'Tất cả',
+                                      listAll),
+                                  countCard(2, MyColors.amber, 'Mới', listNew),
+                                  countCard(3, MyColors.blue, 'Đang thực hiện',
+                                      listInProgress),
+                                  countCard(4, MyColors.green, 'Hoàn thành',
+                                      listDone),
+                                  countCard(
+                                      5, MyColors.red, ' Thất bại', listFailed),
+                                ],
+                              ),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  height: 250,
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  child: new charts.BarChart(
+                                    _getListNumOfStep(listNumOfDayHandleStep),
+                                  ),
+                                ),
+                                Text(
+                                  'Biểu đồ thống kê số ngày hoàn thành trung bình của từng bước.',
+                                  style: TextStyle(
+                                      fontSize: 14, fontStyle: FontStyle.italic),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                            // listRequestInstances.length != 0
+                            //     ? _buildTableDetails()
+                            //     : Container(),
+                          ],
                         ),
-                      ],
-                    ),
-                    listRequestInstances.length != 0
-                        ? _buildTableDetails()
-                        : Container(),
-                  ],
-                ),
-              ),
-            );
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text("${snapshot.error}"));
+                  }
+                  return Center(child: CircularProgressIndicator());
+                });
           } else if (snapshot.hasError) {
             return Center(child: Text("${snapshot.error}"));
           }
@@ -320,26 +392,23 @@ class _DashboardEachRequestInstanceScreenState extends State<DashboardEachReques
     );
   }
 
-  static List<charts.Series<NumOfRequestInstance, String>>
-      _getListNumOfRequestInstance(List<NumOfRequestInstance> data) {
+  static List<charts.Series<NumOfDayHandleStep, String>> _getListNumOfStep(
+      List<NumOfDayHandleStep> data) {
     return [
-      new charts.Series<NumOfRequestInstance, String>(
+      new charts.Series<NumOfDayHandleStep, String>(
         id: 'Requests',
         colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (NumOfRequestInstance num, _) => num.requestID.toString(),
-        measureFn: (NumOfRequestInstance num, _) => num.numOfRequestInstance,
+        domainFn: (NumOfDayHandleStep instance, _) =>
+            "${instance.stepIndex}",
+        measureFn: (NumOfDayHandleStep instance, _) => instance.dayElapsed,
         data: data,
       )
     ];
   }
 
   void clearCache() {
-    listAll.clear();
-    listNew.clear();
-    listInProgress.clear();
-    listDone.clear();
-    listFailed.clear();
     listRequestInstances.clear();
+    listStep.clear();
   }
 
   String formatTime(int num) {

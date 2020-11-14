@@ -149,7 +149,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             hashMapRequestInstances.forEach((k, v) {
               listRequestInstances.add(v);
               listNumOfRI.add(new NumOfRequestInstance(
-                  requestID: k, numOfRequestInstance: v.length));
+                  keyword: v[0].requestKeyword.trim(), numOfRequestInstance: v.length));
             });
 
             return SingleChildScrollView(
@@ -281,13 +281,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             _getListNumOfRequestInstance(listNumOfRI),
                           ),
                         ),
-                        // Center(
-                        //   child: Text(
-                        //     'Biểu đồ thống kê số lượng theo từng loại yêu cầu',
-                        //     style: TextStyle(
-                        //         fontSize: 14, fontStyle: FontStyle.italic),
-                        //   ),
-                        // ),
+                        Center(
+                          child: Text(
+                            'Biểu đồ thống kê số lượng yêu cầu theo từng loại.',
+                            style: TextStyle(
+                                fontSize: 14, fontStyle: FontStyle.italic),
+                          ),
+                        ),
                       ],
                     ),
                     listRequestInstances.length != 0
@@ -308,7 +308,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   _buildTableDetails() {
     List<DataRow> rows = [];
-
     for (List<RequestInstance> list in listRequestInstances) {
       String dateRange = "0";
       int count = 0;
@@ -328,12 +327,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => DashboardEachRequestInstanceScreen(requestInstanceList: list)),
+                  builder: (context) => DashboardEachRequestInstanceScreen(
+                        requestInstanceList: list,
+                        requestID: list[0].requestID,
+                      )),
             );
           }
         },
         cells: <DataCell>[
-          DataCell(_buildText(list[0].requestID.toString())),
+          DataCell(_buildText(list[0].requestKeyword.trim())),
           DataCell(_buildText(list[0].requestName)),
           DataCell(_buildText(list.length.toString())),
           DataCell(
@@ -518,7 +520,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       new charts.Series<NumOfRequestInstance, String>(
         id: 'Requests',
         colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (NumOfRequestInstance num, _) => num.requestID.toString(),
+        domainFn: (NumOfRequestInstance num, _) => num.keyword.trim(),
         measureFn: (NumOfRequestInstance num, _) => num.numOfRequestInstance,
         data: data,
       )

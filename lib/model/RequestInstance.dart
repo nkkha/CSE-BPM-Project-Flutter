@@ -8,6 +8,7 @@ class RequestInstance {
   int approverID;
   String createdDate;
   String finishedDate;
+  String requestKeyword;
   String requestName;
   String requestDescription;
   final int numOfSteps;
@@ -26,6 +27,7 @@ class RequestInstance {
       this.approverID,
       this.createdDate,
       this.finishedDate,
+      this.requestKeyword,
       this.requestName,
       this.requestDescription,
       this.numOfSteps,
@@ -45,6 +47,7 @@ class RequestInstance {
       approverID: json['ApproverID'],
       createdDate: json['CreatedDate'],
       finishedDate: json['FinishedDate'],
+      requestKeyword: json['Keyword'],
       requestName: json['RequestName'],
       requestDescription: json['RequestDescription'],
       numOfSteps: json['NumOfSteps'],
