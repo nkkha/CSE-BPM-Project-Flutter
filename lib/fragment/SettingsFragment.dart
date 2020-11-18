@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cse_bpm_project/screen/login/LoginScreen.dart';
+import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:http/http.dart' as http;
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class SettingsFragment extends StatefulWidget {
 
 class _SettingsFragmentState extends State<SettingsFragment> {
   ProgressDialog pr;
+  var webService = new WebService();
 
   Widget _buildRowSetting(
       String imgUrl, String title, int index, BuildContext context) {
@@ -92,6 +94,9 @@ class _SettingsFragmentState extends State<SettingsFragment> {
       prefs.setInt('userId', null);
       prefs.setInt('roleId', null);
       prefs.setBool('isLogin', false);
+
+      webService.updateDeviceToken();
+
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginScreen()));
     } else {

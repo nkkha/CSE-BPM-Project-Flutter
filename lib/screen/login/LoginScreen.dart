@@ -10,6 +10,7 @@ import 'package:cse_bpm_project/screen/StudentScreen.dart';
 import 'package:cse_bpm_project/secretary/SecretaryRequestScreen.dart';
 import 'package:cse_bpm_project/secretary/SecretaryScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
+import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/gestures.dart';
@@ -24,13 +25,14 @@ class LoginScreen extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
 
   const LoginScreen({Key key, this.navigatorKey}) : super(key: key);
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool _isClicked = false;
+  var webService = new WebService();
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   TextEditingController _userController = new TextEditingController();
@@ -40,6 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   ProgressDialog progressDialog;
   int _roleId;
+  bool _isClicked = false;
+  RequestInstance _requestInstance;
 
   @override
   void initState() {
@@ -49,18 +53,26 @@ class _LoginScreenState extends State<LoginScreen> {
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
         if (message.containsKey('data')) {
-          final RequestInstance data = RequestInstance.fromJson(jsonDecode(message['data']['requestInstance']));
-          _showAlertDialog();
+          final RequestInstance data = RequestInstance.fromJson(
+              jsonDecode(message['data']['requestInstance']));
+          _showAlertDialog(data);
         }
       },
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
+        _requestInstance = RequestInstance.fromJson(
+            jsonDecode(message['data']['requestInstance']));
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
         if (message.containsKey('data')) {
-          final RequestInstance data = RequestInstance.fromJson(jsonDecode(message['data']['requestInstance']));
-          widget.navigatorKey.currentState.push(MaterialPageRoute(builder: (context) => RequestInstanceDetailsScreen(requestInstance: data, isStudent: false,)));
+          final RequestInstance data = RequestInstance.fromJson(
+              jsonDecode(message['data']['requestInstance']));
+          widget.navigatorKey.currentState.push(MaterialPageRoute(
+              builder: (context) => RequestInstanceDetailsScreen(
+                    requestInstance: data,
+                    isStudent: false,
+                  )));
         }
       },
     );
@@ -70,12 +82,6 @@ class _LoginScreenState extends State<LoginScreen> {
     _firebaseMessaging.onIosSettingsRegistered
         .listen((IosNotificationSettings settings) {
       print("Settings registered: $settings");
-    });
-    _firebaseMessaging.getToken().then((String token) {
-      assert(token != null);
-      print("Token: $token");
-
-      // print(_homeScreenText);
     });
 
     _roleId = null;
@@ -96,28 +102,32 @@ class _LoginScreenState extends State<LoginScreen> {
     _myFocusNode2.addListener(_onOnFocusNodeEvent);
   }
 
-  _showAlertDialog() {
+  _showAlertDialog(RequestInstance requestInstance) {
     TextEditingController messageController = new TextEditingController();
     BuildContext context = widget.navigatorKey.currentContext;
-    Alert(
-        context: context,
-        title: "Xác nhận",
-        buttons: [
-          DialogButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Huỷ bỏ",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ),
-          DialogButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Đồng ý",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          )
-        ]).show();
+    Alert(context: context, title: "Yêu cầu được cập nhật", buttons: [
+      DialogButton(
+        onPressed: () => Navigator.pop(context),
+        child: Text(
+          "Thoát",
+          style: TextStyle(color: Colors.white, fontSize: 20),
+        ),
+      ),
+      DialogButton(
+        onPressed: () {
+          Navigator.pop(context);
+          widget.navigatorKey.currentState.push(MaterialPageRoute(
+              builder: (context) => RequestInstanceDetailsScreen(
+                    requestInstance: requestInstance,
+                    isStudent: false,
+                  )));
+        },
+        child: Text(
+          "Mở",
+          style: TextStyle(color: Colors.white, fontSize: 20),
+        ),
+      )
+    ]).show();
   }
 
   Future<Null> getSharedPrefs() async {
@@ -323,11 +333,22 @@ class _LoginScreenState extends State<LoginScreen> {
       prefs.setInt('roleId', user.roleId);
       prefs.setBool('isLogin', true);
 
+      _firebaseMessaging.getToken().then((String token) {
+        assert(token != null);
+        print("Token: $token");
+        prefs.setString('deviceToken', token);
+        webService.postDeviceToken(user.id, token, true);
+        // print(_homeScreenText);
+      });
+
       await pr.hide();
       switch (user.roleId) {
         case 1:
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => StudentScreen()));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      StudentScreen(requestInstance: _requestInstance)));
           break;
         case 2:
           Navigator.pushReplacement(context,
@@ -369,7 +390,7 @@ class _LoginScreenState extends State<LoginScreen> {
     switch (roleId) {
       case 1:
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => StudentScreen()));
+            context, MaterialPageRoute(builder: (context) => StudentScreen(requestInstance: _requestInstance)));
         break;
       case 2:
         Navigator.pushReplacement(context,

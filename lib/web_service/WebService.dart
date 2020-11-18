@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cse_bpm_project/model/CountRIToday.dart';
+import 'package:cse_bpm_project/model/DeviceToken.dart';
 import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/InputFieldInstance.dart';
 import 'package:cse_bpm_project/model/NumOfRequestInstance.dart';
@@ -11,6 +12,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/StepInstance.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WebService {
 //  /// Singleton
@@ -484,5 +486,52 @@ class WebService {
     }
   }
 
+  Future<void> postDeviceToken(int userID, String deviceToken, bool isLogin) async {
+    final http.Response response = await http.post(
+      'http://nkkha.somee.com/odata/tbDeviceToken',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        "UserID": "$userID",
+        "DeviceToken": deviceToken,
+        "IsLogin": "$isLogin"
+      }),
+    );
 
+    if (response.statusCode == 200) {
+      print('Post device token successfully.');
+      final data = jsonDecode(response.body);
+      DeviceToken deviceToken = DeviceToken.fromJson(data);
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setInt('deviceTokenID', deviceToken.id);
+    } else {
+      throw Exception('Failed to create next step instances.');
+    }
+  }
+
+  Future<void> updateDeviceToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    int deviceTokenID = prefs.getInt("deviceTokenID");
+
+    var resBody = {};
+    resBody["IsLogin"] = "false";
+    String str = json.encode(resBody);
+
+    final http.Response response = await http.patch(
+      'http://nkkha.somee.com/odata/tbDeviceToken($deviceTokenID)',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: str,
+    );
+
+    if (response.statusCode == 200) {
+      print('Post device token successfully.');
+      final prefs = await SharedPreferences.getInstance();
+      prefs.clear();
+    } else {
+      throw Exception('Failed to create next step instances.');
+    }
+  }
 }
