@@ -91,11 +91,13 @@ class _SettingsFragmentState extends State<SettingsFragment> {
     if (response.statusCode == 200) {
       await pr.hide();
       final prefs = await SharedPreferences.getInstance();
+      int roleID = prefs.getInt('roleId');
+      if (roleID == 1) {
+        webService.updateDeviceToken();
+      }
       prefs.setInt('userId', null);
       prefs.setInt('roleId', null);
       prefs.setBool('isLogin', false);
-
-      webService.updateDeviceToken();
 
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginScreen()));

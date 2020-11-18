@@ -28,7 +28,7 @@ class _StudentScreenState extends State<StudentScreen>
 
   static const List<Widget> _widgetOptions = <Widget>[
     RequestInstanceFragment(),
-    ChatFragment(),
+    // ChatFragment(),
     SettingsFragment(),
   ];
 
@@ -52,21 +52,23 @@ class _StudentScreenState extends State<StudentScreen>
               Icons.home,
               color: _selectedIndex == 0 ? MyColors.brand : MyColors.mediumGray,
             ),
-            title: Text('Trang chủ'),
+            title: Container(height: 0.0),
+            // title: Text('Trang chủ'),
           ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'images/ic-chat-24.png',
-              color: _selectedIndex == 1 ? MyColors.brand : MyColors.mediumGray,
-            ),
-            title: Text('Chat'),
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Image.asset(
+          //     'images/ic-chat-24.png',
+          //     color: _selectedIndex == 1 ? MyColors.brand : MyColors.mediumGray,
+          //   ),
+          //   title: Text('Chat'),
+          // ),
           BottomNavigationBarItem(
             icon: Image.asset(
               'images/ic-settings-24.png',
-              color: _selectedIndex == 2 ? MyColors.brand : MyColors.mediumGray,
+              color: _selectedIndex == 1 ? MyColors.brand : MyColors.mediumGray,
             ),
-            title: Text('Cài đặt'),
+            title: Container(height: 0.0),
+            // title: Text('Cài đặt'),
           ),
         ],
         currentIndex: _selectedIndex,

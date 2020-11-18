@@ -46,21 +46,21 @@ class _SecretaryScreenState extends State<SecretaryScreen> with AfterLayoutMixin
               Icons.home,
               color: _selectedIndex == 0 ? MyColors.brand : MyColors.mediumGray,
             ),
-            label: 'Trang chủ',
+            title: Container(height: 0),
           ),
           BottomNavigationBarItem(
-            icon: Image.asset(
-              'images/ic-chat-24.png',
+            icon: Icon(
+              Icons.assessment,
               color: _selectedIndex == 1 ? MyColors.brand : MyColors.mediumGray,
             ),
-            label: 'Yêu cầu',
+            title: Container(height: 0),
           ),
           BottomNavigationBarItem(
             icon: Image.asset(
               'images/ic-settings-24.png',
               color: _selectedIndex == 2 ? MyColors.brand : MyColors.mediumGray,
             ),
-            label: 'Cài đặt',
+            title: Container(height: 0),
           ),
         ],
         currentIndex: _selectedIndex,

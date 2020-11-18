@@ -16,15 +16,19 @@ class RequestInstanceListWidget extends StatefulWidget {
       _RequestInstanceListWidgetState();
 }
 
-class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
+class _RequestInstanceListWidgetState
+    extends State<RequestInstanceListWidget> {
   @override
   Widget build(BuildContext context) {
+    List<RequestInstance> newRequests = new List();
     List<RequestInstance> inProgressRequests = new List();
     List<RequestInstance> doneRequests = new List();
     List<RequestInstance> failedRequests = new List();
 
     for (RequestInstance request in widget.requestInstanceList) {
-      if (request.status.contains("done")) {
+      if (request.status.contains("new")) {
+        newRequests.add(request);
+      } else if (request.status.contains("done")) {
         doneRequests.add(request);
       } else if (request.status.contains("failed")) {
         failedRequests.add(request);
@@ -39,22 +43,27 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: 20),
-            _buildListRequestInstance(inProgressRequests, 1),
-            _buildListRequestInstance(doneRequests, 2),
-            _buildListRequestInstance(failedRequests, 3),
+            newRequests.length != 0 ? _buildListRequestInstance(newRequests, 1) : Container(),
+            inProgressRequests.length != 0 ? _buildListRequestInstance(inProgressRequests, 2) : Container(),
+            doneRequests.length != 0 ? _buildListRequestInstance(doneRequests, 3) : Container(),
+            failedRequests.length != 0 ? _buildListRequestInstance(failedRequests, 4) : Container(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildListRequestInstance(List<RequestInstance> requests, int index) {
+  Widget _buildListRequestInstance(
+      List<RequestInstance> listRequestInstance, int index) {
     String title = "";
     Color color;
     if (index == 1) {
-      title = "Đang thực hiện";
+      title = "Yêu cầu mới";
       color = MyColors.amber;
     } else if (index == 2) {
+      title = "Đang thực hiện";
+      color = MyColors.blue;
+    } else if (index == 3) {
       title = "Đã hoàn thành";
       color = MyColors.green;
     } else {
@@ -70,11 +79,12 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
         Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: ListView.builder(
-            itemCount: requests.length,
+            itemCount: listRequestInstance.length,
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              return _buildRequestInstanceRow(requests[index], color, index);
+              return _buildRequestInstanceRow(
+                  listRequestInstance[index], color, index);
             },
           ),
         ),
@@ -92,14 +102,13 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => RequestInstanceDetailsScreen(
-              requestInstance: requestInstance,
-              isStudent: true,
-              update: (data) {
-                setState(() {});
-              },
-            ),
-          ),
+              builder: (context) => RequestInstanceDetailsScreen(
+                requestInstance: requestInstance,
+                isStudent: true,
+                update: (data) {
+                  setState(() {});
+                },
+              )),
         );
       },
       child: Column(
@@ -159,7 +168,7 @@ class _RequestInstanceListWidgetState extends State<RequestInstanceListWidget> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 4, right: 12),
                       child: Text(
-                        'Nội dung: ${requestInstance.defaultContent}',
+                        'Quy trình: ${requestInstance.requestKeyword.trim()}  -  Mã: ${requestInstance.requestID}',
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 15,

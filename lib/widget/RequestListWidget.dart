@@ -18,10 +18,10 @@ class _RequestListWidgetState extends State<RequestListWidget> {
     return ListView.builder(
       itemBuilder: (context, index) {
         Request request = widget.requestList[index];
-        String parsedStartDate = DateFormat('kk:mm · dd/MM ').format(DateTime.parse(request.startDate));
-        String parsedDueDate = DateFormat('kk:mm · dd/MM').format(DateTime.parse(request.dueDate));
+        String parsedStartDate = DateFormat('kk:mm - dd/MM ').format(DateTime.parse(request.startDate));
+        String parsedDueDate = DateFormat('kk:mm - dd/MM').format(DateTime.parse(request.dueDate));
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: index == 0 ? const EdgeInsets.fromLTRB(20, 30, 20, 20) : const EdgeInsets.fromLTRB(20, 0, 20, 20),
           child: Card(
             elevation: 5,
             shape: RoundedRectangleBorder(
@@ -41,7 +41,7 @@ class _RequestListWidgetState extends State<RequestListWidget> {
                 title: Text(
                   '${request.description}',
                 ),
-                subtitle: Text('$parsedStartDate đến $parsedDueDate'),
+                subtitle: Text('Từ $parsedStartDate đến $parsedDueDate'),
               ),
             ),
           ),

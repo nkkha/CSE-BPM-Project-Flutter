@@ -21,7 +21,7 @@ class NoRequestInstanceWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.only(top: 40),
+                padding: const EdgeInsets.only(top: 0),
                 child: Text(
                   isStudent ? 'Bạn không' : 'Hiện tại không',
                   style: TextStyle(
@@ -42,27 +42,28 @@ class NoRequestInstanceWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CreateRequestInstanceScreen()),
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 20,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: MyColors.lightGray,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: isStudent
-                      ? Text(
+              isStudent
+                  ? GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  CreateRequestInstanceScreen()),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 20,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: MyColors.lightGray,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
                           'BẮT ĐẦU YÊU CẦU ĐẦU TIÊN!',
                           style: TextStyle(
                             color: MyColors.brand,
@@ -70,10 +71,10 @@ class NoRequestInstanceWidget extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                             letterSpacing: 1.25,
                           ),
-                        )
-                      : SizedBox(),
-                ),
-              ),
+                        ),
+                      ),
+                    )
+                  : Container(),
             ],
           ),
         ),

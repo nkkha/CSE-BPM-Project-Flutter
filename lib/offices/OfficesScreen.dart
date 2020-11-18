@@ -26,7 +26,7 @@ class _OfficesScreenState extends State<OfficesScreen> {
   Widget build(BuildContext context) {
     List<Widget> _widgetOptions = <Widget>[
       OfficesHomeFragment(roleID: widget.roleID),
-      ChatFragment(),
+      // ChatFragment(),
       SettingsFragment(),
     ];
 
@@ -41,21 +41,21 @@ class _OfficesScreenState extends State<OfficesScreen> {
               Icons.home,
               color: _selectedIndex == 0 ? MyColors.brand : MyColors.mediumGray,
             ),
-            title: Text('Trang chủ'),
+            title: Container(height: 0),
           ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'images/ic-chat-24.png',
-              color: _selectedIndex == 1 ? MyColors.brand : MyColors.mediumGray,
-            ),
-            title: Text('Chat'),
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Image.asset(
+          //     'images/ic-chat-24.png',
+          //     color: _selectedIndex == 1 ? MyColors.brand : MyColors.mediumGray,
+          //   ),
+          //   title: Container(height: 0),
+          // ),
           BottomNavigationBarItem(
             icon: Image.asset(
               'images/ic-settings-24.png',
-              color: _selectedIndex == 2 ? MyColors.brand : MyColors.mediumGray,
+              color: _selectedIndex == 1 ? MyColors.brand : MyColors.mediumGray,
             ),
-            title: Text('Cài đặt'),
+            title: Container(height: 0),
           ),
         ],
         currentIndex: _selectedIndex,

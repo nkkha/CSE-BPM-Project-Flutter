@@ -333,13 +333,15 @@ class _LoginScreenState extends State<LoginScreen> {
       prefs.setInt('roleId', user.roleId);
       prefs.setBool('isLogin', true);
 
-      _firebaseMessaging.getToken().then((String token) {
-        assert(token != null);
-        print("Token: $token");
-        prefs.setString('deviceToken', token);
-        webService.postDeviceToken(user.id, token, true);
-        // print(_homeScreenText);
-      });
+      if (user.roleId == 1) {
+        _firebaseMessaging.getToken().then((String token) {
+          assert(token != null);
+          print("Token: $token");
+          prefs.setString('deviceToken', token);
+          webService.postDeviceToken(user.id, token, true);
+          // print(_homeScreenText);
+        });
+      }
 
       await pr.hide();
       switch (user.roleId) {
