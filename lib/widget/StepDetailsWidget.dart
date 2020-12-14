@@ -409,7 +409,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   }
 
   Widget createImageFieldWidget(int stepIndex, int index) {
-    final int key = hashMapInputFieldInstances[stepIndex][index].id;
+    final int key = hashMapInputFieldInstances[stepIndex][index].userId;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       child: Column(
@@ -466,7 +466,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   }
 
   Widget createUploadFileFieldWidget(int stepIndex, int index) {
-    final int key = hashMapInputFieldInstances[stepIndex][index].id;
+    final int key = hashMapInputFieldInstances[stepIndex][index].userId;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       child: Column(

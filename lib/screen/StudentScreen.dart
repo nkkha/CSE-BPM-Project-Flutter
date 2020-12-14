@@ -1,4 +1,3 @@
-import 'package:cse_bpm_project/fragment/ChatFragment.dart';
 import 'package:cse_bpm_project/fragment/RequestInstanceFragment.dart';
 import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
 import 'package:cse_bpm_project/model/RequestInstance.dart';

@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:convert';
 import 'package:cse_bpm_project/model/NumOfRequestInstance.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
+import 'package:cse_bpm_project/widget/NoRequestWidget.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -27,6 +28,7 @@ class _SecretaryRequestScreenState extends State<SecretaryRequestScreen> {
   List<Request> _searchListItems;
   List<Request> listRequest;
   HashMap hashMapNumOfRI;
+  bool _noRequest = false;
 
   @override
   void initState() {
@@ -57,6 +59,7 @@ class _SecretaryRequestScreenState extends State<SecretaryRequestScreen> {
       future: futureListRequest,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          if (_noRequest) return NoRequestWidget(isStudent: false);
           listRequest = new List();
           listRequest = snapshot.data;
           return FutureBuilder(
@@ -134,20 +137,21 @@ class _SecretaryRequestScreenState extends State<SecretaryRequestScreen> {
     return RequestList(
         requestList: _searchListItems, hashMapNumOfRI: hashMapNumOfRI);
   }
-}
 
-Future<List<Request>> fetchListRequest() async {
-  final response = await http.get('http://nkkha.somee.com/odata/tbRequest');
+  Future<List<Request>> fetchListRequest() async {
+    final response = await http.get('http://nkkha.somee.com/odata/tbRequest');
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body)['value'];
-    List<Request> listRequest = new List();
-    for (Map i in data) {
-      listRequest.add(Request.fromJson(i));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['value'];
+      List<Request> listRequest = new List();
+      for (Map i in data) {
+        listRequest.add(Request.fromJson(i));
+      }
+      if (listRequest.length == 0) _noRequest = true;
+      return listRequest;
+    } else {
+      throw Exception('Failed to load');
     }
-    return listRequest;
-  } else {
-    throw Exception('Failed to load');
   }
 }
 

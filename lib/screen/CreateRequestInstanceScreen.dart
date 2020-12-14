@@ -8,11 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class CreateRequestInstanceScreen extends StatefulWidget {
+  final bool isStudent;
+  CreateRequestInstanceScreen({this.isStudent});
+
   @override
   _CreateRequestInstanceScreenState createState() => _CreateRequestInstanceScreenState();
 }
 
 class _CreateRequestInstanceScreenState extends State<CreateRequestInstanceScreen> {
+
   Future<List<Request>> futureListRequest;
   bool _noRequest = false;
 
@@ -34,7 +38,7 @@ class _CreateRequestInstanceScreenState extends State<CreateRequestInstanceScree
           future: futureListRequest,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              if (_noRequest) return NoRequestWidget();
+              if (_noRequest) return NoRequestWidget(isStudent: widget.isStudent);
               return RequestListWidget(requestList: snapshot.data);
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");

@@ -458,10 +458,6 @@ class _CreateRequestInstanceDetailsScreenState
     pr.update(message: "Đang xử lý...");
     await pr.show();
     String content = _contentController.text;
-    // String name = _nameController.text;
-    // String id = _idController.text;
-    // String email = _emailController.text;
-    // String phone = _phoneController.text;
     String createdDate = formatterDateTime.format(DateTime.now()) + '\-07:00';
 
     final prefs = await SharedPreferences.getInstance();

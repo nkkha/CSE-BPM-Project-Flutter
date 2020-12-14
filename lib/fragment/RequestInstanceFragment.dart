@@ -71,7 +71,7 @@ class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => CreateRequestInstanceScreen()),
+                    builder: (context) => CreateRequestInstanceScreen(isStudent: true)),
               );
             },
           ),
@@ -82,7 +82,7 @@ class _RequestInstanceFragmentState extends State<RequestInstanceFragment> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (_noRequest)
-              return Center(child: NoRequestInstanceWidget(isStudent: false));
+              return Center(child: NoRequestInstanceWidget(isStudent: true));
             listRequestInstance = new List();
             listRequestInstance = snapshot.data;
             return Column(

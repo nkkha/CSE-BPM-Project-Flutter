@@ -73,7 +73,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tạo yêu cầu'),
+        title: Text('Tạo quy trình'),
         titleSpacing: 0,
       ),
       body: SingleChildScrollView(
@@ -124,8 +124,8 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                       focusNode: _myFocusNode2,
                       controller: _descriptionController,
                       style: TextStyle(fontSize: 18, color: Colors.black),
-                      keyboardType: TextInputType.multiline,
-                      textInputAction: TextInputAction.newline,
+                      // keyboardType: TextInputType.multiline,
+                      textInputAction: TextInputAction.done,
                       maxLines: null,
                       decoration: InputDecoration(
                         errorText: snapshot.hasError ? snapshot.error : null,
@@ -231,7 +231,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.digitsOnly
                       ],
-                      // Only numbers                      style: TextStyle(fontSize: 18, color: Colors.black),
+                      style: TextStyle(fontSize: 18, color: Colors.black),
                       decoration: InputDecoration(
                         errorText: snapshot.hasError ? snapshot.error : null,
                         labelText: 'Số bước',
@@ -258,12 +258,13 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                           (index) => createInputFieldWidget(index)),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Container(
                         width: 110,
+                        height: 52,
                         child: RaisedButton(
                           onPressed: () {
                             InputField inputField = new InputField(inputFieldTypeID: 1);
@@ -284,7 +285,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                               Text(
                                 ' Câu hỏi',
                                 style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
+                                    fontSize: 15, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -292,6 +293,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                       ),
                       Container(
                         width: 120,
+                        height: 52,
                         child: RaisedButton(
                           onPressed: () {
                             InputField inputField = new InputField(inputFieldTypeID: 2);
@@ -315,7 +317,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                               Text(
                                 ' Hình ảnh',
                                 style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
+                                    fontSize: 15, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -323,6 +325,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                       ),
                       Container(
                         width: 110,
+                        height: 52,
                         child: RaisedButton(
                           onPressed: () {
                             InputField inputField = new InputField(inputFieldTypeID: 3);
@@ -346,7 +349,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                               Text(
                                 ' Tài liệu',
                                 style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
+                                    fontSize: 15, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -356,12 +359,12 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 32),
+                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 32),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       SizedBox(
-                        width: 140,
+                        width: 120,
                         height: 52,
                         child: RaisedButton(
                           onPressed: _onContinueBtn,
@@ -371,7 +374,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                           ),
                           color: Color(0xff3277D8),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
                           ),
                         ),
                       ),

@@ -2,14 +2,13 @@ import 'dart:collection';
 
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cse_bpm_project/chart/DashboardEachRequestInstanceScreen.dart';
-import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
 import 'package:cse_bpm_project/model/ListItem.dart';
 import 'package:cse_bpm_project/model/NumOfRequestInstance.dart';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
-import 'package:cse_bpm_project/screen/CreateRequestInstanceDetailsScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -149,7 +148,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             hashMapRequestInstances.forEach((k, v) {
               listRequestInstances.add(v);
               listNumOfRI.add(new NumOfRequestInstance(
-                  keyword: v[0].requestKeyword.trim(), numOfRequestInstance: v.length));
+                  keyword: v[0].requestKeyword.trim(),
+                  numOfRequestInstance: v.length));
             });
 
             return SingleChildScrollView(

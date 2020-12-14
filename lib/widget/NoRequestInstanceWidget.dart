@@ -11,11 +11,11 @@ class NoRequestInstanceWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-//        Positioned(
-//          top: 20,
-//          right: 20,
-//          child: Image.asset('images/arrow.png'),
-//        ),
+       Positioned(
+         top: 20,
+         right: 20,
+         child: Image.asset('images/arrow.png'),
+       ),
         Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -23,7 +23,7 @@ class NoRequestInstanceWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 0),
                 child: Text(
-                  isStudent ? 'Bạn không' : 'Hiện tại không',
+                  isStudent ? 'Hiện tại không' : 'Bạn không',
                   style: TextStyle(
                     color: MyColors.brand,
                     fontSize: 42,
@@ -49,7 +49,7 @@ class NoRequestInstanceWidget extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  CreateRequestInstanceScreen()),
+                                  CreateRequestInstanceScreen(isStudent: true)),
                         );
                       },
                       child: Container(
@@ -64,7 +64,7 @@ class NoRequestInstanceWidget extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          'BẮT ĐẦU YÊU CẦU ĐẦU TIÊN!',
+                          'TẠO YÊU CẦU ĐẦU TIÊN!',
                           style: TextStyle(
                             color: MyColors.brand,
                             fontSize: 14,

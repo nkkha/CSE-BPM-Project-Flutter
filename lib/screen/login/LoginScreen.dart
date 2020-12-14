@@ -1,30 +1,29 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cse_bpm_project/model/UserRole.dart';
+import 'package:http/http.dart' as http;
 
-import 'package:cse_bpm_project/dean/DeanScreen.dart';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/offices/OfficesScreen.dart';
 import 'package:cse_bpm_project/model/User.dart';
 import 'package:cse_bpm_project/screen/RequestInstanceDetailsScreen.dart';
 import 'package:cse_bpm_project/screen/StudentScreen.dart';
-import 'package:cse_bpm_project/secretary/SecretaryRequestScreen.dart';
 import 'package:cse_bpm_project/secretary/SecretaryScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../main.dart';
 import 'RegisterScreen.dart';
 
 class LoginScreen extends StatefulWidget {
-  final GlobalKey<NavigatorState> navigatorKey;
+  // final GlobalKey<NavigatorState> navigatorKey;
 
-  const LoginScreen({Key key, this.navigatorKey}) : super(key: key);
+  const LoginScreen({Key key}) : super(key: key);
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -68,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (message.containsKey('data')) {
           final RequestInstance data = RequestInstance.fromJson(
               jsonDecode(message['data']['requestInstance']));
-          widget.navigatorKey.currentState.push(MaterialPageRoute(
+          MyApp.navigatorKey.currentState.push(MaterialPageRoute(
               builder: (context) => RequestInstanceDetailsScreen(
                     requestInstance: data,
                     isStudent: false,
@@ -104,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _showAlertDialog(RequestInstance requestInstance) {
     TextEditingController messageController = new TextEditingController();
-    BuildContext context = widget.navigatorKey.currentContext;
+    BuildContext context = MyApp.navigatorKey.currentContext;
     Alert(context: context, title: "Yêu cầu được cập nhật", buttons: [
       DialogButton(
         onPressed: () => Navigator.pop(context),
@@ -116,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
       DialogButton(
         onPressed: () {
           Navigator.pop(context);
-          widget.navigatorKey.currentState.push(MaterialPageRoute(
+          MyApp.navigatorKey.currentState.push(MaterialPageRoute(
               builder: (context) => RequestInstanceDetailsScreen(
                     requestInstance: requestInstance,
                     isStudent: false,
@@ -309,8 +308,8 @@ class _LoginScreenState extends State<LoginScreen> {
     String pass = _passController.text;
 
     var resBody = {};
-    resBody["UserName"] = "$userName";
-    resBody["Password"] = "$pass";
+    resBody["UserName"] = userName;
+    resBody["Password"] = pass;
     var user = {};
     user["user"] = resBody;
     String str = json.encode(user);
@@ -325,26 +324,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      User user = User.fromJson(data[0]);
+      UserRole userRole = UserRole.fromJson(data[0]);
 
       // Save data to shared preferences
       final prefs = await SharedPreferences.getInstance();
-      prefs.setInt('userId', user.id);
-      prefs.setInt('roleId', user.roleId);
+      prefs.setInt('userId', userRole.userId);
+      prefs.setInt('roleId', userRole.roleId);
       prefs.setBool('isLogin', true);
 
-      if (user.roleId == 1) {
+      if (userRole.roleId == 1) {
         _firebaseMessaging.getToken().then((String token) {
           assert(token != null);
           print("Token: $token");
           prefs.setString('deviceToken', token);
-          webService.postDeviceToken(user.id, token, true);
+          webService.postDeviceToken(userRole.userId, token, true);
           // print(_homeScreenText);
         });
       }
 
       await pr.hide();
-      switch (user.roleId) {
+      switch (userRole.roleId) {
         case 1:
           Navigator.pushReplacement(
               context,
@@ -358,13 +357,13 @@ class _LoginScreenState extends State<LoginScreen> {
           break;
         case 3:
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => DeanScreen()));
+              context, MaterialPageRoute(builder: (context) => SecretaryScreen()));
           break;
         default:
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) => OfficesScreen(roleID: user.roleId)));
+                  builder: (context) => OfficesScreen(roleID: userRole.roleId)));
           break;
       }
     } else {
@@ -400,7 +399,7 @@ class _LoginScreenState extends State<LoginScreen> {
         break;
       case 3:
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => DeanScreen()));
+            context, MaterialPageRoute(builder: (context) => SecretaryScreen()));
         break;
       default:
         Navigator.pushReplacement(

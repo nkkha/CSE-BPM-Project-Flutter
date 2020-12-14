@@ -8,21 +8,21 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey(debugLabel: "MainNavigator");
+
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey(debugLabel: "MainNavigator");
-
   @override
   Widget build(BuildContext context) {
     FlutterStatusbarcolor.setStatusBarColor(Colors.white);
     return MaterialApp(
-      navigatorKey: navigatorKey,
+      navigatorKey: MyApp.navigatorKey,
       title: 'CSE BPM Project',
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(navigatorKey: navigatorKey),
+      home: LoginScreen(),
       theme: ThemeData(
         primaryColor: MyColors.white,
         primaryColorDark: MyColors.lightGray,
@@ -41,5 +41,4 @@ Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
   if (message.containsKey('notification')) {
     final dynamic notification = message['notification'];
   }
-
 }
