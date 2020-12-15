@@ -37,7 +37,7 @@ class _OfficesStudentRequestInstanceListWidgetState
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        _buildTitle(title),
+        // _buildTitle(title),
         Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: ListView.builder(

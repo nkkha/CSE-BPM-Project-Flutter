@@ -171,7 +171,7 @@ class _CreateRequestInstanceDetailsScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 32, 0, 32),
+                          padding: const EdgeInsets.fromLTRB(0, 32, 0, 10),
                           child: Row(
                             children: [
                               Text(
@@ -179,10 +179,9 @@ class _CreateRequestInstanceDetailsScreenState
                                 style: TextStyle(
                                   fontSize: 16,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
                               Text(
-                                ' ${widget.request.description}',
+                                ' ${widget.request.name}',
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -191,16 +190,15 @@ class _CreateRequestInstanceDetailsScreenState
                             ],
                           ),
                         ),
-                        // Padding(
-                        //   padding: const EdgeInsets.fromLTRB(0, 0, 0, 40),
-                        //   child: Text(
-                        //     'Thời gian: $startDate đến $dueDate',
-                        //     style: TextStyle(
-                        //       fontSize: 16,
-                        //     ),
-                        //     textAlign: TextAlign.center,
-                        //   ),
-                        // ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 30),
+                          child: Text(
+                            'Mô tả: ${widget.request.description}',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 0, 0, 32),
                           child: Text(
@@ -472,7 +470,7 @@ class _CreateRequestInstanceDetailsScreenState
         "UserID": "$userId",
         "RequestID": "${widget.request.id}",
         "DefaultContent": "$content",
-        "CurrentStepIndex": "1",
+        "CurrentStepIndex": "0",
         "Status": "new",
         "CreatedDate": createdDate
       }),
@@ -522,7 +520,6 @@ class _CreateRequestInstanceDetailsScreenState
         margin: EdgeInsets.all(8),
         borderRadius: 8,
       )..show(context);
-      throw Exception('Failed to create request instance.');
     }
   }
 

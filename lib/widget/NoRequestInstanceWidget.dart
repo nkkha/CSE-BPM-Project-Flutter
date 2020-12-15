@@ -23,7 +23,7 @@ class NoRequestInstanceWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 0),
                 child: Text(
-                  isStudent ? 'Hiện tại không' : 'Bạn không',
+                  isStudent ? 'Bạn không' : 'Hiện tại không',
                   style: TextStyle(
                     color: MyColors.brand,
                     fontSize: 42,

@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:cse_bpm_project/model/InputFieldInstance.dart';
 import 'package:cse_bpm_project/source/SharedPreferencesHelper.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/RequestInstance.dart';
@@ -118,7 +119,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 32),
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 20),
                     child: Text(
                       "Trạng thái yêu cầu: $status",
                       style: TextStyle(fontSize: 16),
@@ -133,7 +134,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                       : Container(),
                   Center(
                     child: Padding(
-                        padding: const EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(20),
                         child: Image.asset(imgUrl, width: 48, height: 48)),
                   ),
                   _requestInstance.status.contains("new") && !widget.isStudent
@@ -154,29 +155,25 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
   _buildInputFieldInstanceField(int index) {
     switch (listInputFieldInstance[index].inputFieldTypeID) {
       case 1:
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        return Column(
           children: [
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Text(
-                    '${listInputFieldInstance[index].title}',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 32),
-                  child: Text(
-                    '${listInputFieldInstance[index].textAnswer}',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic),
-                  ),
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Text(
+                '${listInputFieldInstance[index].title}',
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Text(
+                listInputFieldInstance[index].textAnswer,
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic),
+              ),
             ),
           ],
         );
@@ -204,7 +201,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                       fit: BoxFit.fitWidth,
                     )
                   : Text(
-                      'null',
+                      "",
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -270,13 +267,13 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                   style: TextStyle(fontSize: 16),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 32),
-                child: Text(
-                  "null",
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(bottom: 32),
+              //   child: Text(
+              //     "null",
+              //     style: TextStyle(fontSize: 16),
+              //   ),
+              // ),
             ],
           );
         }
@@ -400,7 +397,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
       var resBody = {};
       // indexType = 1: Reject, indexType = 2: Approve
       resBody["Status"] = indexType == 1 ? "failed" : "active";
-      resBody["CurrentStepIndex"] = indexType == 1 ? 1 : 2;
+      resBody["CurrentStepIndex"] = indexType == 1 ? 0 : 1;
       if (indexType == 1) {
         resBody["FinishedDate"] = formatterDateTime.format(DateTime.now());
       }
@@ -420,7 +417,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
           _requestInstance.status = 'failed';
         } else {
           _requestInstance.status = 'active';
-          _requestInstance.currentStepIndex = 2;
+          _requestInstance.currentStepIndex = 1;
         }
         if (widget.numOfSteps == 1) {
           webService.patchRequestInstanceFinished(
@@ -429,15 +426,25 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
           webService.getNextStep(_requestInstance, 1, (data) => _hidePr(data));
         }
       } else {
-        throw Exception('Failed to update');
+        _hidePr(false);
       }
     }
   }
 
   void _hidePr(boolData) async {
     await pr.hide();
-    setState(() {
-      widget.update(widget.requestInstance);
-    });
+    if (boolData) {
+      setState(() {
+        widget.update(widget.requestInstance);
+      });
+    } else {
+      Flushbar(
+        icon: Image.asset('images/ic-failed.png', width: 24, height: 24),
+        message: 'Thất bại!',
+        duration: Duration(seconds: 3),
+        margin: EdgeInsets.all(8),
+        borderRadius: 8,
+      )..show(context);
+    }
   }
 }

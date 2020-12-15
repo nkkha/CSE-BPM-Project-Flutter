@@ -9,6 +9,7 @@ class RequestInstanceDetailsScreen extends StatefulWidget {
   final RequestInstance requestInstance;
   final bool isStudent;
   Function update;
+  static bool isWorking = false;
 
   RequestInstanceDetailsScreen(
       {Key key, @required this.requestInstance, this.isStudent, this.update})
@@ -21,7 +22,7 @@ class RequestInstanceDetailsScreen extends StatefulWidget {
 
 class _RequestInstanceDetailsScreenState
     extends State<RequestInstanceDetailsScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   RequestInstance _requestInstance;
 
   _RequestInstanceDetailsScreenState(this._requestInstance);
@@ -31,11 +32,20 @@ class _RequestInstanceDetailsScreenState
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    RequestInstanceDetailsScreen.isWorking = true;
 
     tabController = new TabController(
         vsync: this,
-        length: _requestInstance.numOfSteps,
-        initialIndex: _requestInstance.currentStepIndex - 1);
+        length: _requestInstance.numOfSteps + 1,
+        initialIndex: _requestInstance.currentStepIndex);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    RequestInstanceDetailsScreen.isWorking = false;
+    super.dispose();
   }
 
   @override
@@ -53,13 +63,13 @@ class _RequestInstanceDetailsScreenState
           labelColor: MyColors.blue,
           unselectedLabelColor: MyColors.mediumGray,
           tabs: List<Widget>.generate(
-              _numOfStep, (index) => Tab(text: 'Bước ${index + 1}')),
+              _numOfStep + 1, (index) => Tab(text: 'Bước ${index}')),
         ),
       ),
       body: TabBarView(
         controller: tabController,
         children: List<Widget>.generate(
-          _numOfStep,
+          _numOfStep + 1,
           (index) => index == 0
               ? StepInfoWidget(
                   requestInstance: _requestInstance,

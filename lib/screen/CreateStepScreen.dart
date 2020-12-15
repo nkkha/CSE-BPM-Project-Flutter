@@ -53,12 +53,12 @@ class _CreateStepScreenState extends State<CreateStepScreen> with SingleTickerPr
             if (data < _numOfSteps) {
               tabController.animateTo(data);
             } else if (data == _numOfSteps) {
-              webService.patchRequestNumOfSteps(widget.requestID, stepIndex + 1, (isSuccessful) {
+              webService.patchRequestNumOfSteps(widget.requestID, stepIndex, (isSuccessful) {
                 if (isSuccessful) {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => SecretaryScreen(isCreatedNew: true)),
+                        builder: (context) => SecretaryScreen(isCreatedNew: true, selectedIndex: 1)),
                         (Route<dynamic> route) => false,
                   );
                 }

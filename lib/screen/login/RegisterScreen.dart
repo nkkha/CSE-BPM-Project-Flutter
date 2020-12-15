@@ -352,7 +352,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Flushbar(
           icon:
           Image.asset('images/icons8-exclamation-mark-48.png', width: 24, height: 24),
-          message: 'Đăng ký thất bại!',
+          message: 'Tên đăng nhập đã tồn tại!',
           duration: Duration(seconds: 3),
           margin: EdgeInsets.all(8),
           borderRadius: 8,
@@ -363,7 +363,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       Flushbar(
         icon:
         Image.asset('images/icons8-exclamation-mark-48.png', width: 24, height: 24),
-        message: 'Đăng ký thất bại!',
+        message: 'Tên đăng nhập đã tồn tại!',
         duration: Duration(seconds: 3),
         margin: EdgeInsets.all(8),
         borderRadius: 8,

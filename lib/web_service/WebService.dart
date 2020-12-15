@@ -53,7 +53,7 @@ class WebService {
       updateData(true);
     } else {
       updateData(false);
-      throw Exception('Failed to update request instance');
+      throw Exception('Failed to update request');
     }
   }
 
@@ -131,7 +131,7 @@ class WebService {
     );
 
     if (response.statusCode == 200) {
-      getNextStep(requestInstance, requestInstance.currentStepIndex, update);
+      getNextStep(requestInstance, requestInstance.currentStepIndex + 1, update);
     } else {
       update(false);
       throw Exception('Failed to update request instance');
@@ -175,7 +175,7 @@ class WebService {
       }
       nextStepSize = listStep.length;
       for (int i = 0; i < nextStepSize; i++) {
-        postCreateNextStepInstances(requestInstance.id, listStep[i].id, update);
+        postCreateNextStepInstances(requestInstance.id, listStep[i].id, (data) => update(data));
       }
       if (nextStepSize == 0) {
         update(false);
@@ -263,6 +263,7 @@ class WebService {
         update(true);
       }
     } else {
+      update(false);
       throw Exception('Failed to create next step instances.');
     }
   }

@@ -133,7 +133,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
 
   Widget build(BuildContext context) {
     int currentStepIndex = widget.requestInstance.currentStepIndex;
-    return widget.tabIndex > currentStepIndex - 1
+    return widget.tabIndex > currentStepIndex
         ? Center(child: Text('Bước $currentStepIndex chưa hoàn thành'))
         : FutureBuilder<List<StepInstance>>(
             future: futureListStepInstance,
@@ -151,7 +151,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   }
 
   Widget _buildStepDetails(List<StepInstance> stepInstanceList) {
-    String stepStatusInfo = widget.tabIndex + 1 == widget.numOfSteps
+    String stepStatusInfo = widget.tabIndex == widget.numOfSteps
         ? "Yêu cầu đã hoàn thành!"
         : "Tất cả các bước bên trên đã hoàn thành!";
     String imgUrl = "images/ok.png";
@@ -176,13 +176,13 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       children: [
         SizedBox(height: 16),
         stepInstanceList.length == 1
-            ? _buildStepRow(stepInstanceList[0], 0)
+            ? _buildStepRow(stepInstanceList[0], 1)
             : ListView.builder(
                 itemCount: stepInstanceList.length,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  return _buildStepRow(stepInstanceList[index], index);
+                  return _buildStepRow(stepInstanceList[index], index + 1);
                 },
               ),
         Center(
@@ -303,7 +303,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                 hashMapInputFields.putIfAbsent(stepIndex, () => listIF);
                 if (!hashMapInputFieldInstances.containsKey(stepIndex)) {
                   List<InputFieldInstance> listIFI = new List();
-                  for (InputField inputField in hashMapInputFields[0]) {
+                  for (InputField inputField in hashMapInputFields[stepIndex]) {
                     listIFI.add(new InputFieldInstance(
                         inputFieldID: inputField.id,
                         stepInstanceID: stepInstance.id,
@@ -409,7 +409,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   }
 
   Widget createImageFieldWidget(int stepIndex, int index) {
-    final int key = hashMapInputFieldInstances[stepIndex][index].userId;
+    final int key = hashMapInputFieldInstances[stepIndex][index].inputFieldID;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       child: Column(
@@ -466,7 +466,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   }
 
   Widget createUploadFileFieldWidget(int stepIndex, int index) {
-    final int key = hashMapInputFieldInstances[stepIndex][index].userId;
+    final int key = hashMapInputFieldInstances[stepIndex][index].inputFieldID;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       child: Column(
@@ -833,8 +833,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
               () => _hidePr(0, false, stepInstance));
         } else {
           stepInstance.status = 'done';
-          if (roleID == stepInstance.approverRoleID &&
-              hashMapInputFieldInstances.containsKey(stepIndex)) {
+          if (roleID == stepInstance.approverRoleID && hashMapInputFieldInstances.containsKey(stepIndex)) {
             for (InputFieldInstance inputFieldInstance
                 in hashMapInputFieldInstances[stepIndex]) {
               switch (inputFieldInstance.inputFieldTypeID) {
@@ -848,7 +847,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                       count++;
                       if (count == hashMapInputFieldInstances[stepIndex].length) {
                         if (stepInstanceList.length == 1) {
-                          if (widget.tabIndex + 1 == widget.numOfSteps) {
+                          if (widget.tabIndex == widget.numOfSteps) {
                             webService.patchRequestInstanceFinished(
                                 stepInstance.requestInstanceID,
                                     () => _hidePr(1, false, stepInstance));
@@ -858,7 +857,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                                     (data) => _hidePr(2, data, stepInstance));
                           }
                         } else if (stepInstanceList.length > 1) {
-                          if (widget.tabIndex + 1 == widget.numOfSteps) {
+                          if (widget.tabIndex == widget.numOfSteps) {
                             webService.getOtherCurrentStepInstances(
                                 widget.requestInstance,
                                 stepInstance.id,
@@ -892,7 +891,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                       count++;
                       if (count == hashMapInputFieldInstances[stepIndex].length) {
                         if (stepInstanceList.length == 1) {
-                          if (widget.tabIndex + 1 == widget.numOfSteps) {
+                          if (widget.tabIndex == widget.numOfSteps) {
                             webService.patchRequestInstanceFinished(
                                 stepInstance.requestInstanceID,
                                     () => _hidePr(1, false, stepInstance));
@@ -902,7 +901,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                                     (data) => _hidePr(2, data, stepInstance));
                           }
                         } else if (stepInstanceList.length > 1) {
-                          if (widget.tabIndex + 1 == widget.numOfSteps) {
+                          if (widget.tabIndex == widget.numOfSteps) {
                             webService.getOtherCurrentStepInstances(
                                 widget.requestInstance,
                                 stepInstance.id,
@@ -924,6 +923,34 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                     }
                   });
                   break;
+              }
+            }
+          } else {
+            if (stepInstanceList.length == 1) {
+              if (widget.tabIndex == widget.numOfSteps) {
+                webService.patchRequestInstanceFinished(
+                    stepInstance.requestInstanceID,
+                        () => _hidePr(1, false, stepInstance));
+              } else {
+                webService.patchRequestInstanceStepIndex(
+                    widget.requestInstance,
+                        (data) => _hidePr(2, data, stepInstance));
+              }
+            } else if (stepInstanceList.length > 1) {
+              if (widget.tabIndex == widget.numOfSteps) {
+                webService.getOtherCurrentStepInstances(
+                    widget.requestInstance,
+                    stepInstance.id,
+                    widget.tabIndex,
+                    true,
+                        (data) => _hidePr(2, data, stepInstance));
+              } else {
+                webService.getOtherCurrentStepInstances(
+                    widget.requestInstance,
+                    stepInstance.id,
+                    widget.tabIndex,
+                    false,
+                        (data) => _hidePr(2, data, stepInstance));
               }
             }
           }

@@ -54,7 +54,10 @@ class _LoginScreenState extends State<LoginScreen> {
         if (message.containsKey('data')) {
           final RequestInstance data = RequestInstance.fromJson(
               jsonDecode(message['data']['requestInstance']));
-          _showAlertDialog(data);
+          print(data);
+          if (!RequestInstanceDetailsScreen.isWorking) {
+            _showAlertDialog(data);
+          }
         }
       },
       onLaunch: (Map<String, dynamic> message) async {
@@ -353,11 +356,11 @@ class _LoginScreenState extends State<LoginScreen> {
           break;
         case 2:
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => SecretaryScreen()));
+              MaterialPageRoute(builder: (context) => SecretaryScreen(selectedIndex: 0)));
           break;
         case 3:
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => SecretaryScreen()));
+              context, MaterialPageRoute(builder: (context) => SecretaryScreen(selectedIndex: 0)));
           break;
         default:
           Navigator.pushReplacement(
@@ -395,11 +398,11 @@ class _LoginScreenState extends State<LoginScreen> {
         break;
       case 2:
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => SecretaryScreen()));
+            MaterialPageRoute(builder: (context) => SecretaryScreen(selectedIndex: 0)));
         break;
       case 3:
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => SecretaryScreen()));
+            context, MaterialPageRoute(builder: (context) => SecretaryScreen(selectedIndex: 0)));
         break;
       default:
         Navigator.pushReplacement(

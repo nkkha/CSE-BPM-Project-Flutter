@@ -192,10 +192,10 @@ class _RequestListState extends State<RequestList> {
                 Container(
                   padding: const EdgeInsets.all(8.0),
                   child: Card(
-                    elevation: 5,
+                    elevation: 10,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      side: BorderSide(width: 2, color: Colors.green),
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      // side: BorderSide(width: 2, color: MyColors.lightGray),
                     ),
                     child: InkWell(
                       onTap: () {
@@ -220,9 +220,10 @@ class _RequestListState extends State<RequestList> {
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 8.0),
                                     child: Text(
-                                      "${widget.requestList[index].description}",
+                                      "${widget.requestList[index].name}",
                                       style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 18,
+                                          color: MyColors.brand,
                                           fontWeight: FontWeight.bold),
                                       overflow: TextOverflow.ellipsis,
                                     ),

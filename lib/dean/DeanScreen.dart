@@ -75,7 +75,7 @@ class _DeanScreenState extends State<DeanScreen> with AfterLayoutMixin<DeanScree
         Flushbar(
           icon:
               Image.asset('images/ic-check-circle.png', width: 24, height: 24),
-          message: 'Tạo yêu cầu thành công!',
+          message: 'Tạo quy trình thành công!',
           duration: Duration(seconds: 3),
           margin: EdgeInsets.all(8),
           borderRadius: 8,

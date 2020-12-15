@@ -11,16 +11,15 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class SecretaryScreen extends StatefulWidget {
   bool isCreatedNew = false;
+  int selectedIndex;
 
-  SecretaryScreen({Key key, this.isCreatedNew}) : super(key: key);
+  SecretaryScreen({Key key, this.isCreatedNew, this.selectedIndex}) : super(key: key);
 
   @override
   _SecretaryScreenState createState() => _SecretaryScreenState();
 }
 
 class _SecretaryScreenState extends State<SecretaryScreen> with AfterLayoutMixin<SecretaryScreen> {
-  int _selectedIndex = 0;
-
   static List<Widget> _widgetOptions = <Widget>[
     DashboardScreen(),
     SecretaryHomeFragment(),
@@ -29,7 +28,7 @@ class _SecretaryScreenState extends State<SecretaryScreen> with AfterLayoutMixin
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      widget.selectedIndex = index;
     });
   }
 
@@ -37,33 +36,33 @@ class _SecretaryScreenState extends State<SecretaryScreen> with AfterLayoutMixin
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: _widgetOptions.elementAt(widget.selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(
               Icons.home,
-              color: _selectedIndex == 0 ? MyColors.brand : MyColors.mediumGray,
+              color: widget.selectedIndex == 0 ? MyColors.brand : MyColors.mediumGray,
             ),
             title: Container(height: 0),
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.assessment,
-              color: _selectedIndex == 1 ? MyColors.brand : MyColors.mediumGray,
+              color: widget.selectedIndex == 1 ? MyColors.brand : MyColors.mediumGray,
             ),
             title: Container(height: 0),
           ),
           BottomNavigationBarItem(
             icon: Image.asset(
               'images/ic-settings-24.png',
-              color: _selectedIndex == 2 ? MyColors.brand : MyColors.mediumGray,
+              color: widget.selectedIndex == 2 ? MyColors.brand : MyColors.mediumGray,
             ),
             title: Container(height: 0),
           ),
         ],
-        currentIndex: _selectedIndex,
+        currentIndex: widget.selectedIndex,
         selectedItemColor: MyColors.brand,
         onTap: _onItemTapped,
       ),
@@ -77,7 +76,7 @@ class _SecretaryScreenState extends State<SecretaryScreen> with AfterLayoutMixin
         Flushbar(
           icon:
               Image.asset('images/ic-check-circle.png', width: 24, height: 24),
-          message: 'Tạo yêu cầu thành công!',
+          message: 'Tạo quy trình thành công!',
           duration: Duration(seconds: 3),
           margin: EdgeInsets.all(8),
           borderRadius: 8,

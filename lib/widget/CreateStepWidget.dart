@@ -224,6 +224,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                 children: [
                   Container(
                     width: 110,
+                    height: 52,
                     child: RaisedButton(
                       onPressed: () {
                         InputField inputField =
@@ -253,6 +254,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                   ),
                   Container(
                     width: 120,
+                    height: 52,
                     child: RaisedButton(
                       onPressed: () {
                         InputField inputField =
@@ -285,6 +287,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                   ),
                   Container(
                     width: 110,
+                    height: 52,
                     child: RaisedButton(
                       onPressed: () {
                         InputField inputField =
@@ -465,7 +468,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
             borderRadius: 8,
           )..show(context);
           Future.delayed(const Duration(milliseconds: 1000), () {
-            widget.update(widget.tabIndex + 1, stepIndex);
+            widget.  update(widget.tabIndex + 1, stepIndex);
           });
         });
       }

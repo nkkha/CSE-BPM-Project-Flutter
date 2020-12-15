@@ -4,6 +4,7 @@ import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/Request.dart';
 import 'package:cse_bpm_project/screen/CreateStepScreen.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
@@ -24,9 +25,11 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   TextEditingController _nameController = new TextEditingController();
   TextEditingController _descriptionController = new TextEditingController();
   TextEditingController _numStepsController = new TextEditingController();
+  TextEditingController _idController = new TextEditingController();
   FocusNode _myFocusNode1 = new FocusNode();
   FocusNode _myFocusNode2 = new FocusNode();
   FocusNode _myFocusNode3 = new FocusNode();
+  FocusNode _myFocusNode4 = new FocusNode();
 
   DateTime startDate, dueDate;
   TimeOfDay startTime, dueTime;
@@ -45,9 +48,11 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     _myFocusNode1 = new FocusNode();
     _myFocusNode2 = new FocusNode();
     _myFocusNode3 = new FocusNode();
+    _myFocusNode4 = new FocusNode();
     _myFocusNode1.addListener(_onOnFocusNodeEvent);
     _myFocusNode2.addListener(_onOnFocusNodeEvent);
     _myFocusNode3.addListener(_onOnFocusNodeEvent);
+    _myFocusNode4.addListener(_onOnFocusNodeEvent);
 
     startDate = DateTime.now();
     dueDate = DateTime.now();
@@ -61,6 +66,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     _myFocusNode1.dispose();
     _myFocusNode2.dispose();
     _myFocusNode3.dispose();
+    _myFocusNode4.dispose();
   }
 
   _onOnFocusNodeEvent() {
@@ -88,18 +94,18 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                   height: 12,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 32),
+                  padding: const EdgeInsets.only(bottom: 20),
                   child: StreamBuilder(
                     // stream: authBloc.nameStream,
                     builder: (context, snapshot) => TextField(
-                      focusNode: _myFocusNode1,
-                      controller: _nameController,
+                      focusNode: _myFocusNode4,
+                      controller: _idController,
                       style: TextStyle(fontSize: 18, color: Colors.black),
                       decoration: InputDecoration(
                         errorText: snapshot.hasError ? snapshot.error : null,
-                        labelText: 'Tên yêu cầu',
+                        labelText: 'Mã quy trình',
                         labelStyle: TextStyle(
-                            color: _myFocusNode1.hasFocus
+                            color: _myFocusNode4.hasFocus
                                 ? MyColors.lightBrand
                                 : MyColors.mediumGray),
                         enabledBorder: OutlineInputBorder(
@@ -116,8 +122,34 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                     ),
                   ),
                 ),
+                StreamBuilder(
+                  // stream: authBloc.nameStream,
+                  builder: (context, snapshot) => TextField(
+                    focusNode: _myFocusNode1,
+                    controller: _nameController,
+                    style: TextStyle(fontSize: 18, color: Colors.black),
+                    decoration: InputDecoration(
+                      errorText: snapshot.hasError ? snapshot.error : null,
+                      labelText: 'Tên quy trình',
+                      labelStyle: TextStyle(
+                          color: _myFocusNode1.hasFocus
+                              ? MyColors.lightBrand
+                              : MyColors.mediumGray),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                        BorderSide(color: MyColors.mediumGray, width: 1),
+                        borderRadius: BorderRadius.all(Radius.circular(6)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: MyColors.lightBrand, width: 2.0),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                    ),
+                  ),
+                ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 32),
+                  padding: const EdgeInsets.only(top: 20, bottom: 20),
                   child: StreamBuilder(
                     // stream: authBloc.phoneStream,
                     builder: (context, snapshot) => TextField(
@@ -149,7 +181,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(bottom: 32),
+                  margin: const EdgeInsets.only(bottom: 20),
                   padding:
                       const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
                   decoration: BoxDecoration(
@@ -185,7 +217,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(bottom: 32),
+                  margin: const EdgeInsets.only(bottom: 20),
                   padding:
                       const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
                   decoration: BoxDecoration(
@@ -221,7 +253,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 32),
+                  padding: const EdgeInsets.only(bottom: 20),
                   child: StreamBuilder(
                     // stream: authBloc.passStream,
                     builder: (context, snapshot) => TextField(
@@ -359,7 +391,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 32),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -476,6 +508,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
         formatTime(dueTime.minute) +
         ':00-07:00';
     int numOfSteps = int.parse(_numStepsController.text);
+    String keyword = _idController.text;
 
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('userId') ?? 0;
@@ -491,10 +524,11 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
           "Description": description,
           "Status": 'active',
           "CreatorID": '$userId',
-          "CreatedTime": '$createdTime',
-          "StartDate": '$startDateStr',
-          "DueDate": '$dueDateStr',
-          "NumOfSteps": '$numOfSteps'
+          "CreatedTime": createdTime,
+          "StartDate": startDateStr,
+          "DueDate": dueDateStr,
+          "NumOfSteps": '$numOfSteps',
+          "Keyword": keyword
         }),
       );
 
@@ -516,7 +550,15 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
           );
         }
       } else {
-        throw Exception('Failed to create request.');
+        await pr.hide();
+        Flushbar(
+          icon:
+          Image.asset('images/icons8-exclamation-mark-48.png', width: 24, height: 24),
+          message: 'Mã quy trình đã tồn tại!',
+          duration: Duration(seconds: 3),
+          margin: EdgeInsets.all(8),
+          borderRadius: 8,
+        )..show(context);
       }
     }
   }
