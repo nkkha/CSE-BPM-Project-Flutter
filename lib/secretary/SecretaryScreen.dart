@@ -12,19 +12,30 @@ import 'package:flutter/material.dart';
 class SecretaryScreen extends StatefulWidget {
   bool isCreatedNew = false;
   int selectedIndex;
+  int roleID;
 
-  SecretaryScreen({Key key, this.isCreatedNew, this.selectedIndex}) : super(key: key);
+  SecretaryScreen({Key key, this.isCreatedNew, this.selectedIndex, @required this.roleID}) : super(key: key);
 
   @override
-  _SecretaryScreenState createState() => _SecretaryScreenState();
+  _SecretaryScreenState createState() => _SecretaryScreenState(roleID);
 }
 
 class _SecretaryScreenState extends State<SecretaryScreen> with AfterLayoutMixin<SecretaryScreen> {
-  static List<Widget> _widgetOptions = <Widget>[
-    DashboardScreen(),
-    SecretaryHomeFragment(),
-    SettingsFragment(),
-  ];
+  int roleID;
+  _SecretaryScreenState(this.roleID);
+
+  static List<Widget> _widgetOptions;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _widgetOptions = <Widget>[
+      DashboardScreen(),
+      SecretaryHomeFragment(),
+      SettingsFragment(roleID: roleID),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {

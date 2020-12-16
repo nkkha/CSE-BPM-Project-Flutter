@@ -145,7 +145,7 @@ class _CreateRequestInstanceDetailsScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Thông tin yêu cầu'),
+        title: Text('Tạo yêu cầu'),
         titleSpacing: 0,
       ),
       body: FutureBuilder(

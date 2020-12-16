@@ -133,8 +133,12 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
 
   Widget build(BuildContext context) {
     int currentStepIndex = widget.requestInstance.currentStepIndex;
+    String txt = "Bước $currentStepIndex chưa hoàn thành!";
+    if (currentStepIndex == 0) {
+      txt = "Yêu cầu chưa được phê duyệt!";
+    }
     return widget.tabIndex > currentStepIndex
-        ? Center(child: Text('Bước $currentStepIndex chưa hoàn thành'))
+        ? Center(child: Text(txt, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)))
         : FutureBuilder<List<StepInstance>>(
             future: futureListStepInstance,
             builder: (context, snapshot) {
@@ -233,10 +237,10 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   child: Card(
-                    elevation: 5,
+                    elevation: 10,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
-                      side: BorderSide(width: 2, color: Colors.green),
+                      side: stepInstance.approverRoleID == roleID ? BorderSide(width: 2, color: MyColors.green) : BorderSide(width: 0, color: Colors.white),
                     ),
                     child: Column(
                       children: [

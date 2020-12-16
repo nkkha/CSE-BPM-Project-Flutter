@@ -30,7 +30,7 @@ class _CreateRequestInstanceScreenState extends State<CreateRequestInstanceScree
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tạo yêu cầu'),
+        title: Text('Danh sách quy trình'),
         titleSpacing: 0,
       ),
       body: Center(

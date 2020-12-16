@@ -134,7 +134,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                       : Container(),
                   Center(
                     child: Padding(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.only(bottom: 20),
                         child: Image.asset(imgUrl, width: 48, height: 48)),
                   ),
                   _requestInstance.status.contains("new") && !widget.isStudent

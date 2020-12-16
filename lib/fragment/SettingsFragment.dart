@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cse_bpm_project/screen/login/CreateAccountScreen.dart';
 import 'package:cse_bpm_project/screen/login/LoginScreen.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:http/http.dart' as http;
@@ -8,7 +9,9 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsFragment extends StatefulWidget {
-  const SettingsFragment({Key key}) : super(key: key);
+  final int roleID;
+
+  const SettingsFragment({Key key, this.roleID}) : super(key: key);
 
   @override
   _SettingsFragmentState createState() => _SettingsFragmentState();
@@ -17,6 +20,47 @@ class SettingsFragment extends StatefulWidget {
 class _SettingsFragmentState extends State<SettingsFragment> {
   ProgressDialog pr;
   var webService = new WebService();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(
+          'Cài đặt',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+      body: widget.roleID == 3
+          ? Column(
+              children: <Widget>[
+                _buildRowSetting(
+                    'images/ic-notifications-24.png', 'Thông báo', 1, context),
+                _buildRowSetting(
+                    'images/ic_user_group_24.png', 'Tạo tài khoản', 5, context),
+                _buildRowSetting('images/ic-security-24.png',
+                    'Chính sách bảo mật', 2, context),
+                _buildRowSetting(
+                    'images/ic-help-24.png', 'Trợ giúp', 3, context),
+                _buildRowSetting('images/logout.png', 'Đăng xuất', 4, context),
+              ],
+            )
+          : Column(
+              children: <Widget>[
+                _buildRowSetting(
+                    'images/ic-notifications-24.png', 'Thông báo', 1, context),
+                _buildRowSetting('images/ic-security-24.png',
+                    'Chính sách bảo mật', 2, context),
+                _buildRowSetting(
+                    'images/ic-help-24.png', 'Trợ giúp', 3, context),
+                _buildRowSetting('images/logout.png', 'Đăng xuất', 4, context),
+              ],
+            ),
+    );
+  }
 
   Widget _buildRowSetting(
       String imgUrl, String title, int index, BuildContext context) {
@@ -42,7 +86,7 @@ class _SettingsFragmentState extends State<SettingsFragment> {
               ),
             ],
           ),
-          onTap: index == 4 ? () => _onLogOutClicked(context) : () => {},
+          onTap: () => _onRowClicked(context, index),
         ),
         Padding(
           padding: const EdgeInsets.only(left: 72),
@@ -52,30 +96,14 @@ class _SettingsFragmentState extends State<SettingsFragment> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          'Cài đặt',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-      body: Column(
-        children: <Widget>[
-          _buildRowSetting(
-              'images/ic-notifications-24.png', 'Thông báo', 1, context),
-          _buildRowSetting(
-              'images/ic-security-24.png', 'Chính sách bảo mật', 2, context),
-          _buildRowSetting('images/ic-help-24.png', 'Trợ giúp', 3, context),
-          _buildRowSetting('images/logout.png', 'Đăng xuất', 4, context),
-        ],
-      ),
-    );
+  void _onRowClicked(BuildContext context, int index) {
+    switch (index) {
+      case 4:
+        _onLogOutClicked(context);
+        break;
+      case 5:
+        _onCreateAccountClicked();
+    }
   }
 
   Future<void> _onLogOutClicked(BuildContext context) async {
@@ -104,5 +132,12 @@ class _SettingsFragmentState extends State<SettingsFragment> {
     } else {
       throw Exception('Failed to logout.');
     }
+  }
+
+  void _onCreateAccountClicked() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => CreateAccountScreen()));
   }
 }

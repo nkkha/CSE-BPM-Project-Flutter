@@ -12,19 +12,19 @@ class OfficesHomeFragment extends StatefulWidget {
 }
 
 class _OfficesHomeFragmentState extends State<OfficesHomeFragment> {
-  var title = "";
+  var title = "Trang chủ";
 
   @override
   Widget build(BuildContext context) {
     switch (widget.roleID) {
       case 5:
-        title = 'PDT';
+        title = title + ' (PĐT)';
         break;
       case 6:
-        title = 'PTC';
+        title = title + ' (PTC)';
         break;
       default:
-        title = 'Offices';
+        title = title + ' (Offices)';
         break;
     }
 
@@ -50,10 +50,10 @@ class _OfficesHomeFragmentState extends State<OfficesHomeFragment> {
             Container(
               padding: const EdgeInsets.all(8.0),
               child: Card(
-                elevation: 5,
+                elevation: 10,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
-                  side: BorderSide(width: 2, color: Colors.green),
+                  // side: BorderSide(width: 2, color: Colors.green),
                 ),
                 child: InkWell(
                   onTap: () {
@@ -71,7 +71,8 @@ class _OfficesHomeFragmentState extends State<OfficesHomeFragment> {
                           child: Text(
                             "Yêu cầu cần xử lý",
                             style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 18,
+                                color: MyColors.brand,
                                 fontWeight: FontWeight.bold),
                           ),
                         ),

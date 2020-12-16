@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cse_bpm_project/model/Role.dart';
 import 'package:cse_bpm_project/model/User.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/services.dart';
@@ -10,12 +11,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
-class RegisterScreen extends StatefulWidget {
+class CreateAccountScreen extends StatefulWidget {
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  _CreateAccountScreenState createState() => _CreateAccountScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _CreateAccountScreenState extends State<CreateAccountScreen> {
   TextEditingController _nameController = new TextEditingController();
   TextEditingController _phoneController = new TextEditingController();
   TextEditingController _emailController = new TextEditingController();
@@ -29,16 +30,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   FocusNode _myFocusNode5 = new FocusNode();
 
   bool _isClicked = false;
-
-  @override
-  void dispose() {
-    super.dispose();
-    _myFocusNode1.dispose();
-    _myFocusNode2.dispose();
-    _myFocusNode3.dispose();
-    _myFocusNode4.dispose();
-    _myFocusNode5.dispose();
-  }
+  List<Role> _dropdownItems = new List();
+  List<DropdownMenuItem<Role>> _dropdownMenuItems;
+  Role _selectedItem;
 
   @override
   void initState() {
@@ -53,6 +47,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _myFocusNode3.addListener(_onOnFocusNodeEvent);
     _myFocusNode4.addListener(_onOnFocusNodeEvent);
     _myFocusNode5.addListener(_onOnFocusNodeEvent);
+
+    getListRole();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _myFocusNode1.dispose();
+    _myFocusNode2.dispose();
+    _myFocusNode3.dispose();
+    _myFocusNode4.dispose();
+    _myFocusNode5.dispose();
+  }
+
+  void getListRole() {
+    _dropdownItems.add(new Role(id: 1, name: "Sinh viên"));
+    _dropdownItems.add(new Role(id: 2, name: "Thư ký"));
+    _dropdownItems.add(new Role(id: 3, name: "Ban chủ nhiệm"));
+    _dropdownItems.add(new Role(id: 4, name: "Giảng viên"));
+    _dropdownItems.add(new Role(id: 5, name: "Phòng đào tạo"));
+    _dropdownItems.add(new Role(id: 6, name: "Phòng tài chính"));
+
+    _dropdownMenuItems = buildDropDownMenuItems(_dropdownItems);
+    _selectedItem = _dropdownMenuItems[0].value;
+  }
+
+  List<DropdownMenuItem<Role>> buildDropDownMenuItems(List listItems) {
+    List<DropdownMenuItem<Role>> items = List();
+    for (Role listItem in listItems) {
+      items.add(
+        DropdownMenuItem(
+          child: Text(listItem.name),
+          value: listItem,
+        ),
+      );
+    }
+    return items;
   }
 
   _onOnFocusNodeEvent() {
@@ -79,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 6),
                 child: Text(
-                  'Đăng ký tài khoản',
+                  'Tạo tài khoản',
                   style: TextStyle(fontSize: 22, color: MyColors.black),
                 ),
               ),
@@ -104,7 +135,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               : MyColors.mediumGray),
                       prefixIcon: Container(
                         width: 50,
-                        child: Icon(Icons.account_circle_outlined, color: Colors.grey[400]),
+                        child: Icon(Icons.account_circle_outlined,
+                            color: Colors.grey[400]),
                       ),
                       border: OutlineInputBorder(
                         borderSide:
@@ -141,12 +173,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       border: OutlineInputBorder(
                         borderSide:
-                        BorderSide(color: MyColors.lightGray, width: 1),
+                            BorderSide(color: MyColors.lightGray, width: 1),
                         borderRadius: BorderRadius.all(Radius.circular(6)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide:
-                        BorderSide(color: MyColors.lightBrand, width: 2.0),
+                            BorderSide(color: MyColors.lightBrand, width: 2.0),
                         borderRadius: BorderRadius.circular(6.0),
                       ),
                     ),
@@ -252,6 +284,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               Padding(
+                padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                child: Row(
+                  children: [
+                    Text(
+                      "Quyền: ",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8, right: 8),
+                      child: Container(
+                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all()),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                              value: _selectedItem,
+                              items: _dropdownMenuItems,
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedItem = value;
+                                });
+                              }),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
                 padding: const EdgeInsets.fromLTRB(0, 40, 0, 20),
                 child: SizedBox(
                   width: double.infinity,
@@ -259,7 +321,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: RaisedButton(
                     onPressed: !_isClicked ? _onSignUpClicked : () {},
                     child: Text(
-                      'Đăng ký',
+                      'Tạo tài khoản',
                       style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                     color: MyColors.lightBrand,
@@ -269,25 +331,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
               ),
-              RichText(
-                text: TextSpan(
-                  text: 'Đã có tài khoản? ',
-                  style: TextStyle(fontSize: 16, color: MyColors.black),
-                  children: [
-                    TextSpan(
-                      text: 'Đăng nhập ngay',
-                      style: TextStyle(
-                        color: MyColors.lightBrand,
-                        fontSize: 16,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.of(context).pop();
-                        },
-                    ),
-                  ],
-                ),
-              )
             ],
           ),
         ),
@@ -333,7 +376,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         },
         body: jsonEncode(<String, String>{
           "UserId": "${user.id}",
-          "RoleId": "1",
+          "RoleId": "${_selectedItem.id}",
         }),
       );
 
@@ -342,8 +385,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await pr.hide();
         Flushbar(
           icon:
-          Image.asset('images/ic-check-circle.png', width: 24, height: 24),
-          message: 'Đăng ký thành công!',
+              Image.asset('images/ic-check-circle.png', width: 24, height: 24),
+          message: 'Tạo tài khoản thành công!',
           duration: Duration(seconds: 3),
           margin: EdgeInsets.all(8),
           borderRadius: 8,
@@ -352,8 +395,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _isClicked = false;
         await pr.hide();
         Flushbar(
-          icon:
-          Image.asset('images/icons8-exclamation-mark-48.png', width: 24, height: 24),
+          icon: Image.asset('images/icons8-exclamation-mark-48.png',
+              width: 24, height: 24),
           message: 'Tên đăng nhập đã tồn tại!',
           duration: Duration(seconds: 3),
           margin: EdgeInsets.all(8),
@@ -364,8 +407,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _isClicked = false;
       await pr.hide();
       Flushbar(
-        icon:
-        Image.asset('images/icons8-exclamation-mark-48.png', width: 24, height: 24),
+        icon: Image.asset('images/icons8-exclamation-mark-48.png',
+            width: 24, height: 24),
         message: 'Tên đăng nhập đã tồn tại!',
         duration: Duration(seconds: 3),
         margin: EdgeInsets.all(8),

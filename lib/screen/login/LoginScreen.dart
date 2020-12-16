@@ -176,12 +176,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 10, 0, 6),
                   child: Text(
-                    'Welcome Back!',
+                    'Đăng nhập',
                     style: TextStyle(fontSize: 22, color: MyColors.black),
                   ),
                 ),
                 Text(
-                  'Login to continue using BPM Project',
+                  'Đăng nhập để sử dụng ứng dụng',
                   style: TextStyle(fontSize: 16, color: MyColors.mediumGray),
                 ),
                 Padding(
@@ -191,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _userController,
                     style: TextStyle(fontSize: 18, color: Colors.black),
                     decoration: InputDecoration(
-                      labelText: 'Username',
+                      labelText: 'Tên đăng nhập',
                       labelStyle: TextStyle(
                           color: _myFocusNode1.hasFocus
                               ? MyColors.lightBrand
@@ -219,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: true,
                   style: TextStyle(fontSize: 18, color: Colors.black),
                   decoration: InputDecoration(
-                    labelText: 'Password',
+                    labelText: 'Mật khẩu',
                     labelStyle: TextStyle(
                         color: _myFocusNode2.hasFocus
                             ? MyColors.lightBrand
@@ -246,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                     child: Text(
-                      'Forgot password?',
+                      'Quên mật khẩu?',
                       style:
                           TextStyle(fontSize: 16, color: MyColors.mediumGray),
                     ),
@@ -258,9 +258,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: double.infinity,
                     height: 52,
                     child: RaisedButton(
-                      onPressed: _isClicked == false ? _onLoginClicked : () {},
+                      onPressed: !_isClicked ? _onLoginClicked : () {},
                       child: Text(
-                        'Log In',
+                        'Đăng nhập',
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                       color: MyColors.lightBrand,
@@ -272,11 +272,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 RichText(
                   text: TextSpan(
-                    text: 'New user? ',
+                    text: 'Người dùng mới? ',
                     style: TextStyle(color: MyColors.darkGray, fontSize: 16),
                     children: [
                       TextSpan(
-                        text: 'Sign up for a new account',
+                        text: 'Đăng ký tài khoản',
                         style: TextStyle(
                           color: MyColors.lightBrand,
                           fontSize: 16,
@@ -356,11 +356,11 @@ class _LoginScreenState extends State<LoginScreen> {
           break;
         case 2:
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => SecretaryScreen(selectedIndex: 0)));
+              MaterialPageRoute(builder: (context) => SecretaryScreen(selectedIndex: 0, roleID: userRole.roleId)));
           break;
         case 3:
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => SecretaryScreen(selectedIndex: 0)));
+              context, MaterialPageRoute(builder: (context) => SecretaryScreen(selectedIndex: 0, roleID: userRole.roleId)));
           break;
         default:
           Navigator.pushReplacement(
@@ -398,11 +398,11 @@ class _LoginScreenState extends State<LoginScreen> {
         break;
       case 2:
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => SecretaryScreen(selectedIndex: 0)));
+            MaterialPageRoute(builder: (context) => SecretaryScreen(selectedIndex: 0, roleID: roleId)));
         break;
       case 3:
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => SecretaryScreen(selectedIndex: 0)));
+            context, MaterialPageRoute(builder: (context) => SecretaryScreen(selectedIndex: 0, roleID: roleId)));
         break;
       default:
         Navigator.pushReplacement(
