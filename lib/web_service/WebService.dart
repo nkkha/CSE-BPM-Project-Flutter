@@ -532,7 +532,7 @@ class WebService {
       final prefs = await SharedPreferences.getInstance();
       prefs.clear();
     } else {
-      throw Exception('Failed to create next step instances.');
+      throw Exception('Failed to update device token.');
     }
   }
 }

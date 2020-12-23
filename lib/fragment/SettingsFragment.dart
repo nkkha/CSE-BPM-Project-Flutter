@@ -119,8 +119,8 @@ class _SettingsFragmentState extends State<SettingsFragment> {
     if (response.statusCode == 200) {
       await pr.hide();
       final prefs = await SharedPreferences.getInstance();
-      int roleID = prefs.getInt('roleId');
-      if (roleID == 1) {
+      String deviceToken = prefs.getString('deviceToken');
+      if (deviceToken != null) {
         webService.updateDeviceToken();
       }
       prefs.setInt('userId', null);
