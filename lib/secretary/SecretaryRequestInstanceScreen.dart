@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cse_bpm_project/excel/CreateExcelFileScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:http/http.dart' as http;
 
@@ -63,6 +64,19 @@ class _SecretaryRequestInstanceScreenState
             fontWeight: FontWeight.w500,
           ),
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.print_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        CreateExcelFileScreen(list: listRequestInstance)),
+              );
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<List<RequestInstance>>(
         future: futureListRequestInstance,

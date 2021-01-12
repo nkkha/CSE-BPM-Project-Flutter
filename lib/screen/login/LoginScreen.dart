@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/offices/OfficesScreen.dart';
-import 'package:cse_bpm_project/model/User.dart';
 import 'package:cse_bpm_project/screen/RequestInstanceDetailsScreen.dart';
 import 'package:cse_bpm_project/screen/StudentScreen.dart';
 import 'package:cse_bpm_project/secretary/SecretaryScreen.dart';
@@ -48,6 +47,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
 
+    _checkLogin();
+
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
@@ -88,15 +89,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
     _roleId = null;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      progressDialog = ProgressDialog(context,
-          type: ProgressDialogType.Normal,
-          isDismissible: false,
-          showLogs: true);
-      progressDialog.update(message: "Vui lòng đợi...");
-      await progressDialog.show();
-      getSharedPrefs();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //   progressDialog = ProgressDialog(context,
+    //       type: ProgressDialogType.Normal,
+    //       isDismissible: false,
+    //       showLogs: true);
+    //   progressDialog.update(message: "Vui lòng đợi...");
+    //   await progressDialog.show();
+    // });
 
     _myFocusNode1 = new FocusNode();
     _myFocusNode2 = new FocusNode();
@@ -132,15 +132,19 @@ class _LoginScreenState extends State<LoginScreen> {
     ]).show();
   }
 
+  void _checkLogin() {
+    getSharedPrefs();
+  }
+
   Future<Null> getSharedPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _roleId = prefs.getInt("roleId");
-    new Timer(const Duration(milliseconds: 500), () {
-      progressDialog.hide();
+    // new Timer(const Duration(milliseconds: 500), () {
+    //   progressDialog.hide();
       if (_roleId != null) {
         getHomeScreen(_roleId);
       }
-    });
+    // });
   }
 
   @override

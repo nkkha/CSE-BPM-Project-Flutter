@@ -1,6 +1,5 @@
 import 'package:cse_bpm_project/screen/CreateRequestScreen.dart';
 import 'package:cse_bpm_project/secretary/SecretaryRequestScreen.dart';
-import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
 
 class SecretaryHomeFragment extends StatefulWidget {
