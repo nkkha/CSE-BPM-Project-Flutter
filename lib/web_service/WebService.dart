@@ -389,7 +389,7 @@ class WebService {
       int stepInstanceID,
       int requestInstanceID,
       int inputFieldID,
-      String base64,
+      String url,
       String fileName,
       Function update) async {
     final http.Response response = await http.post(
@@ -402,7 +402,7 @@ class WebService {
         "RequestInstanceID":
             requestInstanceID == null ? null : "$requestInstanceID",
         "InputFieldID": "$inputFieldID",
-        "FileContent": base64,
+        "FileUrl": url,
         "FileName": fileName
       }),
     );

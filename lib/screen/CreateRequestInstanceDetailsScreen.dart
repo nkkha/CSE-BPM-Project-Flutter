@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:collection';
@@ -37,16 +38,15 @@ class _CreateRequestInstanceDetailsScreenState
   final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss');
   ProgressDialog pr;
   int count = 0;
+  TextEditingController _contentController = new TextEditingController();
+  FocusNode _myFocusNode = new FocusNode();
 
   List<InputField> listInputField = new List();
   Future<List<InputField>> futureListIF;
   List<InputFieldInstance> listInputFieldInstance = new List();
 
-  TextEditingController _contentController = new TextEditingController();
-  FocusNode _myFocusNode = new FocusNode();
-
-  HashMap listImageBytes = new HashMap<int, Uint8List>();
-  HashMap listFileBytes = new HashMap<int, Uint8List>();
+  HashMap listImageFilePath = new HashMap<int, String>();
+  HashMap listFilePath = new HashMap<int, String>();
 
   @override
   void initState() {
@@ -95,19 +95,33 @@ class _CreateRequestInstanceDetailsScreenState
     // ignore: deprecated_member_use
     File image = await ImagePicker.pickImage(
         source: ImageSource.camera, imageQuality: 50);
-    var bytes = image.readAsBytesSync();
-    String imageB64 = base64Encode(bytes);
-    updateImage(imageB64);
+    updateImage(image.path);
   }
 
   void _imgFromGallery(Function updateImage) async {
     // ignore: deprecated_member_use
     File image = await ImagePicker.pickImage(
         source: ImageSource.gallery, imageQuality: 50);
-    var bytes = image.readAsBytesSync();
-    String imageB64 = base64Encode(bytes);
-    updateImage(imageB64);
+    updateImage(image.path);
   }
+
+  // void _imgFromCamera(Function updateImage) async {
+  //   // ignore: deprecated_member_use
+  //   File image = await ImagePicker.pickImage(
+  //       source: ImageSource.camera, imageQuality: 50);
+  //   var bytes = image.readAsBytesSync();
+  //   String imageB64 = base64Encode(bytes);
+  //   updateImage(imageB64);
+  // }
+  //
+  // void _imgFromGallery(Function updateImage) async {
+  //   // ignore: deprecated_member_use
+  //   File image = await ImagePicker.pickImage(
+  //       source: ImageSource.gallery, imageQuality: 50);
+  //   var bytes = image.readAsBytesSync();
+  //   String imageB64 = base64Encode(bytes);
+  //   updateImage(imageB64);
+  // }
 
   void _showFilePicker(Function updateFile) async {
     FilePickerResult result = await FilePicker.platform.pickFiles(
@@ -118,9 +132,9 @@ class _CreateRequestInstanceDetailsScreenState
     if (result != null) {
       PlatformFile platformFile = result.files.first;
       File file = File('${platformFile.path}');
-      var bytes = file.readAsBytesSync();
-      String fileB64 = base64Encode(bytes);
-      updateFile(fileB64, platformFile.name);
+      // var bytes = file.readAsBytesSync();
+      // String fileB64 = base64Encode(bytes);
+      updateFile(file.path, platformFile.name);
     }
   }
 
@@ -138,10 +152,10 @@ class _CreateRequestInstanceDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
-    String startDate = DateFormat('kk:mm · dd/MM ')
-        .format(DateTime.parse(widget.request.startDate));
-    String dueDate = DateFormat('kk:mm · dd/MM')
-        .format(DateTime.parse(widget.request.dueDate));
+    // String startDate = DateFormat('kk:mm · dd/MM ')
+    //     .format(DateTime.parse(widget.request.startDate));
+    // String dueDate = DateFormat('kk:mm · dd/MM')
+    //     .format(DateTime.parse(widget.request.dueDate));
 
     return Scaffold(
       appBar: AppBar(
@@ -363,18 +377,18 @@ class _CreateRequestInstanceDetailsScreenState
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(width: 10, height: 10),
-          listImageBytes[key] == null
+          listImageFilePath[key] == null
               ? IconButton(
                   onPressed: () {
                     _showPicker(context, (data) {
                       setState(() {
-                        Uint8List decodedBytes = base64Decode(data);
-                        if (listImageBytes.containsKey(key)) {
-                          listImageBytes.update(key, (value) => decodedBytes);
-                          listInputFieldInstance[index].fileContent = data;
+                        String filePath = data;
+                        if (listImageFilePath.containsKey(key)) {
+                          listImageFilePath.update(key, (value) => filePath);
+                          listInputFieldInstance[index].fileContent = filePath;
                         } else {
-                          listImageBytes.putIfAbsent(key, () => decodedBytes);
-                          listInputFieldInstance[index].fileContent = data;
+                          listImageFilePath.putIfAbsent(key, () => filePath);
+                          listInputFieldInstance[index].fileContent = filePath;
                         }
                       });
                     });
@@ -384,20 +398,20 @@ class _CreateRequestInstanceDetailsScreenState
                   onTap: () {
                     _showPicker(context, (data) {
                       setState(() {
-                        Uint8List decodedBytes = base64Decode(data);
-                        if (listImageBytes.containsKey(key)) {
-                          listImageBytes.update(key, (value) => decodedBytes);
-                          listInputFieldInstance[index].fileContent = data;
+                        String filePath = data;
+                        if (listImageFilePath.containsKey(key)) {
+                          listImageFilePath.update(key, (value) => filePath);
+                          listInputFieldInstance[index].fileContent = filePath;
                         } else {
-                          listImageBytes.putIfAbsent(key, () => decodedBytes);
-                          listInputFieldInstance[index].fileContent = data;
+                          listImageFilePath.putIfAbsent(key, () => filePath);
+                          listInputFieldInstance[index].fileContent = filePath;
                         }
                       });
                     });
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Image.memory(listImageBytes[key]),
+                    child: Image.file(File(listImageFilePath[key])),
                   ),
                 ),
         ],
@@ -416,33 +430,51 @@ class _CreateRequestInstanceDetailsScreenState
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(width: 10, height: 10),
-          listFileBytes[key] == null
+          listFilePath[key] == null
               ? IconButton(
                   onPressed: () {
-                    _showFilePicker((fileB64, fileName) {
+                    _showFilePicker((data, fileName) {
                       setState(() {
-                        Uint8List decodedBytes = base64Decode(fileB64);
-                        if (listFileBytes.containsKey(key)) {
-                          listFileBytes.update(key, (value) => decodedBytes);
-                          listInputFieldInstance[index].fileContent = fileB64;
+                        String filePath = data;
+                        if (listFilePath.containsKey(key)) {
+                          listFilePath.update(key, (value) => filePath);
+                          listInputFieldInstance[index].fileContent = filePath;
                           listInputFieldInstance[index].fileName = fileName;
                         } else {
-                          listFileBytes.putIfAbsent(key, () => decodedBytes);
-                          listInputFieldInstance[index].fileContent = fileB64;
+                          listFilePath.putIfAbsent(key, () => filePath);
+                          listInputFieldInstance[index].fileContent = filePath;
                           listInputFieldInstance[index].fileName = fileName;
                         }
                       });
                     });
                   },
                   icon: Icon(Icons.file_upload, size: 36))
-              : Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    '${listInputFieldInstance[index].fileName}',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.bold),
+              : GestureDetector(
+                  onTap: () {
+                    _showFilePicker((data, fileName) {
+                      setState(() {
+                        String filePath = data;
+                        if (listFilePath.containsKey(key)) {
+                          listFilePath.update(key, (value) => filePath);
+                          listInputFieldInstance[index].fileContent = filePath;
+                          listInputFieldInstance[index].fileName = fileName;
+                        } else {
+                          listFilePath.putIfAbsent(key, () => filePath);
+                          listInputFieldInstance[index].fileContent = filePath;
+                          listInputFieldInstance[index].fileName = fileName;
+                        }
+                      });
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      '${listInputFieldInstance[index].fileName}',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
         ],
@@ -483,22 +515,20 @@ class _CreateRequestInstanceDetailsScreenState
         for (InputFieldInstance inputFieldInstance in listInputFieldInstance) {
           switch (inputFieldInstance.inputFieldTypeID) {
             case 1:
-              webService.postCreateInputTextFieldInstance(
-                  null,
-                  requestInstance.id,
-                  inputFieldInstance.inputFieldID,
-                  inputFieldInstance.textAnswer,
-                  (data) => update(data));
+              // webService.postCreateInputTextFieldInstance(
+              //     null,
+              //     requestInstance.id,
+              //     inputFieldInstance.inputFieldID,
+              //     inputFieldInstance.textAnswer,
+              //     (data) => update(data));
               break;
             case 2:
             case 3:
-              webService.postCreateInputFileFieldInstance(
-                  null,
+              uploadFile(
+                  inputFieldInstance.fileContent,
                   requestInstance.id,
                   inputFieldInstance.inputFieldID,
-                  inputFieldInstance.fileContent,
-                  inputFieldInstance.fileName,
-                  (data) => update(data));
+                  inputFieldInstance.inputFieldTypeID);
               break;
           }
         }
@@ -508,7 +538,7 @@ class _CreateRequestInstanceDetailsScreenState
           context,
           MaterialPageRoute(
               builder: (context) => StudentScreen(isCreatedNew: true)),
-              (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
         );
       }
     } else {
@@ -521,6 +551,31 @@ class _CreateRequestInstanceDetailsScreenState
         borderRadius: 8,
       )..show(context);
     }
+  }
+
+  Future<String> uploadFile(String path, int requestInstanceID,
+      int inputFieldID, int inputFileType) async {
+    String fileName = (path.split('/').last).split('.').first +
+        DateFormat("yyyy_MM_dd_hh_mm_ss").format(DateTime.now()) +
+        '.' +
+        path.split('.').last;
+    Reference firebaseStorageRef = FirebaseStorage.instance
+        .ref()
+        .child(inputFileType == 2 ? 'images' : 'documents')
+        .child(fileName);
+    UploadTask uploadTask = firebaseStorageRef.putFile(File(path));
+    uploadTask.whenComplete(() {
+      return firebaseStorageRef.getDownloadURL().then((value) {
+        if (value != null) {
+          String fileUrl = value.split('&').first;
+          webService.postCreateInputFileFieldInstance(null, requestInstanceID,
+              inputFieldID, fileUrl, fileName, (data) => update(data));
+        }
+      });
+    }).catchError((onError) {
+      print(onError);
+    });
+    return null;
   }
 
   void update(bool isSuccessful) async {

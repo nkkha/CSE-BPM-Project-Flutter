@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/InputFieldInstance.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 
@@ -52,8 +53,9 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   HashMap hashMapInputFields = new HashMap<int, List<InputField>>();
   HashMap hashMapInputFieldInstances =
       new HashMap<int, List<InputFieldInstance>>();
-  HashMap listImageBytes = new HashMap<int, Uint8List>();
-  HashMap listFileBytes = new HashMap<int, Uint8List>();
+  HashMap listImageFilePath = new HashMap<int, String>();
+  HashMap listFilePath = new HashMap<int, String>();
+  int count;
 
   final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss-07:00');
 
@@ -102,18 +104,14 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     // ignore: deprecated_member_use
     File image = await ImagePicker.pickImage(
         source: ImageSource.camera, imageQuality: 50);
-    var bytes = image.readAsBytesSync();
-    String imageB64 = base64Encode(bytes);
-    updateImage(imageB64);
+    updateImage(image.path);
   }
 
   void _imgFromGallery(Function updateImage) async {
     // ignore: deprecated_member_use
     File image = await ImagePicker.pickImage(
         source: ImageSource.gallery, imageQuality: 50);
-    var bytes = image.readAsBytesSync();
-    String imageB64 = base64Encode(bytes);
-    updateImage(imageB64);
+    updateImage(image.path);
   }
 
   void _showFilePicker(Function updateFile) async {
@@ -125,9 +123,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     if (result != null) {
       PlatformFile platformFile = result.files.first;
       File file = File('${platformFile.path}');
-      var bytes = file.readAsBytesSync();
-      String fileB64 = base64Encode(bytes);
-      updateFile(fileB64, platformFile.name);
+      updateFile(file.path, platformFile.name);
     }
   }
 
@@ -138,7 +134,12 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       txt = "Yêu cầu chưa được phê duyệt!";
     }
     return widget.tabIndex > currentStepIndex
-        ? Center(child: Text(txt, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)))
+        ? Center(
+            child: Text(txt,
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic)))
         : FutureBuilder<List<StepInstance>>(
             future: futureListStepInstance,
             builder: (context, snapshot) {
@@ -240,7 +241,9 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                     elevation: 10,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
-                      side: stepInstance.approverRoleID == roleID ? BorderSide(width: 2, color: MyColors.green) : BorderSide(width: 0, color: Colors.white),
+                      side: stepInstance.approverRoleID == roleID
+                          ? BorderSide(width: 2, color: MyColors.green)
+                          : BorderSide(width: 0, color: Colors.white),
                     ),
                     child: Column(
                       children: [
@@ -280,7 +283,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                         stepInstance.status.contains('active') &&
                                 stepInstance.approverRoleID == roleID
                             ? _buildInputFieldColumn(stepInstance, stepIndex)
-                            : _buildInputFieldInstanceColumn(stepInstance.id, stepIndex, roleID),
+                            : _buildInputFieldInstanceColumn(
+                                stepInstance.id, stepIndex, roleID),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -314,7 +318,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                         inputFieldTypeID: inputField.inputFieldTypeID,
                         title: inputField.title));
                   }
-                  hashMapInputFieldInstances.putIfAbsent(stepIndex, () => listIFI);
+                  hashMapInputFieldInstances.putIfAbsent(
+                      stepIndex, () => listIFI);
                 }
               }
             }
@@ -338,7 +343,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
           }
-          return Center(child: Padding(
+          return Center(
+              child: Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: CircularProgressIndicator(),
           ));
@@ -362,7 +368,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
 
   Widget createTextFieldWidget(int stepIndex, int index) {
     TextEditingController _textController = new TextEditingController();
-    _textController.text = hashMapInputFieldInstances[stepIndex][index].textAnswer;
+    _textController.text =
+        hashMapInputFieldInstances[stepIndex][index].textAnswer;
     _textController.addListener(() {
       hashMapInputFieldInstances[stepIndex][index].textAnswer =
           _textController.text;
@@ -423,20 +430,20 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(width: 10, height: 10),
-          listImageBytes[key] == null
+          listImageFilePath[key] == null
               ? IconButton(
                   onPressed: () {
                     _showPicker(context, (data) {
                       setState(() {
-                        Uint8List decodedBytes = base64Decode(data);
-                        if (listImageBytes.containsKey(key)) {
-                          listImageBytes.update(key, (value) => decodedBytes);
+                        String filePath = data;
+                        if (listImageFilePath.containsKey(key)) {
+                          listImageFilePath.update(key, (value) => filePath);
                           hashMapInputFieldInstances[stepIndex][index]
-                              .fileContent = data;
+                              .fileContent = filePath;
                         } else {
-                          listImageBytes.putIfAbsent(key, () => decodedBytes);
+                          listImageFilePath.putIfAbsent(key, () => filePath);
                           hashMapInputFieldInstances[stepIndex][index]
-                              .fileContent = data;
+                              .fileContent = filePath;
                         }
                       });
                     });
@@ -446,22 +453,22 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                   onTap: () {
                     _showPicker(context, (data) {
                       setState(() {
-                        Uint8List decodedBytes = base64Decode(data);
-                        if (listImageBytes.containsKey(key)) {
-                          listImageBytes.update(key, (value) => decodedBytes);
+                        String filePath = data;
+                        if (listImageFilePath.containsKey(key)) {
+                          listImageFilePath.update(key, (value) => filePath);
                           hashMapInputFieldInstances[stepIndex][index]
-                              .fileContent = data;
+                              .fileContent = filePath;
                         } else {
-                          listImageBytes.putIfAbsent(key, () => decodedBytes);
+                          listImageFilePath.putIfAbsent(key, () => filePath);
                           hashMapInputFieldInstances[stepIndex][index]
-                              .fileContent = data;
+                              .fileContent = filePath;
                         }
                       });
                     });
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Image.memory(listImageBytes[key]),
+                    child: Image.file(File(listImageFilePath[key])),
                   ),
                 ),
         ],
@@ -480,37 +487,59 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(width: 10, height: 10),
-          listFileBytes[key] == null
+          listFilePath[key] == null
               ? IconButton(
                   onPressed: () {
-                    _showFilePicker((fileB64, fileName) {
+                    _showFilePicker((data, fileName) {
                       setState(() {
-                        Uint8List decodedBytes = base64Decode(fileB64);
-                        if (listFileBytes.containsKey(key)) {
-                          listFileBytes.update(key, (value) => decodedBytes);
+                        String filePath = data;
+                        if (listFilePath.containsKey(key)) {
+                          listFilePath.update(key, (value) => filePath);
                           hashMapInputFieldInstances[stepIndex][index]
-                              .fileContent = fileB64;
-                          hashMapInputFieldInstances[stepIndex][index].fileName =
-                              fileName;
+                              .fileContent = filePath;
+                          hashMapInputFieldInstances[stepIndex][index]
+                              .fileName = fileName;
                         } else {
-                          listFileBytes.putIfAbsent(key, () => decodedBytes);
+                          listFilePath.putIfAbsent(key, () => filePath);
                           hashMapInputFieldInstances[stepIndex][index]
-                              .fileContent = fileB64;
-                          hashMapInputFieldInstances[stepIndex][index].fileName =
-                              fileName;
+                              .fileContent = filePath;
+                          hashMapInputFieldInstances[stepIndex][index]
+                              .fileName = fileName;
                         }
                       });
                     });
                   },
                   icon: Icon(Icons.file_upload, size: 36))
-              : Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    '${hashMapInputFieldInstances[stepIndex][index].fileName}',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.bold),
+              : GestureDetector(
+                  onTap: () {
+                    _showFilePicker((data, fileName) {
+                      setState(() {
+                        String filePath = data;
+                        if (listFilePath.containsKey(key)) {
+                          listFilePath.update(key, (value) => filePath);
+                          hashMapInputFieldInstances[stepIndex][index]
+                              .fileContent = filePath;
+                          hashMapInputFieldInstances[stepIndex][index]
+                              .fileName = fileName;
+                        } else {
+                          listFilePath.putIfAbsent(key, () => filePath);
+                          hashMapInputFieldInstances[stepIndex][index]
+                              .fileContent = filePath;
+                          hashMapInputFieldInstances[stepIndex][index]
+                              .fileName = fileName;
+                        }
+                      });
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      '${hashMapInputFieldInstances[stepIndex][index].fileName}',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
         ],
@@ -518,7 +547,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     );
   }
 
-  _buildInputFieldInstanceColumn(int stepInstanceID, int stepIndex, int roleID) {
+  _buildInputFieldInstanceColumn(
+      int stepInstanceID, int stepIndex, int roleID) {
     return FutureBuilder(
       future: webService.getListInputFieldInstance(null, stepInstanceID),
       builder: (context, snapshot) {
@@ -528,8 +558,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
             child: Column(
               children: List<Widget>.generate(
                   hashMapInputFieldInstances[stepIndex].length,
-                      (index) =>
-                      _buildInputFieldInstanceField(stepIndex, index)),
+                  (index) => _buildInputFieldInstanceField(stepIndex, index)),
             ),
           );
         } else if (snapshot.hasData) {
@@ -537,8 +566,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
             if (snapshot.data.length > 0) {
               List<InputFieldInstance> listIFI = new List();
               listIFI = snapshot.data;
-              hashMapInputFieldInstances.putIfAbsent(
-                  stepIndex, () => listIFI);
+              hashMapInputFieldInstances.putIfAbsent(stepIndex, () => listIFI);
               return Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: Column(
@@ -557,7 +585,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
         }
-        return Center(child: Padding(
+        return Center(
+            child: Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: CircularProgressIndicator(),
         ));
@@ -596,10 +625,14 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         );
         break;
       case 2:
-        Uint8List decodedBytes;
+        // Uint8List decodedBytes;
+        // if (hashMapInputFieldInstances[stepIndex][index].fileContent != null) {
+        //   decodedBytes = base64Decode(
+        //       hashMapInputFieldInstances[stepIndex][index].fileContent);
+        // }
+        String path;
         if (hashMapInputFieldInstances[stepIndex][index].fileContent != null) {
-          decodedBytes = base64Decode(
-              hashMapInputFieldInstances[stepIndex][index].fileContent);
+          path = hashMapInputFieldInstances[stepIndex][index].fileContent;
         }
         return Column(
           children: [
@@ -612,9 +645,9 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 32),
-              child: decodedBytes != null
-                  ? Image.memory(
-                      decodedBytes,
+              child: path != null
+                  ? Image.file(
+                      File(path),
                       fit: BoxFit.fitWidth,
                     )
                   : Text(
@@ -630,15 +663,18 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         break;
       case 3:
         if (hashMapInputFieldInstances[stepIndex][index].fileContent != null) {
-          Uint8List decodedBytes = base64Decode(
-              hashMapInputFieldInstances[stepIndex][index].fileContent);
+          // Uint8List decodedBytes = base64Decode(
+          //     hashMapInputFieldInstances[stepIndex][index].fileContent);
+          String path =
+              hashMapInputFieldInstances[stepIndex][index].fileContent;
           return FutureBuilder(
             future: getApplicationDocumentsDirectory(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                File file = new File(
-                    '${snapshot.data.path}/${hashMapInputFieldInstances[stepIndex][index].fileName}');
-                file.writeAsBytesSync(decodedBytes);
+                // File file = new File(
+                //     '${snapshot.data.path}/${hashMapInputFieldInstances[stepIndex][index].fileName}');
+                // file.writeAsBytesSync(decodedBytes);
+                File file = new File(path);
                 return FutureBuilder(
                   future: file.readAsBytes(),
                   builder: (context, snapshot) {
@@ -830,14 +866,15 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       );
 
       if (response.statusCode == 200) {
-        int count = 0;
+        count = 0;
         if (indexType == 1) {
           stepInstance.status = 'failed';
           webService.patchRequestInstanceFailed(stepInstance.requestInstanceID,
               () => _hidePr(0, false, stepInstance));
         } else {
           stepInstance.status = 'done';
-          if (roleID == stepInstance.approverRoleID && hashMapInputFieldInstances.containsKey(stepIndex)) {
+          if (roleID == stepInstance.approverRoleID &&
+              hashMapInputFieldInstances.containsKey(stepIndex)) {
             for (InputFieldInstance inputFieldInstance
                 in hashMapInputFieldInstances[stepIndex]) {
               switch (inputFieldInstance.inputFieldTypeID) {
@@ -849,16 +886,17 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                       inputFieldInstance.textAnswer, (isSuccessful) {
                     if (isSuccessful) {
                       count++;
-                      if (count == hashMapInputFieldInstances[stepIndex].length) {
+                      if (count ==
+                          hashMapInputFieldInstances[stepIndex].length) {
                         if (stepInstanceList.length == 1) {
                           if (widget.tabIndex == widget.numOfSteps) {
                             webService.patchRequestInstanceFinished(
                                 stepInstance.requestInstanceID,
-                                    () => _hidePr(1, false, stepInstance));
+                                () => _hidePr(1, false, stepInstance));
                           } else {
                             webService.patchRequestInstanceStepIndex(
                                 widget.requestInstance,
-                                    (data) => _hidePr(2, data, stepInstance));
+                                (data) => _hidePr(2, data, stepInstance));
                           }
                         } else if (stepInstanceList.length > 1) {
                           if (widget.tabIndex == widget.numOfSteps) {
@@ -867,14 +905,14 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                                 stepInstance.id,
                                 widget.tabIndex,
                                 true,
-                                    (data) => _hidePr(2, data, stepInstance));
+                                (data) => _hidePr(2, data, stepInstance));
                           } else {
                             webService.getOtherCurrentStepInstances(
                                 widget.requestInstance,
                                 stepInstance.id,
                                 widget.tabIndex,
                                 false,
-                                    (data) => _hidePr(2, data, stepInstance));
+                                (data) => _hidePr(2, data, stepInstance));
                           }
                         }
                       }
@@ -885,47 +923,8 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                   break;
                 case 2:
                 case 3:
-                  webService.postCreateInputFileFieldInstance(
-                      inputFieldInstance.stepInstanceID,
-                      null,
-                      inputFieldInstance.inputFieldID,
-                      inputFieldInstance.fileContent,
-                      inputFieldInstance.fileName, (isSuccessful) {
-                    if (isSuccessful) {
-                      count++;
-                      if (count == hashMapInputFieldInstances[stepIndex].length) {
-                        if (stepInstanceList.length == 1) {
-                          if (widget.tabIndex == widget.numOfSteps) {
-                            webService.patchRequestInstanceFinished(
-                                stepInstance.requestInstanceID,
-                                    () => _hidePr(1, false, stepInstance));
-                          } else {
-                            webService.patchRequestInstanceStepIndex(
-                                widget.requestInstance,
-                                    (data) => _hidePr(2, data, stepInstance));
-                          }
-                        } else if (stepInstanceList.length > 1) {
-                          if (widget.tabIndex == widget.numOfSteps) {
-                            webService.getOtherCurrentStepInstances(
-                                widget.requestInstance,
-                                stepInstance.id,
-                                widget.tabIndex,
-                                true,
-                                    (data) => _hidePr(2, data, stepInstance));
-                          } else {
-                            webService.getOtherCurrentStepInstances(
-                                widget.requestInstance,
-                                stepInstance.id,
-                                widget.tabIndex,
-                                false,
-                                    (data) => _hidePr(2, data, stepInstance));
-                          }
-                        }
-                      }
-                    } else {
-                      _hideByError();
-                    }
-                  });
+                  uploadFile(inputFieldInstance.fileContent, inputFieldInstance,
+                      stepInstance, stepIndex);
                   break;
               }
             }
@@ -934,11 +933,10 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
               if (widget.tabIndex == widget.numOfSteps) {
                 webService.patchRequestInstanceFinished(
                     stepInstance.requestInstanceID,
-                        () => _hidePr(1, false, stepInstance));
+                    () => _hidePr(1, false, stepInstance));
               } else {
-                webService.patchRequestInstanceStepIndex(
-                    widget.requestInstance,
-                        (data) => _hidePr(2, data, stepInstance));
+                webService.patchRequestInstanceStepIndex(widget.requestInstance,
+                    (data) => _hidePr(2, data, stepInstance));
               }
             } else if (stepInstanceList.length > 1) {
               if (widget.tabIndex == widget.numOfSteps) {
@@ -947,14 +945,14 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                     stepInstance.id,
                     widget.tabIndex,
                     true,
-                        (data) => _hidePr(2, data, stepInstance));
+                    (data) => _hidePr(2, data, stepInstance));
               } else {
                 webService.getOtherCurrentStepInstances(
                     widget.requestInstance,
                     stepInstance.id,
                     widget.tabIndex,
                     false,
-                        (data) => _hidePr(2, data, stepInstance));
+                    (data) => _hidePr(2, data, stepInstance));
               }
             }
           }
@@ -963,6 +961,71 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         throw Exception('Failed to update');
       }
     }
+  }
+
+  Future<String> uploadFile(String path, InputFieldInstance inputFieldInstance,
+      StepInstance stepInstance, int stepIndex) async {
+    String fileName = (path.split('/').last).split('.').first +
+        DateFormat("yyyy_MM_dd_hh_mm_ss").format(DateTime.now()) +
+        '.' +
+        path.split('.').last;
+    Reference firebaseStorageRef = FirebaseStorage.instance
+        .ref()
+        .child(
+            inputFieldInstance.inputFieldTypeID == 2 ? 'images' : 'documents')
+        .child(fileName);
+    UploadTask uploadTask = firebaseStorageRef.putFile(File(path));
+    uploadTask.whenComplete(() {
+      return firebaseStorageRef.getDownloadURL().then((value) {
+        if (value != null) {
+          String fileUrl = value.split('&').first;
+          webService.postCreateInputFileFieldInstance(
+              inputFieldInstance.stepInstanceID,
+              null,
+              inputFieldInstance.inputFieldID,
+              fileUrl,
+              fileName, (isSuccessful) {
+            if (isSuccessful) {
+              count++;
+              if (count == hashMapInputFieldInstances[stepIndex].length) {
+                if (stepInstanceList.length == 1) {
+                  if (widget.tabIndex == widget.numOfSteps) {
+                    webService.patchRequestInstanceFinished(
+                        stepInstance.requestInstanceID,
+                        () => _hidePr(1, false, stepInstance));
+                  } else {
+                    webService.patchRequestInstanceStepIndex(
+                        widget.requestInstance,
+                        (data) => _hidePr(2, data, stepInstance));
+                  }
+                } else if (stepInstanceList.length > 1) {
+                  if (widget.tabIndex == widget.numOfSteps) {
+                    webService.getOtherCurrentStepInstances(
+                        widget.requestInstance,
+                        stepInstance.id,
+                        widget.tabIndex,
+                        true,
+                        (data) => _hidePr(2, data, stepInstance));
+                  } else {
+                    webService.getOtherCurrentStepInstances(
+                        widget.requestInstance,
+                        stepInstance.id,
+                        widget.tabIndex,
+                        false,
+                        (data) => _hidePr(2, data, stepInstance));
+                  }
+                }
+              }
+            } else {
+              _hideByError();
+            }
+          });
+        }
+      });
+    }).catchError((onError) {
+      print(onError);
+    });
+    return null;
   }
 
   void _hideByError() async {

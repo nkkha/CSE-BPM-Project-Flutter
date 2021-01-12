@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 class InputFieldInstance {
   final int id;
   final int inputFieldID;
@@ -7,6 +5,7 @@ class InputFieldInstance {
   final int requestInstanceID;
   String fileContent;
   String fileName;
+  String fileUrl;
   String textAnswer;
   final int inputFieldTypeID;
   String title;
@@ -18,6 +17,7 @@ class InputFieldInstance {
     this.requestInstanceID,
     this.fileContent,
     this.fileName,
+    this.fileUrl,
     this.textAnswer,
     this.inputFieldTypeID,
     this.title,
@@ -31,6 +31,7 @@ class InputFieldInstance {
       requestInstanceID: json['RequestInstanceID'],
       fileContent: json['FileContent'],
       fileName: json['FileName'],
+      fileUrl: json['FileUrl'],
       textAnswer: json['TextAnswer'],
       inputFieldTypeID: json['InputFieldTypeID'],
       title: json['Title'],
