@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:cse_bpm_project/model/InputFieldInstance.dart';
 import 'package:cse_bpm_project/source/SharedPreferencesHelper.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
@@ -15,7 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
 class StepInfoWidget extends StatefulWidget {
@@ -25,7 +23,11 @@ class StepInfoWidget extends StatefulWidget {
   Function update;
 
   StepInfoWidget(
-      {Key key, this.requestInstance, this.isStudent, this.numOfSteps, this.update})
+      {Key key,
+      this.requestInstance,
+      this.isStudent,
+      this.numOfSteps,
+      this.update})
       : super(key: key);
 
   @override
@@ -126,11 +128,14 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                     ),
                   ),
                   listInputFieldInstance.length > 0
-                      ? Column(
-                          children: List<Widget>.generate(
-                              listInputFieldInstance.length,
-                              (index) => _buildInputFieldInstanceField(index)),
-                        )
+                      ? Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Column(
+                            children: List<Widget>.generate(
+                                listInputFieldInstance.length,
+                                (index) =>
+                                    _buildInputFieldInstanceField(index)),
+                          ))
                       : Container(),
                   Center(
                     child: Padding(
@@ -155,53 +160,60 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
   _buildInputFieldInstanceField(int index) {
     switch (listInputFieldInstance[index].inputFieldTypeID) {
       case 1:
-        return Column(
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Text(
-                '${listInputFieldInstance[index].title}',
-                style: TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Text(
-                listInputFieldInstance[index].textAnswer,
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic),
+            Expanded(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Text(
+                      '${index + 1}. ${listInputFieldInstance[index].title}',
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Text(
+                      listInputFieldInstance[index].textAnswer != null
+                          ? listInputFieldInstance[index].textAnswer
+                          : "null",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         );
         break;
       case 2:
-        Uint8List decodedBytes;
-        if (listInputFieldInstance[index].fileContent != null) {
-          decodedBytes =
-              base64Decode(listInputFieldInstance[index].fileContent);
-        }
         return Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Text(
-                '${listInputFieldInstance[index].title}',
-                style: TextStyle(fontSize: 16),
+            Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Text(
+                  '${index + 1}. ${listInputFieldInstance[index].title}',
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 32),
-              child: decodedBytes != null
-                  ? Image.memory(
-                      decodedBytes,
-                      fit: BoxFit.fitWidth,
+              child: listInputFieldInstance[index].fileUrl != null
+                  ? Image.network(
+                      listInputFieldInstance[index].fileUrl,
+                      fit: BoxFit.scaleDown,
                     )
                   : Text(
-                      "",
+                      "null",
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -212,72 +224,72 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
         );
         break;
       case 3:
-        if (listInputFieldInstance[index].fileContent != null) {
-          Uint8List decodedBytes =
-              base64Decode(listInputFieldInstance[index].fileContent);
-          return FutureBuilder(
-            future: getApplicationDocumentsDirectory(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                File file = new File(
-                    '${snapshot.data.path}/${listInputFieldInstance[index].fileName}');
-                file.writeAsBytesSync(decodedBytes);
-                return FutureBuilder(
-                  future: file.readAsBytes(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 20),
-                            child: Text(
-                              '${listInputFieldInstance[index].title}',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 32),
-                            child: RaisedButton(
-                              color: MyColors.lightBrand,
-                              child: Text(
-                                "Mở file",
-                                style: TextStyle(
-                                    fontSize: 16, color: MyColors.white),
-                              ),
-                              onPressed: () => openFile(file.path),
-                            ),
-                          ),
-                        ],
-                      );
-                    }
-                    return CircularProgressIndicator();
-                  },
-                );
-              }
-              return CircularProgressIndicator();
-            },
-          );
-        } else {
-          return Column(
+        if (listInputFieldInstance[index].fileUrl != null) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Text(
-                  '${listInputFieldInstance[index].title}',
-                  style: TextStyle(fontSize: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Text(
+                        '${index + 1}. ${listInputFieldInstance[index].title}',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 32),
+                      child: RaisedButton(
+                        color: MyColors.lightBrand,
+                        child: Text(
+                          "Mở file",
+                          style: TextStyle(fontSize: 16, color: MyColors.white),
+                        ),
+                        onPressed: () =>
+                            _launchURL(listInputFieldInstance[index].fileUrl),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.only(bottom: 32),
-              //   child: Text(
-              //     "null",
-              //     style: TextStyle(fontSize: 16),
-              //   ),
-              // ),
+            ],
+          );
+        } else {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Text(
+                      '${index + 1}. ${listInputFieldInstance[index].title}',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 32),
+                    child: Text(
+                      "null",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
             ],
           );
         }
         break;
+    }
+  }
+
+  void _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 

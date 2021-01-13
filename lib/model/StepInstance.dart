@@ -7,6 +7,7 @@ class StepInstance {
   String status;
   String responseMessage;
   final int stepIndex;
+  final String stepName;
   final String description;
   int approverRoleID;
   String createdDate;
@@ -21,6 +22,7 @@ class StepInstance {
     this.status,
     this.responseMessage,
     this.stepIndex,
+    this.stepName,
     this.description,
     this.approverRoleID,
     this.createdDate,
@@ -37,6 +39,7 @@ class StepInstance {
       status: json['Status'],
       responseMessage: json['ResponseMessage'],
       stepIndex: json['StepIndex'],
+      stepName: json['Name'],
       description: json['Description'],
       approverRoleID: json['ApproverRoleID'],
       createdDate: json['CreatedDate'],

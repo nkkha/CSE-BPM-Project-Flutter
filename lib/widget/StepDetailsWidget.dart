@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/InputFieldInstance.dart';
 import 'package:file_picker/file_picker.dart';
@@ -19,9 +18,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
 class StepDetailsWidget extends StatefulWidget {
@@ -252,12 +251,28 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                           child: Row(
                             children: [
                               Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: Text(
-                                    stepInstance.description,
-                                    style: TextStyle(fontSize: 16),
-                                  ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 8, bottom: 8),
+                                      child: Text(
+                                        stepInstance.stepName,
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 8.0),
+                                      child: Text(
+                                        stepInstance.description,
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               Container(
@@ -344,10 +359,11 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
             return Text("${snapshot.error}");
           }
           return Center(
-              child: Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: CircularProgressIndicator(),
-          ));
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: CircularProgressIndicator(),
+            ),
+          );
         });
   }
 
@@ -384,7 +400,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
           Padding(
             padding: const EdgeInsets.only(bottom: 32),
             child: Text(
-              hashMapInputFieldInstances[stepIndex][index].title,
+              '${index + 1}. ${hashMapInputFieldInstances[stepIndex][index].title}',
               style: TextStyle(fontSize: 16),
             ),
           ),
@@ -426,7 +442,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       child: Column(
         children: [
           Text(
-            '${hashMapInputFieldInstances[stepIndex][index].title}',
+            '${index + 1}. ${hashMapInputFieldInstances[stepIndex][index].title}',
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(width: 10, height: 10),
@@ -483,7 +499,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       child: Column(
         children: [
           Text(
-            '${hashMapInputFieldInstances[stepIndex][index].title}',
+            '${index + 1}. ${hashMapInputFieldInstances[stepIndex][index].title}',
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(width: 10, height: 10),
@@ -586,10 +602,11 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
           return Text("${snapshot.error}");
         }
         return Center(
-            child: Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: CircularProgressIndicator(),
-        ));
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: CircularProgressIndicator(),
+          ),
+        );
       },
     );
   }
@@ -600,26 +617,28 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Text(
-                    '${hashMapInputFieldInstances[stepIndex][index].title}',
-                    style: TextStyle(fontSize: 16),
+            Expanded(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Text(
+                      '${index + 1}. ${hashMapInputFieldInstances[stepIndex][index].title}',
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 32),
-                  child: Text(
-                    '${hashMapInputFieldInstances[stepIndex][index].textAnswer}',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 32),
+                    child: Text(
+                      '${hashMapInputFieldInstances[stepIndex][index].textAnswer}',
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         );
@@ -630,25 +649,28 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         //   decodedBytes = base64Decode(
         //       hashMapInputFieldInstances[stepIndex][index].fileContent);
         // }
-        String path;
-        if (hashMapInputFieldInstances[stepIndex][index].fileContent != null) {
-          path = hashMapInputFieldInstances[stepIndex][index].fileContent;
+        String url;
+        if (hashMapInputFieldInstances[stepIndex][index].fileUrl != null) {
+          url = hashMapInputFieldInstances[stepIndex][index].fileUrl;
         }
         return Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Text(
-                '${hashMapInputFieldInstances[stepIndex][index].title}',
-                style: TextStyle(fontSize: 16),
+            Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Text(
+                  '${index + 1}. ${hashMapInputFieldInstances[stepIndex][index].title}',
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 32),
-              child: path != null
-                  ? Image.file(
-                      File(path),
-                      fit: BoxFit.fitWidth,
+              child: url != null
+                  ? Image.network(
+                      url,
+                      fit: BoxFit.scaleDown,
                     )
                   : Text(
                       'null',
@@ -662,85 +684,76 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         );
         break;
       case 3:
-        if (hashMapInputFieldInstances[stepIndex][index].fileContent != null) {
-          // Uint8List decodedBytes = base64Decode(
-          //     hashMapInputFieldInstances[stepIndex][index].fileContent);
-          String path =
-              hashMapInputFieldInstances[stepIndex][index].fileContent;
-          return FutureBuilder(
-            future: getApplicationDocumentsDirectory(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                // File file = new File(
-                //     '${snapshot.data.path}/${hashMapInputFieldInstances[stepIndex][index].fileName}');
-                // file.writeAsBytesSync(decodedBytes);
-                File file = new File(path);
-                return FutureBuilder(
-                  future: file.readAsBytes(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 20),
-                            child: Text(
-                              '${hashMapInputFieldInstances[stepIndex][index].title}',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 32),
-                            child: RaisedButton(
-                              color: MyColors.lightBrand,
-                              child: Text(
-                                "Mở file",
-                                style: TextStyle(
-                                    fontSize: 16, color: MyColors.white),
-                              ),
-                              onPressed: () => openFile(file.path),
-                            ),
-                          ),
-                        ],
-                      );
-                    }
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: CircularProgressIndicator(),
+        if (hashMapInputFieldInstances[stepIndex][index].fileUrl != null) {
+          String url = hashMapInputFieldInstances[stepIndex][index].fileUrl;
+          if (url != null) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Text(
+                          '${index + 1}. ${hashMapInputFieldInstances[stepIndex][index].title}',
+                          style: TextStyle(fontSize: 16),
+                        ),
                       ),
-                    );
-                  },
-                );
-              }
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: CircularProgressIndicator(),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 32),
+                        child: RaisedButton(
+                          color: MyColors.lightBrand,
+                          child: Text(
+                            "Mở file",
+                            style:
+                                TextStyle(fontSize: 16, color: MyColors.white),
+                          ),
+                          onPressed: () => _launchURL(url),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              );
-            },
-          );
+              ],
+            );
+          }
         } else {
-          return Column(
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Text(
-                  '${hashMapInputFieldInstances[stepIndex][index].title}',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 32),
-                child: Text(
-                  "null",
-                  style: TextStyle(fontSize: 16),
+              Expanded(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Text(
+                        '${index + 1}. ${hashMapInputFieldInstances[stepIndex][index].title}',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 32),
+                      child: Text(
+                        "null",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           );
         }
         break;
+    }
+  }
+
+  void _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 
@@ -875,8 +888,11 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
           stepInstance.status = 'done';
           if (roleID == stepInstance.approverRoleID &&
               hashMapInputFieldInstances.containsKey(stepIndex)) {
-            for (InputFieldInstance inputFieldInstance
-                in hashMapInputFieldInstances[stepIndex]) {
+            for (int i = 0;
+                i < hashMapInputFieldInstances[stepIndex].length;
+                i++) {
+              InputFieldInstance inputFieldInstance =
+                  hashMapInputFieldInstances[stepIndex][i];
               switch (inputFieldInstance.inputFieldTypeID) {
                 case 1:
                   webService.postCreateInputTextFieldInstance(
@@ -924,7 +940,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                 case 2:
                 case 3:
                   uploadFile(inputFieldInstance.fileContent, inputFieldInstance,
-                      stepInstance, stepIndex);
+                      stepInstance, stepIndex, i);
                   break;
               }
             }
@@ -964,7 +980,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   }
 
   Future<String> uploadFile(String path, InputFieldInstance inputFieldInstance,
-      StepInstance stepInstance, int stepIndex) async {
+      StepInstance stepInstance, int stepIndex, int index) async {
     String fileName = (path.split('/').last).split('.').first +
         DateFormat("yyyy_MM_dd_hh_mm_ss").format(DateTime.now()) +
         '.' +
@@ -979,6 +995,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       return firebaseStorageRef.getDownloadURL().then((value) {
         if (value != null) {
           String fileUrl = value.split('&').first;
+          hashMapInputFieldInstances[stepIndex][index].fileUrl = fileUrl;
           webService.postCreateInputFileFieldInstance(
               inputFieldInstance.stepInstanceID,
               null,

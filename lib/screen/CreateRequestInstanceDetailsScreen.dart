@@ -515,12 +515,12 @@ class _CreateRequestInstanceDetailsScreenState
         for (InputFieldInstance inputFieldInstance in listInputFieldInstance) {
           switch (inputFieldInstance.inputFieldTypeID) {
             case 1:
-              // webService.postCreateInputTextFieldInstance(
-              //     null,
-              //     requestInstance.id,
-              //     inputFieldInstance.inputFieldID,
-              //     inputFieldInstance.textAnswer,
-              //     (data) => update(data));
+              webService.postCreateInputTextFieldInstance(
+                  null,
+                  requestInstance.id,
+                  inputFieldInstance.inputFieldID,
+                  inputFieldInstance.textAnswer,
+                  (data) => update(data));
               break;
             case 2:
             case 3:
