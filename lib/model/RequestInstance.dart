@@ -16,6 +16,7 @@ class RequestInstance {
   final String email;
   final String phone;
   final String fullName;
+  final String code;
 
   RequestInstance(
       {this.id,
@@ -34,11 +35,12 @@ class RequestInstance {
       this.userName,
       this.email,
       this.phone,
-      this.fullName});
+      this.fullName,
+      this.code});
 
   factory RequestInstance.fromJson(Map<String, dynamic> json) {
     return RequestInstance(
-      id: json['ID'],
+      id: json['RequestInstanceID'],
       userID: json['UserID'],
       requestID: json['RequestID'],
       defaultContent: json['DefaultContent'],
@@ -55,6 +57,7 @@ class RequestInstance {
       email: json['Mail'],
       phone: json['Phone'],
       fullName: json['FullName'],
+      code: json['Code'],
     );
   }
 }

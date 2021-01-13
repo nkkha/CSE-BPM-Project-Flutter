@@ -85,7 +85,7 @@ class _CreateExcelFileScreenState extends State<CreateExcelFileScreen> {
       RequestInstance rq = widget.list[i - 1];
       List<String> dataList = [
         rq.fullName,
-        "${rq.id}",
+        rq.code,
         rq.phone,
         rq.email,
         rq.createdDate,
