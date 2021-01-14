@@ -1,3 +1,5 @@
+import 'package:cse_bpm_project/model/InputField.dart';
+
 class RequestInstance {
   final int id;
   final int userID;
@@ -17,6 +19,7 @@ class RequestInstance {
   final String phone;
   final String fullName;
   final String code;
+  final List<dynamic> inputFields;
 
   RequestInstance(
       {this.id,
@@ -36,11 +39,12 @@ class RequestInstance {
       this.email,
       this.phone,
       this.fullName,
-      this.code});
+      this.code,
+      this.inputFields});
 
   factory RequestInstance.fromJson(Map<String, dynamic> json) {
     return RequestInstance(
-      id: json['RequestInstanceID'],
+      id: json['ID'],
       userID: json['UserID'],
       requestID: json['RequestID'],
       defaultContent: json['DefaultContent'],
@@ -58,6 +62,7 @@ class RequestInstance {
       phone: json['Phone'],
       fullName: json['FullName'],
       code: json['Code'],
+      inputFields: json['InputFields'],
     );
   }
 }

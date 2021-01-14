@@ -147,7 +147,7 @@ class _SecretaryRequestInstanceScreenState
 
   Future<List<RequestInstance>> fetchListRequestInstance() async {
     final response = await http.get(
-        'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?\$filter=requestID eq ${widget.requestID}');
+        'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstanceAll?\$filter=requestID eq ${widget.requestID}');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];

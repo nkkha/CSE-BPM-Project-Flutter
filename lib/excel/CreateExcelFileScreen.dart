@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -16,16 +18,67 @@ class CreateExcelFileScreen extends StatefulWidget {
 }
 
 class _CreateExcelFileScreenState extends State<CreateExcelFileScreen> {
+  List file = new List();
+  String directory;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _listofFiles();
+  }
+
+  void _listofFiles() async {
+    directory = await _localPath;
+    setState(() {
+      file = Directory("$directory/documents/").listSync();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Xuất file excel'),
       ),
-      body: SingleChildScrollView(
-        child: FloatingActionButton(
-          onPressed: _createExcelFile,
+      body: Container(
+        child: Padding(
+          padding: const EdgeInsets.all(30),
+          child: Column(
+            children: <Widget>[
+              // your Content if there
+              Expanded(
+                child: ListView.builder(
+                    itemCount: file.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Card(
+                          elevation: 10,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                            // side: BorderSide(width: 2, color: MyColors.lightGray),
+                          ),
+                          child: InkWell(
+                            onTap: () => openFile(file[index].toString()),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                file[index].toString(),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+              )
+            ],
+          ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _createExcelFile,
+        child: Icon(Icons.print),
       ),
     );
   }
@@ -59,13 +112,13 @@ class _CreateExcelFileScreenState extends State<CreateExcelFileScreen> {
 
     sheetObject.merge(
       CellIndex.indexByString("A1"),
-      CellIndex.indexByString("H2"),
+      CellIndex.indexByString("I2"),
       customValue: "${widget.list[0].requestName}",
     );
 
     sheetObject.merge(
       CellIndex.indexByString("A3"),
-      CellIndex.indexByString("H4"),
+      CellIndex.indexByString("I4"),
       customValue: "${widget.list[0].requestDescription}",
     );
 
@@ -77,12 +130,14 @@ class _CreateExcelFileScreenState extends State<CreateExcelFileScreen> {
       "Thời gian tạo",
       "Nội dung",
       "Trạng thái",
-      "Bước hiện tại"
+      "Bước hiện tại",
+      "Câu hỏi"
     ];
     sheetObject.insertRowIterables(dataList, 4);
 
     for (int i = 1; i <= widget.list.length; i++) {
       RequestInstance rq = widget.list[i - 1];
+      String json = jsonEncode(rq.inputFields);
       List<String> dataList = [
         rq.fullName,
         rq.code,
@@ -91,7 +146,8 @@ class _CreateExcelFileScreenState extends State<CreateExcelFileScreen> {
         rq.createdDate,
         rq.defaultContent,
         rq.status,
-        "${rq.currentStepIndex}/${rq.numOfSteps}"
+        "${rq.currentStepIndex}/${rq.numOfSteps}",
+        json,
       ];
       sheetObject.insertRowIterables(dataList, i + 4);
     }
@@ -118,15 +174,21 @@ class _CreateExcelFileScreenState extends State<CreateExcelFileScreen> {
     cellG.cellStyle = cellStyle;
     var cellH = sheetObject.cell(CellIndex.indexByString("H5"));
     cellH.cellStyle = cellStyle;
+    var cellI = sheetObject.cell(CellIndex.indexByString("I5"));
+    cellI.cellStyle = cellStyle;
 
     excel.encode().then((onValue) async {
-      final path = await _localPath;
-      print(path);
-      File("$path/excel.xlsx")
+      String fileName = widget.list[0].requestKeyword +
+          DateFormat("_yyyy_MM_ddThh_mm_ss").format(DateTime.now()) +
+          ".xlsx";
+      File("$directory/documents/$fileName")
         ..createSync(recursive: true)
         ..writeAsBytesSync(onValue);
       print('Created');
-      openFile("$path/excel.xlsx");
+      setState(() {
+        file = Directory("$directory/documents/").listSync();
+      });
+      openFile("$directory/documents/$fileName");
     });
   }
 
