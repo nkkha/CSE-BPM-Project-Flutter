@@ -104,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _showAlertDialog(RequestInstance requestInstance) {
-    TextEditingController messageController = new TextEditingController();
+    // TextEditingController messageController = new TextEditingController();
     BuildContext context = MyApp.navigatorKey.currentContext;
     Alert(context: context, title: "Yêu cầu được cập nhật", buttons: [
       DialogButton(
