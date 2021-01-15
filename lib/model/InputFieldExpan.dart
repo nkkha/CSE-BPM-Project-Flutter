@@ -1,19 +1,22 @@
-class InputField {
+class InputFieldExpand {
   final String title;
   final String textAnswer;
   final String fileUrl;
+  final int inputFieldTypeID;
 
-  InputField({
+  InputFieldExpand({
     this.title,
     this.textAnswer,
     this.fileUrl,
+    this.inputFieldTypeID,
   });
 
-  factory InputField.fromJson(Map<String, dynamic> json) {
-    return InputField(
+  factory InputFieldExpand.fromJson(Map<String, dynamic> json) {
+    return InputFieldExpand(
       title: json['Title'],
       textAnswer: json['TextAnswer'],
       fileUrl: json['FileUrl'],
+      inputFieldTypeID: json['InputFieldTypeID'],
     );
   }
 }

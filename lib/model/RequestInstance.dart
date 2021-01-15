@@ -1,4 +1,5 @@
 import 'package:cse_bpm_project/model/InputField.dart';
+import 'package:cse_bpm_project/model/InputFieldExpan.dart';
 
 class RequestInstance {
   final int id;
@@ -62,7 +63,7 @@ class RequestInstance {
       phone: json['Phone'],
       fullName: json['FullName'],
       code: json['Code'],
-      inputFields: json['InputFields'],
+      inputFields: json['InputFieldInstances'],
     );
   }
 }

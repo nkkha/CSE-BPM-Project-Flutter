@@ -24,6 +24,7 @@ class _SecretaryRequestInstanceScreenState
     extends State<SecretaryRequestInstanceScreen> {
   Future<List<RequestInstance>> futureListRequestInstance;
   bool _noRequest = false;
+  bool _haveData = false;
 
   var _searchEdit = new TextEditingController();
   bool _isSearch = true;
@@ -65,17 +66,19 @@ class _SecretaryRequestInstanceScreenState
           ),
         ),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.print_outlined),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        CreateExcelFileScreen(list: listRequestInstance)),
-              );
-            },
-          ),
+          _haveData
+              ? IconButton(
+                  icon: Icon(Icons.print_outlined),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              CreateExcelFileScreen(list: listRequestInstance)),
+                    );
+                  },
+                )
+              : Container(),
         ],
       ),
       body: FutureBuilder<List<RequestInstance>>(
@@ -147,7 +150,7 @@ class _SecretaryRequestInstanceScreenState
 
   Future<List<RequestInstance>> fetchListRequestInstance() async {
     final response = await http.get(
-        'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstanceAll?\$filter=requestID eq ${widget.requestID}');
+        'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstanceDetails?\$filter=requestID eq ${widget.requestID}');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
@@ -155,7 +158,14 @@ class _SecretaryRequestInstanceScreenState
       for (Map i in data) {
         listRequest.add(RequestInstance.fromJson(i));
       }
-      if (listRequest.length == 0) _noRequest = true;
+      if (listRequest.length == 0)
+        _noRequest = true;
+      else {
+        setState(() {
+          _haveData = true;
+        });
+      }
+      ;
       return listRequest;
     } else {
       throw Exception('Failed to load');
