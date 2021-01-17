@@ -447,12 +447,15 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
   void update(int stepID, int stepIndex) async {
     if (stepID != null) {
       if (listInputField.length > 0) {
+        int index = 0;
         for (InputField inputField in listInputField) {
+          index++;
           webService.postCreateInputField(
               stepID,
               null,
               inputField.inputFieldTypeID,
               inputField.title,
+              index,
               (data) => updateIF(data, stepIndex));
         }
       } else {

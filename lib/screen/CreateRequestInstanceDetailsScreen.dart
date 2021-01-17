@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -105,24 +104,6 @@ class _CreateRequestInstanceDetailsScreenState
     updateImage(image.path);
   }
 
-  // void _imgFromCamera(Function updateImage) async {
-  //   // ignore: deprecated_member_use
-  //   File image = await ImagePicker.pickImage(
-  //       source: ImageSource.camera, imageQuality: 50);
-  //   var bytes = image.readAsBytesSync();
-  //   String imageB64 = base64Encode(bytes);
-  //   updateImage(imageB64);
-  // }
-  //
-  // void _imgFromGallery(Function updateImage) async {
-  //   // ignore: deprecated_member_use
-  //   File image = await ImagePicker.pickImage(
-  //       source: ImageSource.gallery, imageQuality: 50);
-  //   var bytes = image.readAsBytesSync();
-  //   String imageB64 = base64Encode(bytes);
-  //   updateImage(imageB64);
-  // }
-
   void _showFilePicker(Function updateFile) async {
     FilePickerResult result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -132,8 +113,6 @@ class _CreateRequestInstanceDetailsScreenState
     if (result != null) {
       PlatformFile platformFile = result.files.first;
       File file = File('${platformFile.path}');
-      // var bytes = file.readAsBytesSync();
-      // String fileB64 = base64Encode(bytes);
       updateFile(file.path, platformFile.name);
     }
   }
@@ -152,11 +131,6 @@ class _CreateRequestInstanceDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
-    // String startDate = DateFormat('kk:mm · dd/MM ')
-    //     .format(DateTime.parse(widget.request.startDate));
-    // String dueDate = DateFormat('kk:mm · dd/MM')
-    //     .format(DateTime.parse(widget.request.dueDate));
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Tạo yêu cầu'),

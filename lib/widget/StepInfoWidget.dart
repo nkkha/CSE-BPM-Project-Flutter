@@ -114,16 +114,9 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 30),
                     child: Text(
-                      "Nội dung yêu cầu: ${_requestInstance.defaultContent}",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 20),
-                    child: Text(
-                      "Trạng thái yêu cầu: $status",
+                      "Nội dung: ${_requestInstance.defaultContent}",
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
@@ -138,13 +131,51 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                           ))
                       : Container(),
                   Center(
-                    child: Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        child: Image.asset(imgUrl, width: 48, height: 48)),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20, bottom: 20),
+                          child: Text(
+                            status,
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: Image.asset(imgUrl, width: 48, height: 48)),
+                      ],
+                    ),
                   ),
                   _requestInstance.status.contains("new") && !widget.isStudent
                       ? _buildCheckBox()
-                      : SizedBox()
+                      : SizedBox(),
+                  _requestInstance.responseMessage != null
+                      ? Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 8, 8, 32),
+                        child: RichText(
+                            text: TextSpan(
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.black,
+                              ),
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: "Ghi chú: ",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontStyle: FontStyle.italic),
+                                ),
+                                TextSpan(
+                                    text: "${_requestInstance.responseMessage}"),
+                              ],
+                            ),
+                          ),
+                      )
+                      : Padding(
+                          padding: const EdgeInsets.only(bottom: 32),
+                          child: SizedBox(),
+                        ),
                 ],
               ),
             ),
@@ -299,7 +330,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
 
   _buildCheckBox() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 32),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -410,6 +441,10 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
       // indexType = 1: Reject, indexType = 2: Approve
       resBody["Status"] = indexType == 1 ? "failed" : "active";
       resBody["CurrentStepIndex"] = indexType == 1 ? 0 : 1;
+      if (message != null) {
+        resBody["ResponseMessage"] = message;
+        _requestInstance.responseMessage = message;
+      }
       if (indexType == 1) {
         resBody["FinishedDate"] = formatterDateTime.format(DateTime.now());
       }

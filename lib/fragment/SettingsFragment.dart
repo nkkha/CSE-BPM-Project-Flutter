@@ -130,6 +130,7 @@ class _SettingsFragmentState extends State<SettingsFragment> {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginScreen()));
     } else {
+      await pr.hide();
       throw Exception('Failed to logout.');
     }
   }

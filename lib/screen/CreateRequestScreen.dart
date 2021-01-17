@@ -110,7 +110,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                                 : MyColors.mediumGray),
                         enabledBorder: OutlineInputBorder(
                           borderSide:
-                          BorderSide(color: MyColors.mediumGray, width: 1),
+                              BorderSide(color: MyColors.mediumGray, width: 1),
                           borderRadius: BorderRadius.all(Radius.circular(6)),
                         ),
                         focusedBorder: OutlineInputBorder(
@@ -137,12 +137,12 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                               : MyColors.mediumGray),
                       enabledBorder: OutlineInputBorder(
                         borderSide:
-                        BorderSide(color: MyColors.mediumGray, width: 1),
+                            BorderSide(color: MyColors.mediumGray, width: 1),
                         borderRadius: BorderRadius.all(Radius.circular(6)),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: MyColors.lightBrand, width: 2.0),
+                        borderSide:
+                            BorderSide(color: MyColors.lightBrand, width: 2.0),
                         borderRadius: BorderRadius.circular(6.0),
                       ),
                     ),
@@ -172,8 +172,8 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                           borderRadius: BorderRadius.all(Radius.circular(6)),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: MyColors.lightBrand, width: 2.0),
+                          borderSide: BorderSide(
+                              color: MyColors.lightBrand, width: 2.0),
                           borderRadius: BorderRadius.circular(6.0),
                         ),
                       ),
@@ -287,7 +287,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                 ),
                 Column(
                   children: List<Widget>.generate(listInputField.length,
-                          (index) => createInputFieldWidget(index)),
+                      (index) => createInputFieldWidget(index)),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
@@ -299,7 +299,8 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                         height: 52,
                         child: RaisedButton(
                           onPressed: () {
-                            InputField inputField = new InputField(inputFieldTypeID: 1);
+                            InputField inputField =
+                                new InputField(inputFieldTypeID: 1);
                             setState(() {
                               listInputField.add(inputField);
                             });
@@ -309,7 +310,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                               borderRadius: BorderRadius.circular(18.0),
                               side: BorderSide(color: MyColors.mediumGray)),
                           padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -328,7 +329,8 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                         height: 52,
                         child: RaisedButton(
                           onPressed: () {
-                            InputField inputField = new InputField(inputFieldTypeID: 2);
+                            InputField inputField =
+                                new InputField(inputFieldTypeID: 2);
                             setState(() {
                               listInputField.add(inputField);
                             });
@@ -338,7 +340,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                               borderRadius: BorderRadius.circular(18.0),
                               side: BorderSide(color: MyColors.mediumGray)),
                           padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -360,9 +362,10 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                         height: 52,
                         child: RaisedButton(
                           onPressed: () {
-                            InputField inputField = new InputField(inputFieldTypeID: 3);
+                            InputField inputField =
+                                new InputField(inputFieldTypeID: 3);
                             setState(() {
-                              listInputField.add(inputField );
+                              listInputField.add(inputField);
                             });
                           },
                           color: Colors.white,
@@ -370,7 +373,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                               borderRadius: BorderRadius.circular(18.0),
                               side: BorderSide(color: MyColors.mediumGray)),
                           padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -466,7 +469,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                    BorderSide(color: MyColors.lightBrand, width: 2.0),
+                        BorderSide(color: MyColors.lightBrand, width: 2.0),
                     borderRadius: BorderRadius.circular(6.0),
                   ),
                 ),
@@ -535,8 +538,16 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
       if (response.statusCode == 200) {
         Request request = Request.fromJson(jsonDecode(response.body));
         if (listInputField.length > 0) {
+          int index = 0;
           for (InputField inputField in listInputField) {
-            webService.postCreateInputField(null, request.id, inputField.inputFieldTypeID, inputField.title, (data) => update(data, numOfSteps, request.id));
+            index++;
+            webService.postCreateInputField(
+                null,
+                request.id,
+                inputField.inputFieldTypeID,
+                inputField.title,
+                index,
+                (data) => update(data, numOfSteps, request.id));
           }
         } else {
           await pr.hide();
@@ -544,16 +555,16 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
             context,
             MaterialPageRoute(
                 builder: (context) => CreateStepScreen(
-                  numOfSteps: numOfSteps,
-                  requestID: request.id,
-                )),
+                      numOfSteps: numOfSteps,
+                      requestID: request.id,
+                    )),
           );
         }
       } else {
         await pr.hide();
         Flushbar(
-          icon:
-          Image.asset('images/icons8-exclamation-mark-48.png', width: 24, height: 24),
+          icon: Image.asset('images/icons8-exclamation-mark-48.png',
+              width: 24, height: 24),
           message: 'Mã quy trình đã tồn tại!',
           duration: Duration(seconds: 3),
           margin: EdgeInsets.all(8),
@@ -572,9 +583,9 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
           context,
           MaterialPageRoute(
               builder: (context) => CreateStepScreen(
-                numOfSteps: numOfSteps,
-                requestID: requestID,
-              )),
+                    numOfSteps: numOfSteps,
+                    requestID: requestID,
+                  )),
         );
       }
     }

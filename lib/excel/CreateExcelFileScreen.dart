@@ -211,7 +211,7 @@ class _CreateExcelFileScreenState extends State<CreateExcelFileScreen> {
   Future<List<InputField>> _fetchListInputField() async {
     final response = await get(
         'http://nkkha.somee.com/odata/tbInputField?\$filter=requestID eq ${widget
-            .list[0].requestID}&\$orderby InputFieldID asc');
+            .list[0].requestID}&\$orderby=ipindex asc');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];

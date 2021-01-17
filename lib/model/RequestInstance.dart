@@ -1,6 +1,3 @@
-import 'package:cse_bpm_project/model/InputField.dart';
-import 'package:cse_bpm_project/model/InputFieldExpan.dart';
-
 class RequestInstance {
   final int id;
   final int userID;
@@ -14,6 +11,7 @@ class RequestInstance {
   String requestKeyword;
   String requestName;
   String requestDescription;
+  String responseMessage;
   final int numOfSteps;
   final String userName;
   final String email;
@@ -35,6 +33,7 @@ class RequestInstance {
       this.requestKeyword,
       this.requestName,
       this.requestDescription,
+      this.responseMessage,
       this.numOfSteps,
       this.userName,
       this.email,
@@ -57,6 +56,7 @@ class RequestInstance {
       requestKeyword: json['Keyword'],
       requestName: json['RequestName'],
       requestDescription: json['RequestDescription'],
+      responseMessage: json['ResponseMessage'],
       numOfSteps: json['NumOfSteps'],
       userName: json['UserName'],
       email: json['Mail'],

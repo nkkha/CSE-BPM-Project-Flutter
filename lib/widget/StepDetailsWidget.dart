@@ -247,7 +247,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                     child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(24),
+                          padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
                           child: Row(
                             children: [
                               Expanded(
@@ -300,6 +300,35 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                             ? _buildInputFieldColumn(stepInstance, stepIndex)
                             : _buildInputFieldInstanceColumn(
                                 stepInstance.id, stepIndex, roleID),
+                        stepInstance.responseMessage != null &&
+                                stepInstance.responseMessage != ''
+                            ? Align(
+                                alignment: Alignment.topLeft,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(24, 0, 24, 8),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.black,
+                                      ),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text: "Ghi chú: ",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontStyle: FontStyle.italic),
+                                        ),
+                                        TextSpan(
+                                            text:
+                                                "${stepInstance.responseMessage}"),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : SizedBox(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -809,7 +838,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         ),
       );
     } else {
-      return SizedBox();
+      return SizedBox(height: 16);
     }
   }
 
@@ -865,7 +894,10 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       var resBody = {};
       // indexType = 1: Reject, indexType = 2: Approve
       resBody["Status"] = indexType == 1 ? "failed" : "done";
-      resBody["ResponseMessage"] = message;
+      if (message != null) {
+        resBody["ResponseMessage"] = message;
+        stepInstanceList[stepIndex - 1].responseMessage = message;
+      }
       resBody["ApproverID"] = userID;
       resBody["FinishedDate"] = formatterDateTime.format(DateTime.now());
       String str = json.encode(resBody);

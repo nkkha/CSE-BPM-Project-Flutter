@@ -4,6 +4,7 @@ class InputField {
   final int requestID;
   final int inputFieldTypeID;
   String title;
+  final int ipIndex;
 
   InputField({
     this.id,
@@ -11,6 +12,7 @@ class InputField {
     this.requestID,
     this.inputFieldTypeID,
     this.title,
+    this.ipIndex,
   });
 
   factory InputField.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class InputField {
       requestID: json['RequestID'],
       inputFieldTypeID: json['InputFieldTypeID'],
       title: json['Title'],
+      ipIndex: json['IpIndex'],
     );
   }
 }

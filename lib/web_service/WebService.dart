@@ -312,7 +312,7 @@ class WebService {
   /// InputField
 
   Future<void> postCreateInputField(int stepID, int requestID,
-      int inputFieldTypeID, String title, Function update) async {
+      int inputFieldTypeID, String title, int index, Function update) async {
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbInputField',
       headers: <String, String>{
@@ -322,7 +322,8 @@ class WebService {
         "StepID": stepID == null ? null : "$stepID",
         "RequestID": requestID == null ? null : "$requestID",
         "InputFieldTypeID": "$inputFieldTypeID",
-        "Title": title
+        "Title": title,
+        "IpIndex": "$index"
       }),
     );
 
@@ -341,7 +342,7 @@ class WebService {
       query = "StepID eq $stepID";
     }
     final response = await http
-        .get('http://nkkha.somee.com/odata/tbInputField?\$filter=$query');
+        .get('http://nkkha.somee.com/odata/tbInputField?\$filter=$query&\$orderby=IpIndex asc');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
@@ -424,7 +425,7 @@ class WebService {
       query = "StepInstanceID eq $stepInstanceID";
     }
     final response = await http.get(
-        'http://nkkha.somee.com/odata/tbInputFieldInstance/GetInputFieldInstance?\$filter=$query');
+        'http://nkkha.somee.com/odata/tbInputFieldInstance/GetInputFieldInstance?\$filter=$query&\$orderby=IpIndex asc');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
