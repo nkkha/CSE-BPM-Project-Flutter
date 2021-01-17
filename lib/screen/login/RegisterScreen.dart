@@ -21,12 +21,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController _emailController = new TextEditingController();
   TextEditingController _passController = new TextEditingController();
   TextEditingController _usernameController = new TextEditingController();
+  TextEditingController _codeController = new TextEditingController();
 
   FocusNode _myFocusNode1 = new FocusNode();
   FocusNode _myFocusNode2 = new FocusNode();
   FocusNode _myFocusNode3 = new FocusNode();
   FocusNode _myFocusNode4 = new FocusNode();
   FocusNode _myFocusNode5 = new FocusNode();
+  FocusNode _myFocusNode6 = new FocusNode();
 
   bool _isClicked = false;
 
@@ -38,6 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _myFocusNode3.dispose();
     _myFocusNode4.dispose();
     _myFocusNode5.dispose();
+    _myFocusNode6.dispose();
   }
 
   @override
@@ -48,11 +51,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _myFocusNode3 = new FocusNode();
     _myFocusNode4 = new FocusNode();
     _myFocusNode5 = new FocusNode();
+    _myFocusNode6 = new FocusNode();
     _myFocusNode1.addListener(_onOnFocusNodeEvent);
     _myFocusNode2.addListener(_onOnFocusNodeEvent);
     _myFocusNode3.addListener(_onOnFocusNodeEvent);
     _myFocusNode4.addListener(_onOnFocusNodeEvent);
     _myFocusNode5.addListener(_onOnFocusNodeEvent);
+    _myFocusNode6.addListener(_onOnFocusNodeEvent);
   }
 
   _onOnFocusNodeEvent() {
@@ -120,8 +125,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
               ),
+              StreamBuilder(
+                // stream: authBloc.phoneStream,
+                builder: (context, snapshot) => TextField(
+                  focusNode: _myFocusNode6,
+                  controller: _codeController,
+                  style: TextStyle(fontSize: 18, color: Colors.black),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                  decoration: InputDecoration(
+                    errorText: snapshot.hasError ? snapshot.error : null,
+                    labelText: 'MSSV',
+                    labelStyle: TextStyle(
+                        color: _myFocusNode6.hasFocus
+                            ? MyColors.lightBrand
+                            : MyColors.mediumGray),
+                    prefixIcon: Container(
+                      width: 50,
+                      child: Icon(Icons.keyboard, color: Colors.grey[400]),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide:
+                      BorderSide(color: MyColors.lightGray, width: 1),
+                      borderRadius: BorderRadius.all(Radius.circular(6)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                      BorderSide(color: MyColors.lightBrand, width: 2.0),
+                      borderRadius: BorderRadius.circular(6.0),
+                    ),
+                  ),
+                ),
+              ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.only(top: 20, bottom: 20),
                 child: StreamBuilder(
                   // stream: authBloc.nameStream,
                   builder: (context, snapshot) => TextField(
@@ -269,23 +308,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
               ),
-              RichText(
-                text: TextSpan(
-                  text: 'Đã có tài khoản? ',
-                  style: TextStyle(fontSize: 16, color: MyColors.black),
-                  children: [
-                    TextSpan(
-                      text: 'Đăng nhập ngay',
-                      style: TextStyle(
-                        color: MyColors.lightBrand,
-                        fontSize: 16,
+              Padding(
+                padding: const EdgeInsets.only(bottom: 32),
+                child: RichText(
+                  text: TextSpan(
+                    text: 'Đã có tài khoản? ',
+                    style: TextStyle(fontSize: 16, color: MyColors.black),
+                    children: [
+                      TextSpan(
+                        text: 'Đăng nhập ngay',
+                        style: TextStyle(
+                          color: MyColors.lightBrand,
+                          fontSize: 16,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.of(context).pop();
+                          },
                       ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.of(context).pop();
-                        },
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               )
             ],
@@ -307,6 +349,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     String fullName = _nameController.text;
     String phone = _phoneController.text;
     String email = _emailController.text;
+    String code = _codeController.text;
 
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbUser',
@@ -318,7 +361,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         "Mail": email,
         "Phone": phone,
         "Password": pass,
-        "FullName": fullName
+        "FullName": fullName,
+        "Code": code
       }),
     );
 
