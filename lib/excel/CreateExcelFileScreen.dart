@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/InputFieldExpan.dart';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
+import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -49,7 +50,20 @@ class _CreateExcelFileScreenState extends State<CreateExcelFileScreen> {
           padding: const EdgeInsets.all(30),
           child: Column(
             children: <Widget>[
-              // your Content if there
+              Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 4, bottom: 20),
+                  child: Text(
+                    'File gần đây',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: MyColors.mediumGray,
+                    ),
+                  ),
+                ),
+              ),
               Expanded(
                 child: ListView.builder(
                     itemCount: file.length,
@@ -60,14 +74,23 @@ class _CreateExcelFileScreenState extends State<CreateExcelFileScreen> {
                           elevation: 10,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(8)),
-                            // side: BorderSide(width: 2, color: MyColors.lightGray),
                           ),
                           child: InkWell(
-                            onTap: () => openFile(file[index].toString()),
+                            onTap: () => openFile(file[index].path),
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                file[index].toString(),
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                                    child: Image.asset('images/icons8-microsoft-excel-2019-48.png'),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      file[index].path.split("/").last,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -193,7 +216,7 @@ class _CreateExcelFileScreenState extends State<CreateExcelFileScreen> {
       }
 
       excel.encode().then((onValue) async {
-        String fileName = widget.list[0].requestKeyword +
+        String fileName = widget.list[0].requestKeyword.trim() +
             DateFormat("_yyyy_MM_ddThh_mm_ss").format(DateTime.now()) +
             ".xlsx";
         File("$directory/documents/$fileName")
@@ -267,5 +290,11 @@ class _CreateExcelFileScreenState extends State<CreateExcelFileScreen> {
 
   Future<void> openFile(String filePath) async {
     await OpenFile.open(filePath);
+  }
+}
+
+extension FileExtention on FileSystemEntity{
+  String get name {
+    return this?.path?.split("/")?.last;
   }
 }

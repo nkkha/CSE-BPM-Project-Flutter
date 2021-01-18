@@ -237,7 +237,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 32),
+              padding: const EdgeInsets.only(bottom: 20),
               child: listInputFieldInstance[index].fileUrl != null
                   ? Image.network(
                       listInputFieldInstance[index].fileUrl,
@@ -271,7 +271,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 32),
+                      padding: const EdgeInsets.only(bottom: 20),
                       child: RaisedButton(
                         color: MyColors.lightBrand,
                         child: Text(
@@ -301,10 +301,10 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 32),
+                    padding: const EdgeInsets.only(bottom: 20),
                     child: Text(
                       "null",
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                     ),
                   ),
                 ],
