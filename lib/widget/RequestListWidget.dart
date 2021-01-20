@@ -14,11 +14,25 @@ class RequestListWidget extends StatefulWidget {
 }
 
 class _RequestListWidgetState extends State<RequestListWidget> {
+  List<Request> availableRequests = new List();
+
+  @override
+  void initState() {
+    super.initState();
+    
+    for (Request request in widget.requestList) {
+      DateTime start = DateTime.parse(request.startDate);
+      DateTime due = DateTime.parse(request.dueDate);
+      if (isCurrentDateInRange(start, due))
+        availableRequests.add(request);
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemBuilder: (context, index) {
-        Request request = widget.requestList[index];
+        Request request = availableRequests[index];
         String parsedStartDate = DateFormat('kk:mm - dd/MM ').format(DateTime.parse(request.startDate));
         String parsedDueDate = DateFormat('kk:mm - dd/MM').format(DateTime.parse(request.dueDate));
         return Padding(
@@ -42,7 +56,7 @@ class _RequestListWidgetState extends State<RequestListWidget> {
                 title: Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(
-                    "${widget.requestList[index].name}",
+                    "${availableRequests[index].name}",
                     style: TextStyle(
                         fontSize: 18,
                         color: MyColors.brand,
@@ -60,7 +74,12 @@ class _RequestListWidgetState extends State<RequestListWidget> {
           ),
         );
       },
-      itemCount: widget.requestList.length,
+      itemCount: availableRequests.length,
     );
+  }
+
+  bool isCurrentDateInRange(DateTime startDate, DateTime endDate) {
+    final currentDate = DateTime.now();
+    return currentDate.isAfter(startDate) && currentDate.isBefore(endDate);
   }
 }

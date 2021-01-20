@@ -131,10 +131,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   focusNode: _myFocusNode6,
                   controller: _codeController,
                   style: TextStyle(fontSize: 18, color: Colors.black),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
                   decoration: InputDecoration(
                     errorText: snapshot.hasError ? snapshot.error : null,
                     labelText: 'MSSV',

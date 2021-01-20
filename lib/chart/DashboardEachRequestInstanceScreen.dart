@@ -399,7 +399,7 @@ class _DashboardEachRequestInstanceScreenState
         id: 'Requests',
         colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
         domainFn: (NumOfDayHandleStep instance, _) =>
-            "${instance.stepIndex}",
+            "B${instance.stepIndex}",
         measureFn: (NumOfDayHandleStep instance, _) => instance.dayElapsed,
         data: data,
       )
