@@ -180,10 +180,10 @@ class _RequestListState extends State<RequestList> {
             }
           }
           Request request = widget.requestList[index];
-          String parsedStartDate = DateFormat('kk:mm - dd/MM ')
-              .format(DateTime.parse(request.startDate));
+          String parsedStartDate = DateFormat('kk:mm - dd/MM')
+              .format(DateTime.parse(request.startDate.substring(0, request.startDate.length - 6)));
           String parsedDueDate = DateFormat('kk:mm - dd/MM')
-              .format(DateTime.parse(request.dueDate));
+              .format(DateTime.parse(request.dueDate.substring(0, request.dueDate.length - 6)));
           return Padding(
             padding: index == 0 ? const EdgeInsets.fromLTRB(20, 10, 20, 0) : const EdgeInsets.fromLTRB(20, 0, 20, 0),
             child: Column(

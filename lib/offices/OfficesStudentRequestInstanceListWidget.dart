@@ -55,7 +55,7 @@ class _OfficesStudentRequestInstanceListWidgetState
 
   Widget _buildRequestInstanceRow(
       RequestInstance requestInstance, Color color, int index) {
-    var date = DateTime.parse(requestInstance.createdDate);
+    var date = DateTime.parse(requestInstance.createdDate.substring(0, requestInstance.createdDate.length - 6));
     String formattedDate = DateFormat('HH:mm:ss - dd/MM/yyyy').format(date);
 
     return InkWell(

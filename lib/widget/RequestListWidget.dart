@@ -21,6 +21,8 @@ class _RequestListWidgetState extends State<RequestListWidget> {
     super.initState();
     
     for (Request request in widget.requestList) {
+      request.startDate = request.startDate.substring(0, request.startDate.length - 6);
+      request.dueDate = request.dueDate.substring(0, request.startDate.length - 6);
       DateTime start = DateTime.parse(request.startDate);
       DateTime due = DateTime.parse(request.dueDate);
       if (isCurrentDateInRange(start, due))
@@ -80,6 +82,6 @@ class _RequestListWidgetState extends State<RequestListWidget> {
 
   bool isCurrentDateInRange(DateTime startDate, DateTime endDate) {
     final currentDate = DateTime.now();
-    return currentDate.isAfter(startDate) && currentDate.isBefore(endDate);
+    return currentDate.compareTo(startDate) >= 0 && currentDate.compareTo(endDate) < 0;
   }
 }

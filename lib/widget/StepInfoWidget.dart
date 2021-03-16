@@ -40,7 +40,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
   _StepInfoWidgetState(this._requestInstance);
 
   var webService = WebService();
-  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss-07:00');
+  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss+07:00');
 
   Future<List<InputFieldInstance>> futureListIFI;
   List<InputFieldInstance> listInputFieldInstance = new List();

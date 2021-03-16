@@ -5,8 +5,8 @@ class Request {
   final String status;
   final int creatorID;
   final String createdTime;
-  final String startDate;
-  final String dueDate;
+  String startDate;
+  String dueDate;
   final int numOfSteps;
 
   Request({

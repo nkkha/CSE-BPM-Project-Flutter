@@ -143,7 +143,7 @@ class WebService {
     var resBody = {};
     // indexType = 1: Reject, indexType = 2: Approve
     resBody["Status"] = "done";
-    resBody["FinishedDate"] = formatterDateTime.format(DateTime.now()) + '\-07:00';
+    resBody["FinishedDate"] = formatterDateTime.format(DateTime.now());
     String str = json.encode(resBody);
 
     final http.Response response = await http.patch(
@@ -239,7 +239,7 @@ class WebService {
 
   Future<void> postCreateNextStepInstances(
       int requestInstanceID, int stepID, Function update) async {
-    String createdDate = formatterDateTime.format(DateTime.now()) + '\-07:00';
+    String createdDate = formatterDateTime.format(DateTime.now()) + '\+07:00';
 
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbStepInstance',

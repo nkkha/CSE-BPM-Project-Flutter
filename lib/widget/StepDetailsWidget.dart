@@ -56,7 +56,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   HashMap listFilePath = new HashMap<int, String>();
   int count;
 
-  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss-07:00');
+  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss+07:00');
 
   @override
   void initState() {

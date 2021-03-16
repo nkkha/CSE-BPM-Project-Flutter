@@ -16,17 +16,17 @@ class _OfficesHomeFragmentState extends State<OfficesHomeFragment> {
 
   @override
   Widget build(BuildContext context) {
-    switch (widget.roleID) {
-      case 5:
-        title = title + ' (PĐT)';
-        break;
-      case 6:
-        title = title + ' (PTC)';
-        break;
-      default:
-        title = title + ' (Offices)';
-        break;
-    }
+    // switch (widget.roleID) {
+    //   case 5:
+    //     title = title + ' (PĐT)';
+    //     break;
+    //   case 6:
+    //     title = title + ' (PTC)';
+    //     break;
+    //   default:
+    //     title = title + ' (Offices)';
+    //     break;
+    // }
 
     return Scaffold(
       appBar: AppBar(

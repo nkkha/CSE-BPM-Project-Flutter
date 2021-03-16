@@ -35,7 +35,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
 
   DateTime startDate, dueDate;
   TimeOfDay startTime, dueTime;
-  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss-07:00');
+  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss+07:00');
   final DateFormat formatterDate = DateFormat('yyyy-MM-dd');
 
   var webService = WebService();
@@ -647,13 +647,13 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
         formatTime(startTime.hour) +
         ':' +
         formatTime(startTime.minute) +
-        ':00-07:00';
+        ':00+07:00';
     String dueDateStr = formatterDate.format(dueDate) +
         'T' +
         formatTime(dueTime.hour) +
         ':' +
         formatTime(dueTime.minute) +
-        ':00-07:00';
+        ':00+07:00';
     int numOfSteps = int.parse(_numStepsController.text);
     String keyword = _idController.text;
 

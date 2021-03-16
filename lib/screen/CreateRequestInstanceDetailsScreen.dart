@@ -462,7 +462,7 @@ class _CreateRequestInstanceDetailsScreenState
     pr.update(message: "Đang xử lý...");
     await pr.show();
     String content = _contentController.text;
-    String createdDate = formatterDateTime.format(DateTime.now()) + '\-07:00';
+    String createdDate = formatterDateTime.format(DateTime.now()) + '\+07:00';
 
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('userId') ?? 0;
