@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
+import 'package:cse_bpm_project/model/DropdownOption.dart';
 import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/Request.dart';
 import 'package:cse_bpm_project/screen/CreateStepScreen.dart';
@@ -39,8 +41,12 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   var webService = WebService();
 
   List<InputField> listInputField = new List();
+
+  // List<List<DropdownOption>> listDropdownOptions = new List();
+  HashMap hashMapDropdownOptions = new HashMap<int, List<DropdownOption>>();
   ProgressDialog pr;
   int count = 0;
+  int countIF = 0;
 
   @override
   void initState() {
@@ -295,7 +301,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Container(
-                        width: 110,
+                        width: 130,
                         height: 52,
                         child: RaisedButton(
                           onPressed: () {
@@ -325,7 +331,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                         ),
                       ),
                       Container(
-                        width: 120,
+                        width: 130,
                         height: 52,
                         child: RaisedButton(
                           onPressed: () {
@@ -357,8 +363,16 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                           ),
                         ),
                       ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
                       Container(
-                        width: 110,
+                        width: 130,
                         height: 52,
                         child: RaisedButton(
                           onPressed: () {
@@ -383,6 +397,44 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                               ),
                               Text(
                                 ' Tài liệu',
+                                style: TextStyle(
+                                    fontSize: 15, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 130,
+                        height: 52,
+                        child: RaisedButton(
+                          onPressed: () {
+                            int key = countIF++;
+                            InputField inputField =
+                                new InputField(inputFieldTypeID: 4, id: key);
+                            setState(() {
+                              listInputField.add(inputField);
+                              List<DropdownOption> dropdownOptions = new List();
+                              dropdownOptions.add(
+                                  new DropdownOption(content: "Tùy chọn 1"));
+                              if (!hashMapDropdownOptions.containsKey(key)) {
+                                hashMapDropdownOptions.putIfAbsent(
+                                    key, () => dropdownOptions);
+                              }
+                            });
+                          },
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18.0),
+                              side: BorderSide(color: MyColors.mediumGray)),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add, size: 24),
+                              Text(
+                                ' Menu',
                                 style: TextStyle(
                                     fontSize: 15, fontWeight: FontWeight.bold),
                               ),
@@ -431,21 +483,109 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
       listInputField[index].title = _textController.text;
     });
 
+    int key;
     String title = "";
     switch (listInputField[index].inputFieldTypeID) {
+      case 1:
+        title = "Tiêu đề câu hỏi";
+        break;
       case 2:
         title = "Tiêu đề hình ảnh";
         break;
       case 3:
         title = "Tiêu đề tài liệu";
         break;
-      default:
-        title = "Tiêu đề câu hỏi";
+      case 4:
+        title = "Tiêu đề menu";
+        key = listInputField[index].id;
         break;
     }
 
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Row(
+            children: [
+              Expanded(
+                child: StreamBuilder(
+                  // stream: authBloc.passStream,
+                  builder: (context, snapshot) => TextField(
+                    controller: _textController,
+                    textInputAction: TextInputAction.done,
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                    decoration: InputDecoration(
+                      errorText: snapshot.hasError ? snapshot.error : null,
+                      labelText: title,
+//              labelStyle: TextStyle(
+//                  color: _myFocusNode.hasFocus
+//                      ? MyColors.lightBrand
+//                      : MyColors.mediumGray),
+                      labelStyle: TextStyle(color: MyColors.mediumGray),
+                      border: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: MyColors.lightGray, width: 1),
+                        borderRadius: BorderRadius.all(Radius.circular(6)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: MyColors.lightBrand, width: 2.0),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              IconButton(
+                  icon: Icon(Icons.remove_circle_outline),
+                  onPressed: () {
+                    setState(() {
+                      listInputField.removeAt(index);
+                    });
+                  }),
+            ],
+          ),
+        ),
+        hashMapDropdownOptions.length > 0
+            ? Column(
+                children: List<Widget>.generate(
+                    hashMapDropdownOptions[key].length,
+                    (index) => createDropdownOptionWidget(
+                            index,
+                            hashMapDropdownOptions[key][index],
+                            (content) => hashMapDropdownOptions[key][index]
+                                .content = content, (delete) {
+                          if (delete) {
+                            setState(() {
+                              hashMapDropdownOptions[key].removeAt(index);
+                            });
+                          }
+                        }, (add) {
+                          if (add) {
+                            setState(() {
+                              hashMapDropdownOptions[key].add(new DropdownOption(
+                                  content:
+                                      "Tùy chọn ${hashMapDropdownOptions[key].length + 1}"));
+                            });
+                          }
+                        })),
+              )
+            : Container(),
+      ],
+    );
+  }
+
+  Widget createDropdownOptionWidget(int index, DropdownOption dropdownOption,
+      Function updateContent, Function delete, Function add) {
+    TextEditingController _textController = new TextEditingController();
+    _textController.text = dropdownOption.content;
+    _textController.addListener(() {
+      dropdownOption.content = _textController.text;
+      updateContent(dropdownOption.content);
+    });
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 32),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Row(
         children: [
           Expanded(
@@ -457,7 +597,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                 style: TextStyle(fontSize: 16, color: Colors.black),
                 decoration: InputDecoration(
                   errorText: snapshot.hasError ? snapshot.error : null,
-                  labelText: title,
+                  labelText: "Tùy chọn ${index + 1}",
 //              labelStyle: TextStyle(
 //                  color: _myFocusNode.hasFocus
 //                      ? MyColors.lightBrand
@@ -476,13 +616,17 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
               ),
             ),
           ),
-          IconButton(
-              icon: Icon(Icons.remove_circle_outline),
-              onPressed: () {
-                setState(() {
-                  listInputField.removeAt(index);
-                });
-              }),
+          index != 0
+              ? IconButton(
+                  icon: Icon(Icons.highlight_off),
+                  onPressed: () {
+                    delete(true);
+                  })
+              : IconButton(
+                  icon: Icon(Icons.add_circle_outline),
+                  onPressed: () {
+                    add(true);
+                  }),
         ],
       ),
     );
