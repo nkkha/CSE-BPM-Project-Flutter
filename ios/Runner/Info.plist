@@ -49,5 +49,7 @@
 
     <key>NSMicrophoneUsageDescription</key>
     <string>Allow access to microphone</string>
+	<key>NSAllowsArbitraryLoads</key>
+    <true/>
 </dict>
 </plist>
