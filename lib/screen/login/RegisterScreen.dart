@@ -1,13 +1,12 @@
-import 'dart:async';
 import 'dart:convert';
-import 'package:cse_bpm_project/model/User.dart';
-import 'package:flushbar/flushbar.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 
+import 'package:another_flushbar/flushbar.dart';
+import 'package:cse_bpm_project/model/User.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -109,7 +108,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               : MyColors.mediumGray),
                       prefixIcon: Container(
                         width: 50,
-                        child: Icon(Icons.account_circle_outlined, color: Colors.grey[400]),
+                        child: Icon(Icons.account_circle_outlined,
+                            color: Colors.grey[400]),
                       ),
                       border: OutlineInputBorder(
                         borderSide:
@@ -144,12 +144,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     border: OutlineInputBorder(
                       borderSide:
-                      BorderSide(color: MyColors.lightGray, width: 1),
+                          BorderSide(color: MyColors.lightGray, width: 1),
                       borderRadius: BorderRadius.all(Radius.circular(6)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide:
-                      BorderSide(color: MyColors.lightBrand, width: 2.0),
+                          BorderSide(color: MyColors.lightBrand, width: 2.0),
                       borderRadius: BorderRadius.circular(6.0),
                     ),
                   ),
@@ -176,12 +176,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       border: OutlineInputBorder(
                         borderSide:
-                        BorderSide(color: MyColors.lightGray, width: 1),
+                            BorderSide(color: MyColors.lightGray, width: 1),
                         borderRadius: BorderRadius.all(Radius.circular(6)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide:
-                        BorderSide(color: MyColors.lightBrand, width: 2.0),
+                            BorderSide(color: MyColors.lightBrand, width: 2.0),
                         borderRadius: BorderRadius.circular(6.0),
                       ),
                     ),
@@ -382,34 +382,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await pr.hide();
         Flushbar(
           icon:
-          Image.asset('images/ic-check-circle.png', width: 24, height: 24),
+              Image.asset('images/ic-check-circle.png', width: 24, height: 24),
           message: 'Đăng ký thành công!',
           duration: Duration(seconds: 3),
           margin: EdgeInsets.all(8),
-          borderRadius: 8,
+          borderRadius: BorderRadius.circular(8),
         )..show(context);
       } else {
         _isClicked = false;
         await pr.hide();
         Flushbar(
-          icon:
-          Image.asset('images/icons8-exclamation-mark-48.png', width: 24, height: 24),
+          icon: Image.asset('images/icons8-exclamation-mark-48.png',
+              width: 24, height: 24),
           message: 'Tên đăng nhập đã tồn tại!',
           duration: Duration(seconds: 3),
           margin: EdgeInsets.all(8),
-          borderRadius: 8,
+          borderRadius: BorderRadius.circular(8),
         )..show(context);
       }
     } else {
       _isClicked = false;
       await pr.hide();
       Flushbar(
-        icon:
-        Image.asset('images/icons8-exclamation-mark-48.png', width: 24, height: 24),
+        icon: Image.asset('images/icons8-exclamation-mark-48.png',
+            width: 24, height: 24),
         message: 'Tên đăng nhập đã tồn tại!',
         duration: Duration(seconds: 3),
         margin: EdgeInsets.all(8),
-        borderRadius: 8,
+        borderRadius: BorderRadius.circular(8),
       )..show(context);
     }
   }

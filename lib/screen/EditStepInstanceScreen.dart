@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 
+import 'package:another_flushbar/flushbar.dart';
 import 'package:cse_bpm_project/model/Status.dart';
 import 'package:cse_bpm_project/model/StepInstance.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:http/http.dart' as http;
 
 // ignore: must_be_immutable
 class EditStepInstanceScreen extends StatefulWidget {
@@ -14,7 +14,8 @@ class EditStepInstanceScreen extends StatefulWidget {
   final int roleId;
   final StepInstance stepInstance;
 
-  EditStepInstanceScreen({Key key, this.roleId, this.stepInstance, this.passData})
+  EditStepInstanceScreen(
+      {Key key, this.roleId, this.stepInstance, this.passData})
       : super(key: key);
 
   @override
@@ -132,9 +133,8 @@ class _EditStepInstanceScreenState extends State<EditStepInstanceScreen> {
                     padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
                     child: Text(
                       "Thông tin chi tiết",
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -160,8 +160,7 @@ class _EditStepInstanceScreenState extends State<EditStepInstanceScreen> {
                     children: [
                       Text(
                         "Trạng thái: ",
-                        style:
-                            TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 8, right: 8),
@@ -280,7 +279,7 @@ class _EditStepInstanceScreenState extends State<EditStepInstanceScreen> {
         message: 'Cập nhật thành công!',
         duration: Duration(seconds: 3),
         margin: EdgeInsets.all(8),
-        borderRadius: 8,
+        borderRadius: BorderRadius.circular(8),
       )..show(context);
       _stepInstance.status = _selectedItem.name.toLowerCase();
       _stepInstance.responseMessage = _messageController.text;
@@ -292,7 +291,7 @@ class _EditStepInstanceScreenState extends State<EditStepInstanceScreen> {
         message: 'Cập nhật thất bại!',
         duration: Duration(seconds: 3),
         margin: EdgeInsets.all(8),
-        borderRadius: 8,
+        borderRadius: BorderRadius.circular(8),
       )..show(context);
     }
   }

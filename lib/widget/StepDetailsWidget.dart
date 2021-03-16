@@ -2,19 +2,19 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:another_flushbar/flushbar.dart';
 import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/InputFieldInstance.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flushbar/flushbar.dart';
-import 'package:http/http.dart' as http;
-
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/model/StepInstance.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:cse_bpm_project/source/SharedPreferencesHelper.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
@@ -842,8 +842,38 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     }
   }
 
+  bool validate(int stepIndex) {
+    if (hashMapInputFieldInstances.length > 0) {
+      for (InputFieldInstance ip in hashMapInputFieldInstances[stepIndex]) {
+        switch (ip.inputFieldTypeID) {
+          case 1:
+            if (ip.textAnswer == null || ip.textAnswer == "") return false;
+            break;
+          case 2:
+          case 3:
+            if (ip.fileContent == null || ip.fileContent == "") return false;
+            break;
+        }
+      }
+    }
+    return true;
+  }
+
   _showAlertDialog(
       BuildContext context, index, StepInstance stepInstance, int stepIndex) {
+    if (index == 2) {
+      if (!validate(stepIndex)) {
+        Flushbar(
+          icon: Image.asset('images/icons8-exclamation-mark-48.png',
+              width: 24, height: 24),
+          message: 'Vui lòng điền đầy đủ thông tin!',
+          duration: Duration(seconds: 3),
+          margin: EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+        )..show(context);
+        return;
+      }
+    }
     TextEditingController messageController = new TextEditingController();
     Alert(
         context: context,
@@ -1084,7 +1114,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       message: 'Thất bại!',
       duration: Duration(seconds: 3),
       margin: EdgeInsets.all(8),
-      borderRadius: 8,
+      borderRadius: BorderRadius.circular(8),
     )..show(context);
   }
 

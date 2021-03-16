@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
+
+import 'package:another_flushbar/flushbar.dart';
 import 'package:cse_bpm_project/model/DropdownOption.dart';
 import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/Request.dart';
 import 'package:cse_bpm_project/screen/CreateStepScreen.dart';
+import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-
-import 'package:cse_bpm_project/source/MyColors.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,6 +47,8 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   ProgressDialog pr;
   int count = 0;
   int countIF = 0;
+  bool isValid = false;
+  bool isValidDateRange = true;
 
   @override
   void initState() {
@@ -60,10 +62,11 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     _myFocusNode3.addListener(_onOnFocusNodeEvent);
     _myFocusNode4.addListener(_onOnFocusNodeEvent);
 
-    startDate = DateTime.now();
-    dueDate = DateTime.now();
-    startTime = TimeOfDay.now();
-    dueTime = TimeOfDay.now();
+    DateTime dt = DateTime.now();
+    startDate = new DateTime(dt.year, dt.month, dt.day, 0, 0, 0, 0, 0);
+    dueDate = startDate;
+    startTime = new TimeOfDay(hour: 8, minute: 0);
+    dueTime = new TimeOfDay(hour: 23, minute: 59);
   }
 
   @override
@@ -205,7 +208,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                           "${startDate.day}/${formatTime(startDate.month)}/${formatTime(startDate.year)}",
                           style: TextStyle(fontSize: 18, color: MyColors.blue),
                         ),
-                        onTap: () => _pickDate(true),
+                        onTap: () => _pickDateStart(),
                       ),
                       Text(
                         " - ",
@@ -217,7 +220,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                           "${formatTime(startTime.hour)}:${formatTime(startTime.minute)}",
                           style: TextStyle(fontSize: 18, color: MyColors.blue),
                         ),
-                        onTap: () => _pickTime(true),
+                        onTap: () => _pickTimeStart(),
                       ),
                     ],
                   ),
@@ -241,7 +244,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                           "${dueDate.day}/${formatTime(dueDate.month)}/${formatTime(dueDate.year)}",
                           style: TextStyle(fontSize: 18, color: MyColors.blue),
                         ),
-                        onTap: () => _pickDate(false),
+                        onTap: () => _pickDateEnd(),
                       ),
                       Text(
                         " - ",
@@ -253,11 +256,23 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                           "${formatTime(dueTime.hour)}:${formatTime(dueTime.minute)}",
                           style: TextStyle(fontSize: 18, color: MyColors.blue),
                         ),
-                        onTap: () => _pickTime(false),
+                        onTap: () => _pickTimeEnd(),
                       ),
                     ],
                   ),
                 ),
+                !isValidDateRange
+                    ? Align(
+                        alignment: Alignment.topLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: Text(
+                            'Thời gian không hợp lệ.',
+                            style: TextStyle(color: MyColors.red),
+                          ),
+                        ),
+                      )
+                    : SizedBox(),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 20),
                   child: StreamBuilder(
@@ -446,26 +461,21 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      SizedBox(
-                        width: 120,
-                        height: 52,
-                        child: RaisedButton(
-                          onPressed: _onContinueBtn,
-                          child: Text(
-                            'Tiếp tục',
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                          color: Color(0xff3277D8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                          ),
-                        ),
+                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+                  child: SizedBox(
+                    width: 120,
+                    height: 52,
+                    child: RaisedButton(
+                      onPressed: _onContinueBtn,
+                      child: Text(
+                        'Tiếp tục',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
-                    ],
+                      color: Color(0xff3277D8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -633,89 +643,116 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   }
 
   Future<void> _onContinueBtn() async {
-    pr = ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
-    pr.update(message: "Đang xử lý...");
-    await pr.show();
+    if (validate()) {
+      pr = ProgressDialog(context,
+          type: ProgressDialogType.Normal,
+          isDismissible: false,
+          showLogs: true);
+      pr.update(message: "Đang xử lý...");
+      await pr.show();
 
-    String name = _nameController.text;
-    String description = _descriptionController.text;
-    DateTime currentDateTime = DateTime.now();
-    String createdTime = formatterDateTime.format(currentDateTime);
-    String startDateStr = formatterDate.format(startDate) +
-        'T' +
-        formatTime(startTime.hour) +
-        ':' +
-        formatTime(startTime.minute) +
-        ':00+07:00';
-    String dueDateStr = formatterDate.format(dueDate) +
-        'T' +
-        formatTime(dueTime.hour) +
-        ':' +
-        formatTime(dueTime.minute) +
-        ':00+07:00';
-    int numOfSteps = int.parse(_numStepsController.text);
-    String keyword = _idController.text;
+      String name = _nameController.text;
+      String description = _descriptionController.text;
+      DateTime currentDateTime = DateTime.now();
+      String createdTime = formatterDateTime.format(currentDateTime);
+      String startDateStr = formatterDate.format(startDate) +
+          'T' +
+          formatTime(startTime.hour) +
+          ':' +
+          formatTime(startTime.minute) +
+          ':00+07:00';
+      String dueDateStr = formatterDate.format(dueDate) +
+          'T' +
+          formatTime(dueTime.hour) +
+          ':' +
+          formatTime(dueTime.minute) +
+          ':00+07:00';
+      int numOfSteps = int.parse(_numStepsController.text);
+      String keyword = _idController.text;
 
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId') ?? 0;
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('userId') ?? 0;
 
-    if (userId != 0) {
-      final http.Response response = await http.post(
-        'http://nkkha.somee.com/odata/tbRequest',
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          "Name": name,
-          "Description": description,
-          "Status": 'active',
-          "CreatorID": '$userId',
-          "CreatedTime": createdTime,
-          "StartDate": startDateStr,
-          "DueDate": dueDateStr,
-          "NumOfSteps": '$numOfSteps',
-          "Keyword": keyword
-        }),
-      );
+      if (userId != 0) {
+        final http.Response response = await http.post(
+          'http://nkkha.somee.com/odata/tbRequest',
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, String>{
+            "Name": name,
+            "Description": description,
+            "Status": 'active',
+            "CreatorID": '$userId',
+            "CreatedTime": createdTime,
+            "StartDate": startDateStr,
+            "DueDate": dueDateStr,
+            "NumOfSteps": '$numOfSteps',
+            "Keyword": keyword
+          }),
+        );
 
-      if (response.statusCode == 200) {
-        Request request = Request.fromJson(jsonDecode(response.body));
-        if (listInputField.length > 0) {
-          int index = 0;
-          for (InputField inputField in listInputField) {
-            index++;
-            webService.postCreateInputField(
-                null,
-                request.id,
-                inputField.inputFieldTypeID,
-                inputField.title,
-                index,
-                (data) => update(data, numOfSteps, request.id));
+        if (response.statusCode == 200) {
+          Request request = Request.fromJson(jsonDecode(response.body));
+          if (listInputField.length > 0) {
+            int index = 0;
+            for (InputField inputField in listInputField) {
+              index++;
+              webService.postCreateInputField(
+                  null,
+                  request.id,
+                  inputField.inputFieldTypeID,
+                  inputField.title,
+                  index,
+                  (data) => update(data, numOfSteps, request.id));
+            }
+          } else {
+            await pr.hide();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => CreateStepScreen(
+                        numOfSteps: numOfSteps,
+                        requestID: request.id,
+                      )),
+            );
           }
         } else {
           await pr.hide();
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => CreateStepScreen(
-                      numOfSteps: numOfSteps,
-                      requestID: request.id,
-                    )),
-          );
+          Flushbar(
+            icon: Image.asset('images/icons8-exclamation-mark-48.png',
+                width: 24, height: 24),
+            message: 'Mã quy trình đã tồn tại!',
+            duration: Duration(seconds: 3),
+            margin: EdgeInsets.all(8),
+            borderRadius: BorderRadius.circular(8),
+          )..show(context);
         }
-      } else {
-        await pr.hide();
-        Flushbar(
-          icon: Image.asset('images/icons8-exclamation-mark-48.png',
-              width: 24, height: 24),
-          message: 'Mã quy trình đã tồn tại!',
-          duration: Duration(seconds: 3),
-          margin: EdgeInsets.all(8),
-          borderRadius: 8,
-        )..show(context);
+      }
+    } else {
+      Flushbar(
+        icon: Image.asset('images/icons8-exclamation-mark-48.png',
+            width: 24, height: 24),
+        message: 'Vui lòng điền đầy đủ thông tin!',
+        duration: Duration(seconds: 3),
+        margin: EdgeInsets.all(8),
+        borderRadius: BorderRadius.circular(8),
+      )..show(context);
+    }
+  }
+
+  bool validate() {
+    if (listInputField.length > 0) {
+      for (InputField ip in listInputField) {
+        if (ip.title == null || ip.title == "") return false;
       }
     }
+    if (_idController.text == "" ||
+        _nameController.text == "" ||
+        _descriptionController.text == "" ||
+        _numStepsController.text == "" ||
+        !isValidDateRange) return false;
+    return true;
   }
 
   void update(bool isSuccessful, int numOfSteps, int requestID) async {
@@ -739,7 +776,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     return num < 10 ? '0$num' : num.toString();
   }
 
-  _pickDate(bool isStart) async {
+  void _pickDateStart() async {
     DateTime date = await showDatePicker(
       context: context,
       firstDate: DateTime(DateTime.now().year - 5),
@@ -749,26 +786,61 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
 
     if (date != null) {
       setState(() {
-        if (isStart) {
-          startDate = date;
-        } else {
-          dueDate = date;
-        }
+        startDate = date;
+        checkValidDateRange();
       });
     }
   }
 
-  _pickTime(bool isStart) async {
+  void _pickDateEnd() async {
+    DateTime date = await showDatePicker(
+      context: context,
+      firstDate: DateTime(DateTime.now().year - 5),
+      lastDate: DateTime(DateTime.now().year + 5),
+      initialDate: dueDate,
+    );
+
+    if (date != null) {
+      setState(() {
+        dueDate = date;
+        checkValidDateRange();
+      });
+    }
+  }
+
+  void _pickTimeStart() async {
     TimeOfDay time =
         await showTimePicker(context: context, initialTime: startTime);
 
     if (time != null)
       setState(() {
-        if (isStart) {
-          startTime = time;
-        } else {
-          dueTime = time;
-        }
+        startTime = time;
+        checkValidDateRange();
       });
   }
+
+  void _pickTimeEnd() async {
+    TimeOfDay time =
+        await showTimePicker(context: context, initialTime: dueTime);
+
+    if (time != null)
+      setState(() {
+        dueTime = time;
+        checkValidDateRange();
+      });
+  }
+
+  void checkValidDateRange() {
+    if (startDate.compareTo(dueDate) == 0) {
+      if (toDouble(startTime) < toDouble(dueTime))
+        isValidDateRange = true;
+      else
+        isValidDateRange = false;
+    } else if (startDate.compareTo(dueDate) > 0)
+      isValidDateRange = false;
+    else
+      isValidDateRange = true;
+  }
+
+  double toDouble(TimeOfDay myTime) => myTime.hour + myTime.minute / 60.0;
 }

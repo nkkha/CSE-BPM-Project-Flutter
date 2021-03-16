@@ -1,10 +1,10 @@
+import 'package:after_layout/after_layout.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:cse_bpm_project/fragment/RequestInstanceFragment.dart';
 import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
-import 'package:after_layout/after_layout.dart';
-import 'package:flushbar/flushbar.dart';
 
 import 'RequestInstanceDetailsScreen.dart';
 
@@ -84,9 +84,9 @@ class _StudentScreenState extends State<StudentScreen>
           context,
           MaterialPageRoute(
               builder: (context) => RequestInstanceDetailsScreen(
-                requestInstance: widget.requestInstance,
-                isStudent: false,
-              )));
+                    requestInstance: widget.requestInstance,
+                    isStudent: false,
+                  )));
     }
 
     if (widget.isCreatedNew != null) {
@@ -97,7 +97,7 @@ class _StudentScreenState extends State<StudentScreen>
           message: 'Tạo yêu cầu thành công!',
           duration: Duration(seconds: 3),
           margin: EdgeInsets.all(8),
-          borderRadius: 8,
+          borderRadius: BorderRadius.circular(8),
         )..show(context);
         widget.isCreatedNew = false;
       }

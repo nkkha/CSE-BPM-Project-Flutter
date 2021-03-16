@@ -1,13 +1,13 @@
 import 'dart:async';
-import 'package:cse_bpm_project/model/Role.dart';
+
+import 'package:another_flushbar/flushbar.dart';
 import 'package:cse_bpm_project/model/InputField.dart';
+import 'package:cse_bpm_project/model/Role.dart';
+import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:cse_bpm_project/source/SharedPreferencesHelper.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
-import 'package:flutter/services.dart';
-
-import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:flutter/services.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -197,8 +197,8 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
             ),
             widget.tabIndex != 0
                 ? Padding(
-                  padding: const EdgeInsets.only(bottom: 32),
-                  child: Row(
+                    padding: const EdgeInsets.only(bottom: 32),
+                    child: Row(
                       children: <Widget>[
                         Checkbox(
                           value: isParallelStep,
@@ -208,10 +208,13 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                             });
                           },
                         ),
-                        Text("Song song với bước trước?", style: TextStyle(fontSize: 16),),
+                        Text(
+                          "Song song với bước trước?",
+                          style: TextStyle(fontSize: 16),
+                        ),
                       ],
                     ),
-                )
+                  )
                 : Container(),
             Column(
               children: List<Widget>.generate(listInputField.length,
@@ -414,34 +417,58 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
   }
 
   Future<void> _onContinueClicked() async {
-    pr = ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
-    pr.update(message: "Đang xử lý...");
-    await pr.show();
-    int stepIndex;
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (widget.tabIndex == 0) {
-      stepIndex = 1;
-      prefs.setInt('currentStepIndex', stepIndex);
-    } else {
-      int currentStepIndex = await SharedPreferencesHelper.getCurrentStepIndex();
-      if (currentStepIndex != null) {
-        if (!isParallelStep) {
-          stepIndex = currentStepIndex + 1;
-          prefs.setInt('currentStepIndex', stepIndex);
-        } else {
-          stepIndex = currentStepIndex;
+    if (validate()) {
+      pr = ProgressDialog(context,
+          type: ProgressDialogType.Normal,
+          isDismissible: false,
+          showLogs: true);
+      pr.update(message: "Đang xử lý...");
+      await pr.show();
+      int stepIndex;
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      if (widget.tabIndex == 0) {
+        stepIndex = 1;
+        prefs.setInt('currentStepIndex', stepIndex);
+      } else {
+        int currentStepIndex =
+            await SharedPreferencesHelper.getCurrentStepIndex();
+        if (currentStepIndex != null) {
+          if (!isParallelStep) {
+            stepIndex = currentStepIndex + 1;
+            prefs.setInt('currentStepIndex', stepIndex);
+          } else {
+            stepIndex = currentStepIndex;
+          }
         }
       }
-    }
 
-    webService.postCreateStep(
-        widget.requestID,
-        _nameController.text,
-        _descriptionController.text,
-        _selectedItem.id,
-        stepIndex,
-        (data) => update(data, stepIndex));
+      webService.postCreateStep(
+          widget.requestID,
+          _nameController.text,
+          _descriptionController.text,
+          _selectedItem.id,
+          stepIndex,
+          (data) => update(data, stepIndex));
+    } else {
+      Flushbar(
+        icon: Image.asset('images/icons8-exclamation-mark-48.png',
+            width: 24, height: 24),
+        message: 'Vui lòng điền đầy đủ thông tin!',
+        duration: Duration(seconds: 3),
+        margin: EdgeInsets.all(8),
+        borderRadius: BorderRadius.circular(8),
+      )..show(context);
+    }
+  }
+
+  bool validate() {
+    if (listInputField.length > 0) {
+      for (InputField ip in listInputField) {
+        if (ip.title == null || ip.title == "") return false;
+      }
+    }
+    if (_nameController.text == "") return false;
+    return true;
   }
 
   void update(int stepID, int stepIndex) async {
@@ -468,10 +495,10 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
             message: 'Thành công!',
             duration: Duration(seconds: 3),
             margin: EdgeInsets.all(8),
-            borderRadius: 8,
+            borderRadius: BorderRadius.circular(8),
           )..show(context);
           Future.delayed(const Duration(milliseconds: 1000), () {
-            widget.  update(widget.tabIndex + 1, stepIndex);
+            widget.update(widget.tabIndex + 1, stepIndex);
           });
         });
       }
@@ -482,8 +509,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
             width: 24, height: 24),
         message: 'Thất bại!',
         duration: Duration(seconds: 3),
-        margin: EdgeInsets.all(8),
-        borderRadius: 8,
+        borderRadius: BorderRadius.circular(8),
       )..show(context);
     }
   }
@@ -501,7 +527,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
             message: 'Thành công!',
             duration: Duration(seconds: 3),
             margin: EdgeInsets.all(8),
-            borderRadius: 8,
+            borderRadius: BorderRadius.circular(8),
           )..show(context);
           Future.delayed(const Duration(milliseconds: 1000), () {
             widget.update(widget.tabIndex + 1, stepIndex);
@@ -516,7 +542,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
         message: 'Thất bại!',
         duration: Duration(seconds: 3),
         margin: EdgeInsets.all(8),
-        borderRadius: 8,
+        borderRadius: BorderRadius.circular(8),
       )..show(context);
     }
   }

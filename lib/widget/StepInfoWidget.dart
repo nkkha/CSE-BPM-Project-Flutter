@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:cse_bpm_project/model/InputFieldInstance.dart';
 import 'package:cse_bpm_project/source/SharedPreferencesHelper.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/RequestInstance.dart';
@@ -490,7 +490,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
         message: 'Thất bại!',
         duration: Duration(seconds: 3),
         margin: EdgeInsets.all(8),
-        borderRadius: 8,
+        borderRadius: BorderRadius.circular(8),
       )..show(context);
     }
   }

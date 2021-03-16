@@ -1,14 +1,12 @@
-import 'dart:async';
 import 'dart:convert';
+
+import 'package:another_flushbar/flushbar.dart';
 import 'package:cse_bpm_project/model/Role.dart';
 import 'package:cse_bpm_project/model/User.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:cse_bpm_project/source/MyColors.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-
-import 'package:cse_bpm_project/source/MyColors.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 class CreateAccountScreen extends StatefulWidget {
@@ -389,7 +387,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           message: 'Tạo tài khoản thành công!',
           duration: Duration(seconds: 3),
           margin: EdgeInsets.all(8),
-          borderRadius: 8,
+          borderRadius: BorderRadius.circular(8),
         )..show(context);
       } else {
         _isClicked = false;
@@ -400,7 +398,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           message: 'Tên đăng nhập đã tồn tại!',
           duration: Duration(seconds: 3),
           margin: EdgeInsets.all(8),
-          borderRadius: 8,
+          borderRadius: BorderRadius.circular(8),
         )..show(context);
       }
     } else {
@@ -412,7 +410,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         message: 'Tên đăng nhập đã tồn tại!',
         duration: Duration(seconds: 3),
         margin: EdgeInsets.all(8),
-        borderRadius: 8,
+        borderRadius: BorderRadius.circular(8),
       )..show(context);
     }
   }

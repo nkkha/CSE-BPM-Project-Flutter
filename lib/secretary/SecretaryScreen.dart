@@ -1,11 +1,9 @@
-import 'package:cse_bpm_project/chart/GalleryScaffold.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:cse_bpm_project/chart/DashboardScreen.dart';
-import 'package:cse_bpm_project/fragment/ChatFragment.dart';
 import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
 import 'package:cse_bpm_project/secretary/SecretaryHomeFragment.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:after_layout/after_layout.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
@@ -90,7 +88,7 @@ class _SecretaryScreenState extends State<SecretaryScreen> with AfterLayoutMixin
           message: 'Tạo quy trình thành công!',
           duration: Duration(seconds: 3),
           margin: EdgeInsets.all(8),
-          borderRadius: 8,
+          borderRadius: BorderRadius.circular(8),
         )..show(context);
         widget.isCreatedNew = false;
       }

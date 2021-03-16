@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:collection';
 import 'package:cse_bpm_project/model/InputField.dart';
@@ -40,9 +40,9 @@ class _CreateRequestInstanceDetailsScreenState
   TextEditingController _contentController = new TextEditingController();
   FocusNode _myFocusNode = new FocusNode();
 
-  List<InputField> listInputField = new List();
+  List<InputField> listInputField = [];
   Future<List<InputField>> futureListIF;
-  List<InputFieldInstance> listInputFieldInstance = new List();
+  List<InputFieldInstance> listInputFieldInstance = [];
 
   HashMap listImageFilePath = new HashMap<int, String>();
   HashMap listFilePath = new HashMap<int, String>();
@@ -457,74 +457,102 @@ class _CreateRequestInstanceDetailsScreenState
   }
 
   Future<void> _onSubmitRequest() async {
-    pr = ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
-    pr.update(message: "Đang xử lý...");
-    await pr.show();
-    String content = _contentController.text;
-    String createdDate = formatterDateTime.format(DateTime.now()) + '\+07:00';
+    if (validate()) {
+      pr = ProgressDialog(context,
+          type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+      pr.update(message: "Đang xử lý...");
+      await pr.show();
+      String content = _contentController.text;
+      String createdDate = formatterDateTime.format(DateTime.now()) + '\+07:00';
 
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId') ?? 0;
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('userId') ?? 0;
 
-    final http.Response response = await http.post(
-      'http://nkkha.somee.com/odata/tbRequestInstance',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        "UserID": "$userId",
-        "RequestID": "${widget.request.id}",
-        "DefaultContent": "$content",
-        "CurrentStepIndex": "0",
-        "Status": "new",
-        "CreatedDate": createdDate
-      }),
-    );
+      final http.Response response = await http.post(
+        'http://nkkha.somee.com/odata/tbRequestInstance',
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          "UserID": "$userId",
+          "RequestID": "${widget.request.id}",
+          "DefaultContent": "$content",
+          "CurrentStepIndex": "0",
+          "Status": "new",
+          "CreatedDate": createdDate
+        }),
+      );
 
-    if (response.statusCode == 200) {
-      RequestInstance requestInstance =
-          RequestInstance.fromJson(jsonDecode(response.body));
-      if (listInputFieldInstance.length > 0) {
-        for (InputFieldInstance inputFieldInstance in listInputFieldInstance) {
-          switch (inputFieldInstance.inputFieldTypeID) {
-            case 1:
-              webService.postCreateInputTextFieldInstance(
-                  null,
-                  requestInstance.id,
-                  inputFieldInstance.inputFieldID,
-                  inputFieldInstance.textAnswer,
-                  (data) => update(data));
-              break;
-            case 2:
-            case 3:
-              uploadFile(
-                  inputFieldInstance.fileContent,
-                  requestInstance.id,
-                  inputFieldInstance.inputFieldID,
-                  inputFieldInstance.inputFieldTypeID);
-              break;
+      if (response.statusCode == 200) {
+        RequestInstance requestInstance =
+        RequestInstance.fromJson(jsonDecode(response.body));
+        if (listInputFieldInstance.length > 0) {
+          for (InputFieldInstance inputFieldInstance in listInputFieldInstance) {
+            switch (inputFieldInstance.inputFieldTypeID) {
+              case 1:
+                webService.postCreateInputTextFieldInstance(
+                    null,
+                    requestInstance.id,
+                    inputFieldInstance.inputFieldID,
+                    inputFieldInstance.textAnswer,
+                        (data) => update(data));
+                break;
+              case 2:
+              case 3:
+                uploadFile(
+                    inputFieldInstance.fileContent,
+                    requestInstance.id,
+                    inputFieldInstance.inputFieldID,
+                    inputFieldInstance.inputFieldTypeID);
+                break;
+            }
           }
+        } else {
+          await pr.hide();
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => StudentScreen(isCreatedNew: true)),
+                (Route<dynamic> route) => false,
+          );
         }
       } else {
         await pr.hide();
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-              builder: (context) => StudentScreen(isCreatedNew: true)),
-          (Route<dynamic> route) => false,
-        );
+        Flushbar(
+          icon: Image.asset('images/ic-failed.png', width: 24, height: 24),
+          message: 'Thất bại!',
+          duration: Duration(seconds: 3),
+          margin: EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+        )..show(context);
       }
     } else {
-      await pr.hide();
       Flushbar(
-        icon: Image.asset('images/ic-failed.png', width: 24, height: 24),
-        message: 'Thất bại!',
+        icon: Image.asset('images/icons8-exclamation-mark-48.png',
+            width: 24, height: 24),
+        message: 'Vui lòng điền đầy đủ thông tin!',
         duration: Duration(seconds: 3),
         margin: EdgeInsets.all(8),
-        borderRadius: 8,
+        borderRadius: BorderRadius.circular(8),
       )..show(context);
     }
+  }
+
+  bool validate() {
+    if (listInputFieldInstance.length > 0) {
+      for (InputFieldInstance ip in listInputFieldInstance) {
+        switch (ip.inputFieldTypeID) {
+          case 1:
+            if (ip.textAnswer == null || ip.textAnswer == "") return false;
+            break;
+          case 2:
+          case 3:
+            if (ip.fileContent == null || ip.fileContent == "") return false;
+            break;
+        }
+      }
+    }
+    return true;
   }
 
   Future<String> uploadFile(String path, int requestInstanceID,
@@ -571,7 +599,7 @@ class _CreateRequestInstanceDetailsScreenState
         message: 'Thất bại!',
         duration: Duration(seconds: 3),
         margin: EdgeInsets.all(8),
-        borderRadius: 8,
+        borderRadius: BorderRadius.circular(8),
       )..show(context);
     }
   }
