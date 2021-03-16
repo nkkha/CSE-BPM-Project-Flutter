@@ -20,10 +20,10 @@ class _SecretaryRequestInstanceListWidgetState
     extends State<SecretaryRequestInstanceListWidget> {
   @override
   Widget build(BuildContext context) {
-    List<RequestInstance> newRequests = new List();
-    List<RequestInstance> inProgressRequests = new List();
-    List<RequestInstance> doneRequests = new List();
-    List<RequestInstance> failedRequests = new List();
+    List<RequestInstance> newRequests = [];
+    List<RequestInstance> inProgressRequests = [];
+    List<RequestInstance> doneRequests = [];
+    List<RequestInstance> failedRequests = [];
 
     for (RequestInstance request in widget.requestInstanceList) {
       if (request.status.contains("new")) {

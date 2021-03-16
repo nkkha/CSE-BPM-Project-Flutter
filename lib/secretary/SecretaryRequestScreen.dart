@@ -60,7 +60,7 @@ class _SecretaryRequestScreenState extends State<SecretaryRequestScreen> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (_noRequest) return NoRequestWidget(isStudent: false);
-          listRequest = new List();
+          listRequest = [];
           listRequest = snapshot.data;
           return FutureBuilder(
             future: futureListNumOfRI,
@@ -123,7 +123,7 @@ class _SecretaryRequestScreenState extends State<SecretaryRequestScreen> {
   }
 
   Widget _searchListView() {
-    _searchListItems = new List();
+    _searchListItems = [];
     for (int i = 0; i < listRequest.length; i++) {
       var item = listRequest[i];
 
@@ -143,7 +143,7 @@ class _SecretaryRequestScreenState extends State<SecretaryRequestScreen> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<Request> listRequest = new List();
+      List<Request> listRequest = [];
       for (Map i in data) {
         listRequest.add(Request.fromJson(i));
       }

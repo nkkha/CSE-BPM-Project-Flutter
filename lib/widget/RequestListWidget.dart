@@ -14,7 +14,7 @@ class RequestListWidget extends StatefulWidget {
 }
 
 class _RequestListWidgetState extends State<RequestListWidget> {
-  List<Request> availableRequests = new List();
+  List<Request> availableRequests = [];
 
   @override
   void initState() {

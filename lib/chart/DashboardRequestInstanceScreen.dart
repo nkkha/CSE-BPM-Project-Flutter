@@ -1,11 +1,7 @@
-import 'dart:async';
-import 'dart:convert';
 import 'package:cse_bpm_project/source/MyColors.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/secretary/SecretaryRequestInstanceListWidget.dart';
-import 'package:cse_bpm_project/widget/NoRequestInstanceWidget.dart';
 import 'package:flutter/material.dart';
 
 class DashboardRequestInstanceScreen extends StatefulWidget {
@@ -97,7 +93,7 @@ class _DashboardRequestInstanceScreenState
   }
 
   Widget _searchListView() {
-    _searchListItems = new List();
+    _searchListItems = [];
     for (int i = 0; i < widget.listRequestInstance.length; i++) {
       var item = widget.listRequestInstance[i];
 

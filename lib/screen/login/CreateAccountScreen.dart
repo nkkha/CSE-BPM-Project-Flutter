@@ -28,7 +28,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   FocusNode _myFocusNode5 = new FocusNode();
 
   bool _isClicked = false;
-  List<Role> _dropdownItems = new List();
+  List<Role> _dropdownItems = [];
   List<DropdownMenuItem<Role>> _dropdownMenuItems;
   Role _selectedItem;
 
@@ -72,7 +72,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   }
 
   List<DropdownMenuItem<Role>> buildDropDownMenuItems(List listItems) {
-    List<DropdownMenuItem<Role>> items = List();
+    List<DropdownMenuItem<Role>> items = [];
     for (Role listItem in listItems) {
       items.add(
         DropdownMenuItem(

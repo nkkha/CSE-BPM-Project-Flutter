@@ -40,9 +40,9 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
 
   var webService = WebService();
 
-  List<InputField> listInputField = new List();
+  List<InputField> listInputField = [];
 
-  // List<List<DropdownOption>> listDropdownOptions = new List();
+  // List<List<DropdownOption>> listDropdownOptions = [];
   HashMap hashMapDropdownOptions = new HashMap<int, List<DropdownOption>>();
   ProgressDialog pr;
   int count = 0;
@@ -429,7 +429,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                                 new InputField(inputFieldTypeID: 4, id: key);
                             setState(() {
                               listInputField.add(inputField);
-                              List<DropdownOption> dropdownOptions = new List();
+                              List<DropdownOption> dropdownOptions = [];
                               dropdownOptions.add(
                                   new DropdownOption(content: "Tùy chọn 1"));
                               if (!hashMapDropdownOptions.containsKey(key)) {

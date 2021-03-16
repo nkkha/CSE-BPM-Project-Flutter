@@ -75,7 +75,7 @@ class _EditStepInstanceScreenState extends State<EditStepInstanceScreen> {
   }
 
   List<DropdownMenuItem<Status>> buildDropDownMenuItems(List listItems) {
-    List<DropdownMenuItem<Status>> items = List();
+    List<DropdownMenuItem<Status>> items = [];
     for (Status listItem in listItems) {
       items.add(
         DropdownMenuItem(

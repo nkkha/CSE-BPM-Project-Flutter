@@ -67,7 +67,7 @@ class WebService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<StepInstance> listStepInstance = new List();
+      List<StepInstance> listStepInstance = [];
       for (Map i in data) {
         listStepInstance.add(StepInstance.fromJson(i));
       }
@@ -83,7 +83,7 @@ class WebService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<StepInstance> listStepInstance = new List();
+      List<StepInstance> listStepInstance = [];
       for (Map i in data) {
         listStepInstance.add(StepInstance.fromJson(i));
       }
@@ -169,7 +169,7 @@ class WebService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<MyStep> listStep = new List();
+      List<MyStep> listStep = [];
       for (Map i in data) {
         listStep.add(MyStep.fromJson(i));
       }
@@ -191,7 +191,7 @@ class WebService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<MyStep> listStep = new List();
+      List<MyStep> listStep = [];
       for (Map i in data) {
         listStep.add(MyStep.fromJson(i));
       }
@@ -215,7 +215,7 @@ class WebService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<StepInstance> listStepInstance = new List();
+      List<StepInstance> listStepInstance = [];
       for (Map i in data) {
         listStepInstance.add(StepInstance.fromJson(i));
       }
@@ -299,7 +299,7 @@ class WebService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<Role> listRole = new List();
+      List<Role> listRole = [];
       for (Map i in data) {
         listRole.add(Role.fromJson(i));
       }
@@ -346,7 +346,7 @@ class WebService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<InputField> listInputField = new List();
+      List<InputField> listInputField = [];
       for (Map i in data) {
         listInputField.add(InputField.fromJson(i));
       }
@@ -429,7 +429,7 @@ class WebService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<InputFieldInstance> listInputFieldInstance = new List();
+      List<InputFieldInstance> listInputFieldInstance = [];
       for (Map i in data) {
         listInputFieldInstance.add(InputFieldInstance.fromJson(i));
       }
@@ -445,7 +445,7 @@ class WebService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<NumOfRequestInstance> listNumOfRequestInstance = new List();
+      List<NumOfRequestInstance> listNumOfRequestInstance = [];
       for (Map i in data) {
         listNumOfRequestInstance.add(NumOfRequestInstance.fromJson(i));
       }
@@ -461,7 +461,7 @@ class WebService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<CountRIToday> listRIToday = new List();
+      List<CountRIToday> listRIToday = [];
       for (Map i in data) {
         listRIToday.add(CountRIToday.fromJson(i));
       }
@@ -472,7 +472,7 @@ class WebService {
   }
 
   Future<List<RequestInstance>> getListRequestInstance(String query) async {
-    List<RequestInstance> listRequestInstance = new List();
+    List<RequestInstance> listRequestInstance = [];
     final response = await http.get(
         'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?$query');
     if (response.statusCode == 200) {

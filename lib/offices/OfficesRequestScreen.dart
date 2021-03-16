@@ -76,7 +76,7 @@ class _OfficesRequestScreenState extends State<OfficesRequestScreen> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data.length > 0) {
-                      listRequestInstance = new List();
+                      listRequestInstance = [];
                       listRequestInstance = snapshot.data;
                       return SingleChildScrollView(
                         child: Column(
@@ -132,7 +132,7 @@ class _OfficesRequestScreenState extends State<OfficesRequestScreen> {
   }
 
   Widget _searchListView() {
-    _searchListItems = new List();
+    _searchListItems = [];
     for (int i = 0; i < listRequestInstance.length; i++) {
       var item = listRequestInstance[i];
 
@@ -147,7 +147,7 @@ class _OfficesRequestScreenState extends State<OfficesRequestScreen> {
   }
 
   Future<List<RequestInstance>> fetchListRequestInstance(String query) async {
-    List<RequestInstance> listRequestInstance = new List();
+    List<RequestInstance> listRequestInstance = [];
     if (query.isNotEmpty) {
       final response = await http.get(
           'http://nkkha.somee.com/odata/tbRequestInstance/GetRequestInstance?$query');
@@ -171,7 +171,7 @@ class _OfficesRequestScreenState extends State<OfficesRequestScreen> {
         'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails?\$filter=Status eq \'active\' and ApproverRoleID eq $roleID');
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<StepInstance> listStepInstance = new List();
+      List<StepInstance> listStepInstance = [];
       for (Map i in data) {
         listStepInstance.add(StepInstance.fromJson(i));
       }

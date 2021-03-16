@@ -1,10 +1,10 @@
+import 'package:after_layout/after_layout.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cse_bpm_project/fragment/ChatFragment.dart';
 import 'package:cse_bpm_project/fragment/SettingsFragment.dart';
 import 'package:cse_bpm_project/secretary/SecretaryHomeFragment.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:flutter/material.dart';
-import 'package:after_layout/after_layout.dart';
 
 // ignore: must_be_immutable
 class DeanScreen extends StatefulWidget {
@@ -16,7 +16,8 @@ class DeanScreen extends StatefulWidget {
   _DeanScreenState createState() => _DeanScreenState();
 }
 
-class _DeanScreenState extends State<DeanScreen> with AfterLayoutMixin<DeanScreen> {
+class _DeanScreenState extends State<DeanScreen>
+    with AfterLayoutMixin<DeanScreen> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
@@ -44,21 +45,21 @@ class _DeanScreenState extends State<DeanScreen> with AfterLayoutMixin<DeanScree
               Icons.home,
               color: _selectedIndex == 0 ? MyColors.brand : MyColors.mediumGray,
             ),
-            title: Text('Trang chủ'),
+            label: 'Trang chủ',
           ),
           BottomNavigationBarItem(
             icon: Image.asset(
               'images/ic-chat-24.png',
               color: _selectedIndex == 1 ? MyColors.brand : MyColors.mediumGray,
             ),
-            title: Text('Chat'),
+            label: 'Chat',
           ),
           BottomNavigationBarItem(
             icon: Image.asset(
               'images/ic-settings-24.png',
               color: _selectedIndex == 2 ? MyColors.brand : MyColors.mediumGray,
             ),
-            title: Text('Cài đặt'),
+            label: 'Cài đặt',
           ),
         ],
         currentIndex: _selectedIndex,

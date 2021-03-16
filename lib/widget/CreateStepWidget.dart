@@ -37,8 +37,8 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
   FocusNode _myFocusNode2 = new FocusNode();
 
   ProgressDialog pr;
-  List<InputField> listInputField = new List();
-  List<Role> _dropdownItems = new List();
+  List<InputField> listInputField = [];
+  List<Role> _dropdownItems = [];
   List<DropdownMenuItem<Role>> _dropdownMenuItems;
   Role _selectedItem;
   bool isCreated = false;
@@ -67,7 +67,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
   }
 
   List<DropdownMenuItem<Role>> buildDropDownMenuItems(List listItems) {
-    List<DropdownMenuItem<Role>> items = List();
+    List<DropdownMenuItem<Role>> items = [];
     for (Role listItem in listItems) {
       items.add(
         DropdownMenuItem(

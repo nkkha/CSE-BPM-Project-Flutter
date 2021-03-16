@@ -87,7 +87,7 @@ class _SecretaryRequestInstanceScreenState
           if (snapshot.hasData) {
             if (_noRequest)
               return Center(child: NoRequestInstanceWidget(isStudent: false));
-            listRequestInstance = new List();
+            listRequestInstance = [];
             listRequestInstance = snapshot.data;
             return Column(
               children: [
@@ -133,7 +133,7 @@ class _SecretaryRequestInstanceScreenState
   }
 
   Widget _searchListView() {
-    _searchListItems = new List();
+    _searchListItems = [];
     for (int i = 0; i < listRequestInstance.length; i++) {
       var item = listRequestInstance[i];
 
@@ -154,7 +154,7 @@ class _SecretaryRequestInstanceScreenState
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<RequestInstance> listRequest = new List();
+      List<RequestInstance> listRequest = [];
       for (Map i in data) {
         listRequest.add(RequestInstance.fromJson(i));
       }

@@ -9,7 +9,6 @@ import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'DashboardRequestInstanceScreen.dart';
@@ -22,15 +21,15 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   var webService = new WebService();
   String query = "\$filter=CreatedDate eq $formatted";
-  List<RequestInstance> listAll = new List();
-  List<RequestInstance> listNew = new List();
-  List<RequestInstance> listInProgress = new List();
-  List<RequestInstance> listDone = new List();
-  List<RequestInstance> listFailed = new List();
+  List<RequestInstance> listAll = [];
+  List<RequestInstance> listNew = [];
+  List<RequestInstance> listInProgress = [];
+  List<RequestInstance> listDone = [];
+  List<RequestInstance> listFailed = [];
 
   HashMap hashMapRequestInstances = new HashMap<int, List<RequestInstance>>();
-  List<List<RequestInstance>> listRequestInstances = new List();
-  List<NumOfRequestInstance> listNumOfRI = new List();
+  List<List<RequestInstance>> listRequestInstances = [];
+  List<NumOfRequestInstance> listNumOfRI = [];
 
   DateTime startDate, dueDate;
   String startDateStr, dueDateStr;
@@ -59,7 +58,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   List<DropdownMenuItem<ListItem>> buildDropDownMenuItems(List listItems) {
-    List<DropdownMenuItem<ListItem>> items = List();
+    List<DropdownMenuItem<ListItem>> items = [];
     for (ListItem listItem in listItems) {
       items.add(
         DropdownMenuItem(
@@ -136,7 +135,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 listFailed.add(requestInstance);
               }
               if (!hashMapRequestInstances.containsKey(id)) {
-                List<RequestInstance> listRI = new List();
+                List<RequestInstance> listRI = [];
                 listRI.add(requestInstance);
                 hashMapRequestInstances.putIfAbsent(id, () => listRI);
               } else {

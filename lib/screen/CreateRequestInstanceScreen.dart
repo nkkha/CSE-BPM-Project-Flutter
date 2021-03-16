@@ -56,7 +56,7 @@ class _CreateRequestInstanceScreenState extends State<CreateRequestInstanceScree
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<Request> listRequest = new List();
+      List<Request> listRequest = [];
       for (Map i in data) {
         listRequest.add(Request.fromJson(i));
       }

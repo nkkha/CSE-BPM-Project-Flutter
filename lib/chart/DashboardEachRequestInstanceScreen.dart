@@ -1,13 +1,11 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cse_bpm_project/model/NumOfDayHandleStep.dart';
-import 'package:cse_bpm_project/model/NumOfRequestInstance.dart';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/model/StepInstance.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
 import 'package:cse_bpm_project/model/Step.dart';
 import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'DashboardRequestInstanceScreen.dart';
 
 class DashboardEachRequestInstanceScreen extends StatefulWidget {
@@ -26,20 +24,16 @@ class DashboardEachRequestInstanceScreen extends StatefulWidget {
 class _DashboardEachRequestInstanceScreenState
     extends State<DashboardEachRequestInstanceScreen> {
   var webService = new WebService();
-  List<RequestInstance> listAll = new List();
-  List<RequestInstance> listNew = new List();
-  List<RequestInstance> listInProgress = new List();
-  List<RequestInstance> listDone = new List();
-  List<RequestInstance> listFailed = new List();
-  List<List<RequestInstance>> listRequestInstances = new List();
-  List<MyStep> listStep = new List();
-  List<NumOfDayHandleStep> listNumOfDayHandleStep = new List();
+  List<RequestInstance> listAll = [];
+  List<RequestInstance> listNew = [];
+  List<RequestInstance> listInProgress = [];
+  List<RequestInstance> listDone = [];
+  List<RequestInstance> listFailed = [];
+  List<List<RequestInstance>> listRequestInstances = [];
+  List<MyStep> listStep = [];
+  List<NumOfDayHandleStep> listNumOfDayHandleStep = [];
   Future<List<StepInstance>> futureListStepInstance;
   Future<List<MyStep>> futureListStep;
-
-  static final DateTime now = DateTime.now();
-  static final DateFormat formatter = DateFormat('yyyy-MM-dd');
-  static final String formatted = formatter.format(now);
 
   void initState() {
     super.initState();
@@ -211,86 +205,6 @@ class _DashboardEachRequestInstanceScreenState
         },
       ),
     );
-  }
-
-  _buildTableDetails() {
-    List<DataRow> rows = [];
-
-    for (List<RequestInstance> list in listRequestInstances) {
-      String dateRange = "0";
-      int count = 0;
-      int totalDayRange = 0;
-      for (RequestInstance requestInstance in list) {
-        if (requestInstance.finishedDate != null) {
-          count++;
-          DateTime created = DateTime.parse(requestInstance.createdDate);
-          DateTime finished = DateTime.parse(requestInstance.finishedDate);
-          totalDayRange += finished.difference(created).inDays;
-        }
-      }
-      dateRange = (totalDayRange.toDouble() / count.toDouble()).toString();
-      rows.add(DataRow(
-        onSelectChanged: (bool selected) {
-          if (selected) {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //       builder: (context) => SettingsFragment()),
-            // );
-          }
-        },
-        cells: <DataCell>[
-          DataCell(_buildText(list[0].requestID.toString())),
-          DataCell(_buildText(list[0].requestName)),
-          DataCell(_buildText(list.length.toString())),
-          DataCell(
-              _buildText('$dateRange${dateRange != 'NaN' ? ' ngày' : ''}')),
-        ],
-      ));
-    }
-
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.only(top: 20, bottom: 20),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          showCheckboxColumn: false,
-          columnSpacing: 30,
-          columns: <DataColumn>[
-            DataColumn(
-              label: Text(
-                'ID',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Tên yêu cầu',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Số lượng',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-            DataColumn(
-              label: Text(
-                'Thời gian hoàn thành trung bình',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-          ],
-          rows: rows,
-        ),
-      ),
-    );
-  }
-
-  _buildText(String text) {
-    return Text(text, style: TextStyle(fontSize: 14));
   }
 
   Widget countCard(

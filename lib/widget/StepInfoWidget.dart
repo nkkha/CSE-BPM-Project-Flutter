@@ -43,7 +43,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
   final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss+07:00');
 
   Future<List<InputFieldInstance>> futureListIFI;
-  List<InputFieldInstance> listInputFieldInstance = new List();
+  List<InputFieldInstance> listInputFieldInstance = [];
   int count = 0;
   int nextStepSize = 0;
   ProgressDialog pr;

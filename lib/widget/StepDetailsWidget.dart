@@ -47,7 +47,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   int roleID;
 
   Future<List<StepInstance>> futureListStepInstance;
-  List<StepInstance> stepInstanceList = new List();
+  List<StepInstance> stepInstanceList = [];
 
   HashMap hashMapInputFields = new HashMap<int, List<InputField>>();
   HashMap hashMapInputFieldInstances =
@@ -350,11 +350,11 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
           if (snapshot.hasData) {
             if (snapshot.data.length > 0) {
               if (!hashMapInputFields.containsKey(stepIndex)) {
-                List<InputField> listIF = new List();
+                List<InputField> listIF = [];
                 listIF = snapshot.data;
                 hashMapInputFields.putIfAbsent(stepIndex, () => listIF);
                 if (!hashMapInputFieldInstances.containsKey(stepIndex)) {
-                  List<InputFieldInstance> listIFI = new List();
+                  List<InputFieldInstance> listIFI = [];
                   for (InputField inputField in hashMapInputFields[stepIndex]) {
                     listIFI.add(new InputFieldInstance(
                         inputFieldID: inputField.id,
@@ -609,7 +609,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         } else if (snapshot.hasData) {
           if (!hashMapInputFieldInstances.containsKey(stepIndex)) {
             if (snapshot.data.length > 0) {
-              List<InputFieldInstance> listIFI = new List();
+              List<InputFieldInstance> listIFI = [];
               listIFI = snapshot.data;
               hashMapInputFieldInstances.putIfAbsent(stepIndex, () => listIFI);
               return Padding(

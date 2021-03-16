@@ -9,13 +9,15 @@ class CreateStepScreen extends StatefulWidget {
   final int requestID;
   final int numOfSteps;
 
-  CreateStepScreen({Key key, @required this.requestID, this.numOfSteps}) : super(key: key);
+  CreateStepScreen({Key key, @required this.requestID, this.numOfSteps})
+      : super(key: key);
 
   @override
   _CreateStepScreenState createState() => _CreateStepScreenState();
 }
 
-class _CreateStepScreenState extends State<CreateStepScreen> with SingleTickerProviderStateMixin {
+class _CreateStepScreenState extends State<CreateStepScreen>
+    with SingleTickerProviderStateMixin {
   TabController tabController;
   int currentStepIndex = 0;
 
@@ -24,7 +26,8 @@ class _CreateStepScreenState extends State<CreateStepScreen> with SingleTickerPr
   @override
   void initState() {
     super.initState();
-    tabController = new TabController(vsync: this, length: widget.numOfSteps, initialIndex: 0);
+    tabController = new TabController(
+        vsync: this, length: widget.numOfSteps, initialIndex: 0);
   }
 
   @override
@@ -48,24 +51,30 @@ class _CreateStepScreenState extends State<CreateStepScreen> with SingleTickerPr
       body: TabBarView(
         controller: tabController,
         children: List<Widget>.generate(
-          _numOfSteps,
-          (index) => CreateStepWidget(tabIndex: index, requestID: widget.requestID, update: (data, stepIndex) {
-            if (data < _numOfSteps) {
-              tabController.animateTo(data);
-            } else if (data == _numOfSteps) {
-              webService.patchRequestNumOfSteps(widget.requestID, stepIndex, (isSuccessful) {
-                if (isSuccessful) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SecretaryScreen(isCreatedNew: true, selectedIndex: 1)),
-                        (Route<dynamic> route) => false,
-                  );
-                }
-              });
-            }
-          })
-        ),
+            _numOfSteps,
+            (index) => CreateStepWidget(
+                tabIndex: index,
+                requestID: widget.requestID,
+                update: (data, stepIndex) {
+                  if (data < _numOfSteps) {
+                    tabController.animateTo(data);
+                  } else if (data == _numOfSteps) {
+                    webService.patchRequestNumOfSteps(
+                        widget.requestID, stepIndex, (isSuccessful) {
+                      if (isSuccessful) {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SecretaryScreen(
+                                  isCreatedNew: true,
+                                  selectedIndex: 1,
+                                  roleID: 0)),
+                          (Route<dynamic> route) => false,
+                        );
+                      }
+                    });
+                  }
+                })),
       ),
     );
   }

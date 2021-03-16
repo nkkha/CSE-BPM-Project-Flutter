@@ -26,7 +26,7 @@ class _StepInputFieldInstanceWidgetState
 
   int count = 0;
   ProgressDialog pr;
-  List<InputFieldInstance> listIFInstance = new List();
+  List<InputFieldInstance> listIFInstance = [];
   HashMap listImage = new HashMap<int, File>();
 
   _imgFromCamera(Function updateImage) async {

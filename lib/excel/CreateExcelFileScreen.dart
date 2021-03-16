@@ -22,7 +22,7 @@ class CreateExcelFileScreen extends StatefulWidget {
 }
 
 class _CreateExcelFileScreenState extends State<CreateExcelFileScreen> {
-  List file = new List();
+  List file = [];
   String directory;
 
   @override
@@ -238,7 +238,7 @@ class _CreateExcelFileScreenState extends State<CreateExcelFileScreen> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
-      List<InputField> listInputField = new List();
+      List<InputField> listInputField = [];
       for (Map i in data) {
         listInputField.add(InputField.fromJson(i));
       }
