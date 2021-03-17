@@ -180,7 +180,7 @@ class _StepInputFieldInstanceWidgetState
                 style: TextStyle(fontSize: 16, color: Colors.black),
                 decoration: InputDecoration(
                   errorText: snapshot.hasError ? snapshot.error : null,
-                  labelText: 'Trả lời',
+                  labelText: 'Trả lời *',
 //              labelStyle: TextStyle(
 //                  color: _myFocusNode.hasFocus
 //                      ? MyColors.lightBrand

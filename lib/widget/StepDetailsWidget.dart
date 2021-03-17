@@ -420,7 +420,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
           _textController.text;
     });
 
-    String label = "Trả lời";
+    String label = "Trả lời *";
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 32),

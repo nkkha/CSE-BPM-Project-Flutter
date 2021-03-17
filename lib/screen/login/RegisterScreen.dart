@@ -101,7 +101,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextStyle(fontSize: 18, color: Colors.black),
                     decoration: InputDecoration(
                       errorText: snapshot.hasError ? snapshot.error : null,
-                      labelText: 'Tên đăng nhập',
+                      labelText: 'Tên đăng nhập *',
                       labelStyle: TextStyle(
                           color: _myFocusNode5.hasFocus
                               ? MyColors.lightBrand
@@ -133,7 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(fontSize: 18, color: Colors.black),
                   decoration: InputDecoration(
                     errorText: snapshot.hasError ? snapshot.error : null,
-                    labelText: 'MSSV',
+                    labelText: 'MSSV *',
                     labelStyle: TextStyle(
                         color: _myFocusNode6.hasFocus
                             ? MyColors.lightBrand
@@ -165,7 +165,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextStyle(fontSize: 18, color: Colors.black),
                     decoration: InputDecoration(
                       errorText: snapshot.hasError ? snapshot.error : null,
-                      labelText: 'Họ và tên',
+                      labelText: 'Họ và tên *',
                       labelStyle: TextStyle(
                           color: _myFocusNode1.hasFocus
                               ? MyColors.lightBrand
@@ -200,7 +200,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                   decoration: InputDecoration(
                     errorText: snapshot.hasError ? snapshot.error : null,
-                    labelText: 'Số điện thoại',
+                    labelText: 'Số điện thoại *',
                     labelStyle: TextStyle(
                         color: _myFocusNode2.hasFocus
                             ? MyColors.lightBrand
@@ -232,7 +232,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextStyle(fontSize: 18, color: Colors.black),
                     decoration: InputDecoration(
                       errorText: snapshot.hasError ? snapshot.error : null,
-                      labelText: 'Email',
+                      labelText: 'Email *',
                       labelStyle: TextStyle(
                           color: _myFocusNode3.hasFocus
                               ? MyColors.lightBrand
@@ -264,7 +264,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(fontSize: 18, color: Colors.black),
                   decoration: InputDecoration(
                     errorText: snapshot.hasError ? snapshot.error : null,
-                    labelText: 'Mật khẩu',
+                    labelText: 'Mật khẩu *',
                     labelStyle: TextStyle(
                         color: _myFocusNode4.hasFocus
                             ? MyColors.lightBrand

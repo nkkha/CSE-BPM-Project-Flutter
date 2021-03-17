@@ -112,7 +112,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                       style: TextStyle(fontSize: 18, color: Colors.black),
                       decoration: InputDecoration(
                         errorText: snapshot.hasError ? snapshot.error : null,
-                        labelText: 'Mã quy trình',
+                        labelText: 'Mã quy trình *',
                         labelStyle: TextStyle(
                             color: _myFocusNode4.hasFocus
                                 ? MyColors.lightBrand
@@ -139,7 +139,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                     style: TextStyle(fontSize: 18, color: Colors.black),
                     decoration: InputDecoration(
                       errorText: snapshot.hasError ? snapshot.error : null,
-                      labelText: 'Tên quy trình',
+                      labelText: 'Tên quy trình *',
                       labelStyle: TextStyle(
                           color: _myFocusNode1.hasFocus
                               ? MyColors.lightBrand
@@ -170,7 +170,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                       maxLines: null,
                       decoration: InputDecoration(
                         errorText: snapshot.hasError ? snapshot.error : null,
-                        labelText: 'Mô tả',
+                        labelText: 'Mô tả *',
                         labelStyle: TextStyle(
                             color: _myFocusNode2.hasFocus
                                 ? MyColors.lightBrand
@@ -287,7 +287,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                       style: TextStyle(fontSize: 18, color: Colors.black),
                       decoration: InputDecoration(
                         errorText: snapshot.hasError ? snapshot.error : null,
-                        labelText: 'Số bước',
+                        labelText: 'Số bước *',
                         labelStyle: TextStyle(
                             color: _myFocusNode3.hasFocus
                                 ? MyColors.lightBrand
@@ -497,16 +497,16 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     String title = "";
     switch (listInputField[index].inputFieldTypeID) {
       case 1:
-        title = "Tiêu đề câu hỏi";
+        title = "Tiêu đề câu hỏi *";
         break;
       case 2:
-        title = "Tiêu đề hình ảnh";
+        title = "Tiêu đề hình ảnh *";
         break;
       case 3:
-        title = "Tiêu đề tài liệu";
+        title = "Tiêu đề tài liệu *";
         break;
       case 4:
-        title = "Tiêu đề menu";
+        title = "Tiêu đề menu *";
         key = listInputField[index].id;
         break;
     }
@@ -550,13 +550,17 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                   icon: Icon(Icons.remove_circle_outline),
                   onPressed: () {
                     setState(() {
+                      if (listInputField[index].inputFieldTypeID == 4) {
+                        hashMapDropdownOptions.remove(key);
+                      }
                       listInputField.removeAt(index);
                     });
                   }),
             ],
           ),
         ),
-        hashMapDropdownOptions.length > 0
+        hashMapDropdownOptions.length > 0 &&
+                listInputField[index].inputFieldTypeID == 4
             ? Column(
                 children: List<Widget>.generate(
                     hashMapDropdownOptions[key].length,
