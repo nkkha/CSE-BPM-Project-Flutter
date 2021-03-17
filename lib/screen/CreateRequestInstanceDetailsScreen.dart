@@ -35,7 +35,7 @@ class CreateRequestInstanceDetailsScreen extends StatefulWidget {
 class _CreateRequestInstanceDetailsScreenState
     extends State<CreateRequestInstanceDetailsScreen> {
   var webService = WebService();
-  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss');
+  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss+07:00');
   ProgressDialog pr;
   int count = 0;
   TextEditingController _contentController = new TextEditingController();
@@ -547,7 +547,7 @@ class _CreateRequestInstanceDetailsScreenState
       pr.update(message: "Đang xử lý...");
       await pr.show();
       String content = _contentController.text;
-      String createdDate = formatterDateTime.format(DateTime.now()) + '\+07:00';
+      String createdDate = formatterDateTime.format(DateTime.now());
 
       final prefs = await SharedPreferences.getInstance();
       final userId = prefs.getInt('userId') ?? 0;
@@ -629,6 +629,7 @@ class _CreateRequestInstanceDetailsScreenState
       for (InputFieldInstance ip in listInputFieldInstance) {
         switch (ip.inputFieldTypeID) {
           case 1:
+          case 4:
             if (ip.textAnswer == null || ip.textAnswer == "") return false;
             break;
           case 2:

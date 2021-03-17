@@ -471,9 +471,17 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
           _requestInstance.status = 'active';
           _requestInstance.currentStepIndex = 1;
         }
-        if (widget.numOfSteps == 1) {
+        if (widget.numOfSteps == 0) {
           webService.patchRequestInstanceFinished(
-              _requestInstance.id, () => _hidePr(false));
+              _requestInstance.id, () {
+            Flushbar(
+              icon: Image.asset('images/ic-check-circle.png', width: 24, height: 24),
+              message: 'Thành công!',
+              duration: Duration(seconds: 3),
+              margin: EdgeInsets.all(8),
+              borderRadius: BorderRadius.circular(8),
+            )..show(context);
+              });
         } else {
           webService.getNextStep(_requestInstance, 1, (data) => _hidePr(data));
         }

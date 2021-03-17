@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:collection';
+import 'dart:convert';
 
 import 'package:another_flushbar/flushbar.dart';
+import 'package:cse_bpm_project/model/DropdownOption.dart';
 import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/Role.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
@@ -40,9 +43,11 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
   List<InputField> listInputField = [];
   List<Role> _dropdownItems = [];
   List<DropdownMenuItem<Role>> _dropdownMenuItems;
+  HashMap hashMapDropdownOptions = new HashMap<int, List<DropdownOption>>();
   Role _selectedItem;
   bool isCreated = false;
   int count = 0;
+  int countIF = 0;
   bool isParallelStep = false;
 
   @override
@@ -221,12 +226,12 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                   (index) => createInputFieldWidget(index)),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Container(
-                    width: 110,
+                    width: 130,
                     height: 52,
                     child: RaisedButton(
                       onPressed: () {
@@ -249,14 +254,14 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                           Text(
                             ' Câu hỏi',
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
+                                fontSize: 15, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
                     ),
                   ),
                   Container(
-                    width: 120,
+                    width: 130,
                     height: 52,
                     child: RaisedButton(
                       onPressed: () {
@@ -282,14 +287,22 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                           Text(
                             ' Hình ảnh',
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
+                                fontSize: 15, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
                     ),
                   ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
                   Container(
-                    width: 110,
+                    width: 130,
                     height: 52,
                     child: RaisedButton(
                       onPressed: () {
@@ -315,7 +328,45 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                           Text(
                             ' Tài liệu',
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
+                                fontSize: 15, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 130,
+                    height: 52,
+                    child: RaisedButton(
+                      onPressed: () {
+                        int key = countIF++;
+                        InputField inputField =
+                            new InputField(inputFieldTypeID: 4, id: key);
+                        setState(() {
+                          listInputField.add(inputField);
+                          List<DropdownOption> dropdownOptions = [];
+                          dropdownOptions
+                              .add(new DropdownOption(content: "Tùy chọn 1"));
+                          if (!hashMapDropdownOptions.containsKey(key)) {
+                            hashMapDropdownOptions.putIfAbsent(
+                                key, () => dropdownOptions);
+                          }
+                        });
+                      },
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                          side: BorderSide(color: MyColors.mediumGray)),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add, size: 24),
+                          Text(
+                            ' Menu',
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -359,21 +410,113 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
       listInputField[index].title = _textController.text;
     });
 
+    int key;
     String title = "";
     switch (listInputField[index].inputFieldTypeID) {
+      case 1:
+        title = "Tiêu đề câu hỏi *";
+        break;
       case 2:
-        title = "Tiêu đề hình ảnh";
+        title = "Tiêu đề hình ảnh *";
         break;
       case 3:
-        title = "Tiêu đề tài liệu";
+        title = "Tiêu đề tài liệu *";
         break;
-      default:
-        title = "Tiêu đề câu hỏi";
+      case 4:
+        title = "Tiêu đề menu *";
+        key = listInputField[index].id;
         break;
     }
 
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 32, left: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: StreamBuilder(
+                  // stream: authBloc.passStream,
+                  builder: (context, snapshot) => TextField(
+                    controller: _textController,
+                    textInputAction: TextInputAction.done,
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                    decoration: InputDecoration(
+                      errorText: snapshot.hasError ? snapshot.error : null,
+                      labelText: title,
+//              labelStyle: TextStyle(
+//                  color: _myFocusNode.hasFocus
+//                      ? MyColors.lightBrand
+//                      : MyColors.mediumGray),
+                      labelStyle: TextStyle(color: MyColors.mediumGray),
+                      border: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: MyColors.lightGray, width: 1),
+                        borderRadius: BorderRadius.all(Radius.circular(6)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: MyColors.lightBrand, width: 2.0),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              IconButton(
+                  icon: Icon(Icons.remove_circle_outline),
+                  onPressed: () {
+                    setState(() {
+                      if (listInputField[index].inputFieldTypeID == 4) {
+                        hashMapDropdownOptions.remove(key);
+                      }
+                      listInputField.removeAt(index);
+                    });
+                  }),
+            ],
+          ),
+        ),
+        hashMapDropdownOptions.length > 0 &&
+                listInputField[index].inputFieldTypeID == 4
+            ? Column(
+                children: List<Widget>.generate(
+                    hashMapDropdownOptions[key].length,
+                    (index) => createDropdownOptionWidget(
+                            index,
+                            hashMapDropdownOptions[key][index],
+                            (content) => hashMapDropdownOptions[key][index]
+                                .content = content, (delete) {
+                          if (delete) {
+                            setState(() {
+                              hashMapDropdownOptions[key].removeAt(index);
+                            });
+                          }
+                        }, (add) {
+                          if (add) {
+                            setState(() {
+                              hashMapDropdownOptions[key].add(new DropdownOption(
+                                  content:
+                                      "Tùy chọn ${hashMapDropdownOptions[key].length + 1}"));
+                            });
+                          }
+                        })),
+              )
+            : Container(),
+      ],
+    );
+  }
+
+  Widget createDropdownOptionWidget(int index, DropdownOption dropdownOption,
+      Function updateContent, Function delete, Function add) {
+    TextEditingController _textController = new TextEditingController();
+    _textController.text = dropdownOption.content;
+    _textController.addListener(() {
+      dropdownOption.content = _textController.text;
+      updateContent(dropdownOption.content);
+    });
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 32, left: 8),
+      padding: const EdgeInsets.only(left: 8, bottom: 20),
       child: Row(
         children: [
           Expanded(
@@ -385,7 +528,7 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
                 style: TextStyle(fontSize: 16, color: Colors.black),
                 decoration: InputDecoration(
                   errorText: snapshot.hasError ? snapshot.error : null,
-                  labelText: title,
+                  labelText: "Tùy chọn ${index + 1} *",
 //              labelStyle: TextStyle(
 //                  color: _myFocusNode.hasFocus
 //                      ? MyColors.lightBrand
@@ -404,13 +547,17 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
               ),
             ),
           ),
-          IconButton(
-              icon: Icon(Icons.remove_circle_outline),
-              onPressed: () {
-                setState(() {
-                  listInputField.removeAt(index);
-                });
-              }),
+          index != 0
+              ? IconButton(
+                  icon: Icon(Icons.highlight_off),
+                  onPressed: () {
+                    delete(true);
+                  })
+              : IconButton(
+                  icon: Icon(Icons.add_circle_outline),
+                  onPressed: () {
+                    add(true);
+                  }),
         ],
       ),
     );
@@ -462,12 +609,17 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
   }
 
   bool validate() {
+    if (_nameController.text == "") return false;
     if (listInputField.length > 0) {
       for (InputField ip in listInputField) {
         if (ip.title == null || ip.title == "") return false;
+        if (ip.inputFieldTypeID == 4) {
+          for (DropdownOption op in hashMapDropdownOptions[ip.id]) {
+            if (op.content == null || op.content == "") return false;
+          }
+        }
       }
     }
-    if (_nameController.text == "") return false;
     return true;
   }
 
@@ -475,15 +627,24 @@ class _CreateStepWidgetState extends State<CreateStepWidget>
     if (stepID != null) {
       if (listInputField.length > 0) {
         int index = 0;
-        for (InputField inputField in listInputField) {
+        for (InputField ip in listInputField) {
           index++;
           webService.postCreateInputField(
-              stepID,
-              null,
-              inputField.inputFieldTypeID,
-              inputField.title,
-              index,
-              (data) => updateIF(data, stepIndex));
+              stepID, null, ip.inputFieldTypeID, ip.title, index,
+              (success, inputFieldID) {
+            if (ip.inputFieldTypeID == 4) {
+              var array = [];
+              for (DropdownOption op in hashMapDropdownOptions[ip.id]) {
+                var resBody = {};
+                resBody["InputFieldID"] = inputFieldID;
+                resBody["Content"] = op.content;
+                array.add(resBody);
+              }
+              String data = jsonEncode(array);
+              webService.postCreateDropdownOptions(data);
+            }
+            updateIF(success, stepIndex);
+          });
         }
       } else {
         await pr.hide();

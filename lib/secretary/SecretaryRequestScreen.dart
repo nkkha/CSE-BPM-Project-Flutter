@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
-import 'package:cse_bpm_project/model/NumOfRequestInstance.dart';
-import 'package:cse_bpm_project/web_service/WebService.dart';
-import 'package:cse_bpm_project/widget/NoRequestWidget.dart';
-import 'package:http/http.dart' as http;
 
-import 'package:flutter/material.dart';
+import 'package:cse_bpm_project/model/NumOfRequestInstance.dart';
 import 'package:cse_bpm_project/model/Request.dart';
 import 'package:cse_bpm_project/secretary/SecretaryRequestInstanceScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
+import 'package:cse_bpm_project/web_service/WebService.dart';
+import 'package:cse_bpm_project/widget/NoRequestWidget.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class SecretaryRequestScreen extends StatefulWidget {
@@ -180,12 +180,16 @@ class _RequestListState extends State<RequestList> {
             }
           }
           Request request = widget.requestList[index];
-          String parsedStartDate = DateFormat('kk:mm - dd/MM')
-              .format(DateTime.parse(request.startDate.substring(0, request.startDate.length - 6)));
-          String parsedDueDate = DateFormat('kk:mm - dd/MM')
-              .format(DateTime.parse(request.dueDate.substring(0, request.dueDate.length - 6)));
+          String parsedStartDate = DateFormat('kk:mm - dd/MM').format(
+              DateTime.parse(request.startDate
+                  .substring(0, request.startDate.length - 6)));
+          String parsedDueDate = DateFormat('kk:mm - dd/MM').format(
+              DateTime.parse(
+                  request.dueDate.substring(0, request.dueDate.length - 6)));
           return Padding(
-            padding: index == 0 ? const EdgeInsets.fromLTRB(20, 10, 20, 0) : const EdgeInsets.fromLTRB(20, 0, 20, 0),
+            padding: index == 0
+                ? const EdgeInsets.fromLTRB(20, 10, 20, 10)
+                : const EdgeInsets.fromLTRB(20, 0, 20, 10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:another_flushbar/flushbar.dart';
+import 'package:cse_bpm_project/model/DropdownOption.dart';
 import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/InputFieldInstance.dart';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
@@ -54,6 +55,10 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       new HashMap<int, List<InputFieldInstance>>();
   HashMap listImageFilePath = new HashMap<int, String>();
   HashMap listFilePath = new HashMap<int, String>();
+  HashMap _hashMapDropdownItems = new HashMap<int, List<DropdownOption>>();
+  HashMap _hashMapDropdownMenuItems =
+      new HashMap<int, List<DropdownMenuItem<DropdownOption>>>();
+  HashMap _hashMapSelectedItem = new HashMap<int, DropdownOption>();
   int count;
 
   final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss+07:00');
@@ -407,6 +412,9 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       case 3:
         return createUploadFileFieldWidget(stepIndex, index);
         break;
+      case 4:
+        return createDropdownWidget(stepIndex, index);
+        break;
     }
     return Container();
   }
@@ -592,6 +600,80 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     );
   }
 
+  Widget createDropdownWidget(int stepIndex, int index) {
+    final int id = hashMapInputFieldInstances[stepIndex][index].inputFieldID;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      child: Column(
+        children: [
+          Text(
+            '${hashMapInputFieldInstances[stepIndex][index].title}',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(width: 10, height: 10),
+          FutureBuilder<List<DropdownOption>>(
+            future: webService.getDropdownOptions(
+                hashMapInputFieldInstances[stepIndex][index].inputFieldID),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<DropdownOption> data = snapshot.data;
+                if (!_hashMapDropdownItems.containsKey(id)) {
+                  _hashMapDropdownItems.putIfAbsent(id, () => data);
+                }
+                if (!_hashMapDropdownMenuItems.containsKey(id)) {
+                  _hashMapDropdownMenuItems.putIfAbsent(id,
+                      () => buildDropDownMenuItems(_hashMapDropdownItems[id]));
+                }
+                DropdownOption op = _hashMapDropdownMenuItems[id][0].value;
+                if (!_hashMapSelectedItem.containsKey(id)) {
+                  _hashMapSelectedItem.putIfAbsent(id, () => op);
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8),
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border.all()),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton(
+                          value: _hashMapSelectedItem[id],
+                          items: _hashMapDropdownMenuItems[id],
+                          onChanged: (value) {
+                            setState(() {
+                              _hashMapSelectedItem[id] = value;
+                              hashMapInputFieldInstances[stepIndex][index]
+                                  .textAnswer = value.content;
+                            });
+                          }),
+                    ),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return Center(child: CircularProgressIndicator());
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<DropdownMenuItem<DropdownOption>> buildDropDownMenuItems(
+      List listItems) {
+    List<DropdownMenuItem<DropdownOption>> items = [];
+    for (DropdownOption listItem in listItems) {
+      items.add(
+        DropdownMenuItem(
+          child: Text(listItem.content),
+          value: listItem,
+        ),
+      );
+    }
+    return items;
+  }
+
   _buildInputFieldInstanceColumn(
       int stepInstanceID, int stepIndex, int roleID) {
     return FutureBuilder(
@@ -643,6 +725,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   _buildInputFieldInstanceField(int stepIndex, int index) {
     switch (hashMapInputFieldInstances[stepIndex][index].inputFieldTypeID) {
       case 1:
+      case 4:
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -847,6 +930,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       for (InputFieldInstance ip in hashMapInputFieldInstances[stepIndex]) {
         switch (ip.inputFieldTypeID) {
           case 1:
+          case 4:
             if (ip.textAnswer == null || ip.textAnswer == "") return false;
             break;
           case 2:
@@ -957,6 +1041,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                   hashMapInputFieldInstances[stepIndex][i];
               switch (inputFieldInstance.inputFieldTypeID) {
                 case 1:
+                case 4:
                   webService.postCreateInputTextFieldInstance(
                       inputFieldInstance.stepInstanceID,
                       null,

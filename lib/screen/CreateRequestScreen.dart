@@ -41,8 +41,6 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   var webService = WebService();
 
   List<InputField> listInputField = [];
-
-  // List<List<DropdownOption>> listDropdownOptions = [];
   HashMap hashMapDropdownOptions = new HashMap<int, List<DropdownOption>>();
   ProgressDialog pr;
   int count = 0;

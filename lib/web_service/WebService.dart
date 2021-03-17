@@ -30,7 +30,7 @@ class WebService {
 
   int nextStepSize = 0;
   int count = 0;
-  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss');
+  final DateFormat formatterDateTime = DateFormat('yyyy-MM-ddThh:mm:ss+07:00');
 
   /// Web API
 
@@ -64,7 +64,7 @@ class WebService {
   Future<List<StepInstance>> getStepInstances(
       int tabIndex, int requestInstanceID) async {
     final response = await http.get(
-        'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails?\$filter=StepIndex eq $tabIndex and RequestInstanceID eq $requestInstanceID');
+        'http://nkkha.somee.com/odata/tbStepInstance/GetStepInstanceDetails?\$filter=StepIndex eq $tabIndex and RequestInstanceID eq $requestInstanceID&\$orderby=StepID asc');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
@@ -242,7 +242,7 @@ class WebService {
 
   Future<void> postCreateNextStepInstances(
       int requestInstanceID, int stepID, Function update) async {
-    String createdDate = formatterDateTime.format(DateTime.now()) + '\+07:00';
+    String createdDate = formatterDateTime.format(DateTime.now());
 
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbStepInstance',
