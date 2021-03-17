@@ -1,24 +1,25 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:another_flushbar/flushbar.dart';
-import 'package:cse_bpm_project/model/RequestInstance.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:http/http.dart' as http;
 import 'dart:collection';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:another_flushbar/flushbar.dart';
+import 'package:cse_bpm_project/model/DropdownOption.dart';
 import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/InputFieldInstance.dart';
 import 'package:cse_bpm_project/model/Request.dart';
-import 'package:cse_bpm_project/web_service/WebService.dart';
-
+import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/screen/StudentScreen.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
+import 'package:cse_bpm_project/web_service/WebService.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
 class CreateRequestInstanceDetailsScreen extends StatefulWidget {
   final Request request;
@@ -46,6 +47,10 @@ class _CreateRequestInstanceDetailsScreenState
 
   HashMap listImageFilePath = new HashMap<int, String>();
   HashMap listFilePath = new HashMap<int, String>();
+  HashMap _hashMapDropdownItems = new HashMap<int, List<DropdownOption>>();
+  HashMap _hashMapDropdownMenuItems =
+      new HashMap<int, List<DropdownMenuItem<DropdownOption>>>();
+  HashMap _hashMapSelectedItem = new HashMap<int, DropdownOption>();
 
   @override
   void initState() {
@@ -285,6 +290,9 @@ class _CreateRequestInstanceDetailsScreenState
       case 3:
         return createUploadFileFieldWidget(index);
         break;
+      case 4:
+        return createDropdownWidget(index);
+        break;
     }
     return Container();
   }
@@ -456,10 +464,86 @@ class _CreateRequestInstanceDetailsScreenState
     );
   }
 
+  Widget createDropdownWidget(int index) {
+    int id = listInputFieldInstance[index].id;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      child: Column(
+        children: [
+          Text(
+            '${listInputFieldInstance[index].title}',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(width: 10, height: 10),
+          FutureBuilder<List<DropdownOption>>(
+            future: webService
+                .getDropdownOptions(listInputFieldInstance[index].inputFieldID),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<DropdownOption> data = snapshot.data;
+                if (!_hashMapDropdownItems.containsKey(id)) {
+                  _hashMapDropdownItems.putIfAbsent(id, () => data);
+                }
+                if (!_hashMapDropdownMenuItems.containsKey(id)) {
+                  _hashMapDropdownMenuItems.putIfAbsent(id,
+                      () => buildDropDownMenuItems(_hashMapDropdownItems[id]));
+                }
+                DropdownOption op = _hashMapDropdownMenuItems[id][0].value;
+                if (!_hashMapSelectedItem.containsKey(id)) {
+                  _hashMapSelectedItem.putIfAbsent(id, () => op);
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8),
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border.all()),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton(
+                          value: _hashMapSelectedItem[id],
+                          items: _hashMapDropdownMenuItems[id],
+                          onChanged: (value) {
+                            setState(() {
+                              _hashMapSelectedItem[id] = value;
+                              listInputFieldInstance[index].textAnswer =
+                                  value.content;
+                            });
+                          }),
+                    ),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return Center(child: CircularProgressIndicator());
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<DropdownMenuItem<DropdownOption>> buildDropDownMenuItems(
+      List listItems) {
+    List<DropdownMenuItem<DropdownOption>> items = [];
+    for (DropdownOption listItem in listItems) {
+      items.add(
+        DropdownMenuItem(
+          child: Text(listItem.content),
+          value: listItem,
+        ),
+      );
+    }
+    return items;
+  }
+
   Future<void> _onSubmitRequest() async {
     if (validate()) {
       pr = ProgressDialog(context,
-          type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+          type: ProgressDialogType.Normal,
+          isDismissible: false,
+          showLogs: true);
       pr.update(message: "Đang xử lý...");
       await pr.show();
       String content = _contentController.text;
@@ -485,17 +569,19 @@ class _CreateRequestInstanceDetailsScreenState
 
       if (response.statusCode == 200) {
         RequestInstance requestInstance =
-        RequestInstance.fromJson(jsonDecode(response.body));
+            RequestInstance.fromJson(jsonDecode(response.body));
         if (listInputFieldInstance.length > 0) {
-          for (InputFieldInstance inputFieldInstance in listInputFieldInstance) {
+          for (InputFieldInstance inputFieldInstance
+              in listInputFieldInstance) {
             switch (inputFieldInstance.inputFieldTypeID) {
               case 1:
+              case 4:
                 webService.postCreateInputTextFieldInstance(
                     null,
                     requestInstance.id,
                     inputFieldInstance.inputFieldID,
                     inputFieldInstance.textAnswer,
-                        (data) => update(data));
+                    (data) => update(data));
                 break;
               case 2:
               case 3:
@@ -513,7 +599,7 @@ class _CreateRequestInstanceDetailsScreenState
             context,
             MaterialPageRoute(
                 builder: (context) => StudentScreen(isCreatedNew: true)),
-                (Route<dynamic> route) => false,
+            (Route<dynamic> route) => false,
           );
         }
       } else {

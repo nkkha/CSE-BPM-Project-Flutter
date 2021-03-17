@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:cse_bpm_project/model/CountRIToday.dart';
 import 'package:cse_bpm_project/model/DeviceToken.dart';
+import 'package:cse_bpm_project/model/DropdownOption.dart';
 import 'package:cse_bpm_project/model/InputField.dart';
 import 'package:cse_bpm_project/model/InputFieldInstance.dart';
 import 'package:cse_bpm_project/model/NumOfRequestInstance.dart';
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/model/Role.dart';
 import 'package:cse_bpm_project/model/Step.dart';
-import 'package:http/http.dart' as http;
-
 import 'package:cse_bpm_project/model/StepInstance.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -131,7 +132,8 @@ class WebService {
     );
 
     if (response.statusCode == 200) {
-      getNextStep(requestInstance, requestInstance.currentStepIndex + 1, update);
+      getNextStep(
+          requestInstance, requestInstance.currentStepIndex + 1, update);
     } else {
       update(false);
       throw Exception('Failed to update request instance');
@@ -175,7 +177,8 @@ class WebService {
       }
       nextStepSize = listStep.length;
       for (int i = 0; i < nextStepSize; i++) {
-        postCreateNextStepInstances(requestInstance.id, listStep[i].id, (data) => update(data));
+        postCreateNextStepInstances(
+            requestInstance.id, listStep[i].id, (data) => update(data));
       }
       if (nextStepSize == 0) {
         update(false);
@@ -186,8 +189,8 @@ class WebService {
   }
 
   Future<List<MyStep>> getStepByID(int id) async {
-    final response = await http.get(
-        'http://nkkha.somee.com/odata/tbStep?\$filter=RequestID eq $id');
+    final response = await http
+        .get('http://nkkha.somee.com/odata/tbStep?\$filter=RequestID eq $id');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
@@ -335,23 +338,6 @@ class WebService {
     }
   }
 
-  Future<void> postCreateDropdownOptions(String data) async {
-    final http.Response response = await http.post(
-      'http://nkkha.somee.com/odata/tbDropdownOption/PostListEntity',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        "value": data
-      }),
-    );
-
-    if (response.statusCode == 200) {
-    } else {
-      throw Exception("Failed to create dropdown options");
-    }
-  }
-
   Future<List<InputField>> getListInputField(int requestID, int stepID) async {
     String query = "";
     if (requestID != null) {
@@ -359,8 +345,8 @@ class WebService {
     } else if (stepID != null) {
       query = "StepID eq $stepID";
     }
-    final response = await http
-        .get('http://nkkha.somee.com/odata/tbInputField?\$filter=$query&\$orderby=IpIndex asc');
+    final response = await http.get(
+        'http://nkkha.somee.com/odata/tbInputField?\$filter=$query&\$orderby=IpIndex asc');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['value'];
@@ -506,7 +492,8 @@ class WebService {
     }
   }
 
-  Future<void> postDeviceToken(int userID, String deviceToken, bool isLogin) async {
+  Future<void> postDeviceToken(
+      int userID, String deviceToken, bool isLogin) async {
     final http.Response response = await http.post(
       'http://nkkha.somee.com/odata/tbDeviceToken',
       headers: <String, String>{
@@ -552,6 +539,39 @@ class WebService {
       prefs.clear();
     } else {
       throw Exception('Failed to update device token.');
+    }
+  }
+
+  //DropdownOptions
+
+  Future<void> postCreateDropdownOptions(String data) async {
+    final http.Response response = await http.post(
+      'http://nkkha.somee.com/odata/tbDropdownOption/PostListEntity',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{"value": data}),
+    );
+
+    if (response.statusCode == 200) {
+    } else {
+      throw Exception("Failed to create dropdown options");
+    }
+  }
+
+  Future<List<DropdownOption>> getDropdownOptions(int inputFieldID) async {
+    final response = await http.get(
+        'http://nkkha.somee.com/odata/tbDropdownOption?\$filter=InputFieldID eq $inputFieldID');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['value'];
+      List<DropdownOption> listDropdownOption = [];
+      for (Map i in data) {
+        listDropdownOption.add(DropdownOption.fromJson(i));
+      }
+      return listDropdownOption;
+    } else {
+      throw Exception('Failed to load');
     }
   }
 }

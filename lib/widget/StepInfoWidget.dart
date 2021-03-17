@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cse_bpm_project/model/InputFieldInstance.dart';
-import 'package:cse_bpm_project/source/SharedPreferencesHelper.dart';
-import 'package:cse_bpm_project/web_service/WebService.dart';
-import 'package:http/http.dart' as http;
-
 import 'package:cse_bpm_project/model/RequestInstance.dart';
 import 'package:cse_bpm_project/source/MyColors.dart';
+import 'package:cse_bpm_project/source/SharedPreferencesHelper.dart';
+import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -152,8 +152,8 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                       : SizedBox(),
                   _requestInstance.responseMessage != null
                       ? Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 8, 8, 32),
-                        child: RichText(
+                          padding: const EdgeInsets.fromLTRB(8, 8, 8, 32),
+                          child: RichText(
                             text: TextSpan(
                               style: TextStyle(
                                 fontSize: 18,
@@ -167,11 +167,12 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                                       fontStyle: FontStyle.italic),
                                 ),
                                 TextSpan(
-                                    text: "${_requestInstance.responseMessage}"),
+                                    text:
+                                        "${_requestInstance.responseMessage}"),
                               ],
                             ),
                           ),
-                      )
+                        )
                       : Padding(
                           padding: const EdgeInsets.only(bottom: 32),
                           child: SizedBox(),
@@ -191,6 +192,7 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
   _buildInputFieldInstanceField(int index) {
     switch (listInputFieldInstance[index].inputFieldTypeID) {
       case 1:
+      case 4:
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -304,7 +306,10 @@ class _StepInfoWidgetState extends State<StepInfoWidget> {
                     padding: const EdgeInsets.only(bottom: 20),
                     child: Text(
                       "null",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic),
                     ),
                   ),
                 ],
