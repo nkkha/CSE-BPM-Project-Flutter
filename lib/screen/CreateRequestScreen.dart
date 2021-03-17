@@ -461,7 +461,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: SizedBox(
                     width: 120,
                     height: 52,
@@ -611,7 +611,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                 style: TextStyle(fontSize: 16, color: Colors.black),
                 decoration: InputDecoration(
                   errorText: snapshot.hasError ? snapshot.error : null,
-                  labelText: "Tùy chọn ${index + 1}",
+                  labelText: "Tùy chọn ${index + 1} *",
 //              labelStyle: TextStyle(
 //                  color: _myFocusNode.hasFocus
 //                      ? MyColors.lightBrand
@@ -700,15 +700,24 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
           Request request = Request.fromJson(jsonDecode(response.body));
           if (listInputField.length > 0) {
             int index = 0;
-            for (InputField inputField in listInputField) {
+            for (InputField ip in listInputField) {
               index++;
               webService.postCreateInputField(
-                  null,
-                  request.id,
-                  inputField.inputFieldTypeID,
-                  inputField.title,
-                  index,
-                  (data) => update(data, numOfSteps, request.id));
+                  null, request.id, ip.inputFieldTypeID, ip.title, index,
+                  (success, inputFieldID) {
+                if (ip.inputFieldTypeID == 4) {
+                  var array = [];
+                  for (DropdownOption op in hashMapDropdownOptions[ip.id]) {
+                    var resBody = {};
+                    resBody["InputFieldID"] = inputFieldID;
+                    resBody["Content"] = op.content;
+                    array.add(resBody);
+                  }
+                  String data = jsonEncode(array);
+                  webService.postCreateDropdownOptions(data);
+                }
+                update(success, numOfSteps, request.id);
+              });
             }
           } else {
             await pr.hide();
@@ -746,16 +755,21 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   }
 
   bool validate() {
-    if (listInputField.length > 0) {
-      for (InputField ip in listInputField) {
-        if (ip.title == null || ip.title == "") return false;
-      }
-    }
     if (_idController.text == "" ||
         _nameController.text == "" ||
         _descriptionController.text == "" ||
         _numStepsController.text == "" ||
         !isValidDateRange) return false;
+    if (listInputField.length > 0) {
+      for (InputField ip in listInputField) {
+        if (ip.title == null || ip.title == "") return false;
+        if (ip.inputFieldTypeID == 4) {
+          for (DropdownOption op in hashMapDropdownOptions[ip.id]) {
+            if (op.content == null || op.content == "") return false;
+          }
+        }
+      }
+    }
     return true;
   }
 

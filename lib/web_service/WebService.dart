@@ -328,9 +328,27 @@ class WebService {
     );
 
     if (response.statusCode == 200) {
-      update(true);
+      final inputFieldID = jsonDecode(response.body)['ID'];
+      update(true, inputFieldID);
     } else {
       throw Exception("Failed to create input field");
+    }
+  }
+
+  Future<void> postCreateDropdownOptions(String data) async {
+    final http.Response response = await http.post(
+      'http://nkkha.somee.com/odata/tbDropdownOption/PostListEntity',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        "value": data
+      }),
+    );
+
+    if (response.statusCode == 200) {
+    } else {
+      throw Exception("Failed to create dropdown options");
     }
   }
 
