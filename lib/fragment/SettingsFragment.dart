@@ -1,10 +1,12 @@
 import 'dart:async';
+
+import 'package:cse_bpm_project/screen/AboutScreen.dart';
 import 'package:cse_bpm_project/screen/login/CreateAccountScreen.dart';
 import 'package:cse_bpm_project/screen/login/LoginScreen.dart';
-import 'package:cse_bpm_project/web_service/WebService.dart';
-import 'package:http/http.dart' as http;
 import 'package:cse_bpm_project/source/MyColors.dart';
+import 'package:cse_bpm_project/web_service/WebService.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,12 +39,11 @@ class _SettingsFragmentState extends State<SettingsFragment> {
       body: widget.roleID == 3
           ? Column(
               children: <Widget>[
-                _buildRowSetting(
-                    'images/ic-notifications-24.png', 'Thông báo', 1, context),
+                _buildRowSetting('images/ic_info.png', 'About', 1, context),
                 _buildRowSetting(
                     'images/ic_user_group_24.png', 'Tạo tài khoản', 5, context),
-                _buildRowSetting('images/ic-security-24.png',
-                    'Chính sách bảo mật', 2, context),
+                _buildRowSetting(
+                    'images/ic-notifications-24.png', 'Thông báo', 2, context),
                 _buildRowSetting(
                     'images/ic-help-24.png', 'Trợ giúp', 3, context),
                 _buildRowSetting('images/logout.png', 'Đăng xuất', 4, context),
@@ -50,10 +51,9 @@ class _SettingsFragmentState extends State<SettingsFragment> {
             )
           : Column(
               children: <Widget>[
+                _buildRowSetting('images/ic_info.png', 'About', 1, context),
                 _buildRowSetting(
-                    'images/ic-notifications-24.png', 'Thông báo', 1, context),
-                _buildRowSetting('images/ic-security-24.png',
-                    'Chính sách bảo mật', 2, context),
+                    'images/ic-notifications-24.png', 'Thông báo', 2, context),
                 _buildRowSetting(
                     'images/ic-help-24.png', 'Trợ giúp', 3, context),
                 _buildRowSetting('images/logout.png', 'Đăng xuất', 4, context),
@@ -98,11 +98,18 @@ class _SettingsFragmentState extends State<SettingsFragment> {
 
   void _onRowClicked(BuildContext context, int index) {
     switch (index) {
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AboutScreen()),
+        );
+        break;
       case 4:
         _onLogOutClicked(context);
         break;
       case 5:
         _onCreateAccountClicked();
+        break;
     }
   }
 
@@ -136,9 +143,7 @@ class _SettingsFragmentState extends State<SettingsFragment> {
   }
 
   void _onCreateAccountClicked() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => CreateAccountScreen()));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => CreateAccountScreen()));
   }
 }
